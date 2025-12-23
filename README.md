@@ -74,10 +74,6 @@ PromptArchitect-Studio is built with modern, high-performance technologies:
 5.  **View the app:**
     Open your browser and navigate to `http://localhost:5173`.
 
-## 🌐 Deployment
-
-You can view the live app on AI Studio: [PromptArchitect Studio](https://ai.studio/apps/drive/137GCqdjoo3ebo5Tv43emk1BS0fiWvkY6)
-
 ---
 
 <div align="center">
