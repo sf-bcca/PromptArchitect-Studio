@@ -1,8 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import PromptCard from './components/PromptCard';
 import { engineerPrompt } from './services/geminiService';
+import { supabase } from './services/supabaseClient';
 import { PromptHistoryItem, RefinedPromptResult } from './types';
 
 const App: React.FC = () => {
@@ -12,22 +12,48 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [history, setHistory] = useState<PromptHistoryItem[]>([]);
 
-  // Load history from localStorage
+  // Load history from Supabase
   useEffect(() => {
-    const saved = localStorage.getItem('prompt_history');
-    if (saved) {
-      try {
-        setHistory(JSON.parse(saved));
-      } catch (e) {
-        console.error("Failed to parse history");
+    const fetchHistory = async () => {
+      const { data, error } = await supabase
+        .from('prompt_history')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(10);
+      
+      if (data && !error) {
+        const mappedHistory: PromptHistoryItem[] = data.map(item => ({
+          id: item.id,
+          originalInput: item.original_input,
+          result: item.result,
+          timestamp: new Date(item.created_at).getTime(),
+        }));
+        setHistory(mappedHistory);
+      } else if (error) {
+        console.error("Failed to fetch history:", error);
       }
-    }
+    };
+
+    fetchHistory();
   }, []);
 
-  // Save history when it changes
+  // Sync currentResult to history when it updates (Local state management)
+  // The Edge Function already saved the item to DB, so we just update the UI list
   useEffect(() => {
-    localStorage.setItem('prompt_history', JSON.stringify(history));
-  }, [history]);
+    if (currentResult && (currentResult as any).id) {
+      const newItem: PromptHistoryItem = {
+        id: (currentResult as any).id,
+        originalInput: userInput,
+        result: currentResult,
+        timestamp: Date.now(),
+      };
+      setHistory(prev => {
+        // Avoid duplicates if we already have this ID in history
+        if (prev.find(h => h.id === newItem.id)) return prev;
+        return [newItem, ...prev].slice(0, 10);
+      });
+    }
+  }, [currentResult]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,15 +65,8 @@ const App: React.FC = () => {
     try {
       const result = await engineerPrompt(userInput);
       setCurrentResult(result);
-      
-      const newHistoryItem: PromptHistoryItem = {
-        id: Math.random().toString(36).substr(2, 9),
-        originalInput: userInput,
-        result: result,
-        timestamp: Date.now(),
-      };
-      
-      setHistory(prev => [newHistoryItem, ...prev].slice(0, 10)); // Keep last 10
+      // No need to manually add to history here, the useEffect on currentResult will handle UI
+      // and the Edge Function already saved it to the database.
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred.");
     } finally {
