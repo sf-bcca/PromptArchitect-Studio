@@ -81,31 +81,31 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-200">
       <Header />
       
       <main className="max-w-4xl mx-auto px-4 py-12 pb-32">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-slate-900 sm:text-4xl mb-4">
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-50 sm:text-4xl mb-4">
             Engineer Perfect Prompts
           </h2>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
             Input your basic idea, and we'll apply professional engineering techniques 
             to generate a structured, high-performing framework for any LLM.
           </p>
         </div>
 
         {/* Input Form */}
-        <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-6 sm:p-8 mb-12 transition-all hover:shadow-xl">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 p-6 sm:p-8 mb-12 transition-all hover:shadow-xl">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="prompt-input" className="block text-sm font-medium text-slate-700 mb-2">
+              <label htmlFor="prompt-input" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 What are you trying to achieve?
               </label>
               <textarea
                 id="prompt-input"
                 rows={4}
-                className="block w-full rounded-xl border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-slate-900 bg-slate-50 p-4 transition-all resize-none border"
+                className="block w-full rounded-xl border-slate-200 dark:border-slate-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-slate-900 dark:text-slate-100 bg-slate-50 dark:bg-slate-950 p-4 transition-all resize-none border"
                 placeholder="e.g., 'Help me write a prompt for an email to my boss asking for a raise' or 'Create a prompt for a fitness coach AI'..."
                 value={userInput}
                 onChange={(e) => setUserInput(e.target.value)}
@@ -114,7 +114,7 @@ const App: React.FC = () => {
             </div>
             
             <div className="flex justify-between items-center">
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-400 dark:text-slate-500">
                 Uses Gemini 3 Flash Reasoning Engine
               </p>
               <button
@@ -149,15 +149,15 @@ const App: React.FC = () => {
 
         {/* Error State */}
         {error && (
-          <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-8 rounded-r-xl">
+          <div className="bg-red-50 dark:bg-red-900/30 border-l-4 border-red-400 dark:border-red-500 p-4 mb-8 rounded-r-xl">
             <div className="flex">
               <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <svg className="h-5 w-5 text-red-400 dark:text-red-400" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                 </svg>
               </div>
               <div className="ml-3">
-                <p className="text-sm text-red-700">{error}</p>
+                <p className="text-sm text-red-700 dark:text-red-200">{error}</p>
               </div>
             </div>
           </div>
@@ -174,10 +174,10 @@ const App: React.FC = () => {
               { title: "Constraint Driven", desc: "Strict boundaries ensure focus and quality.", icon: "🎯" },
               { title: "Output Controlled", desc: "Structured formats for easy integration.", icon: "📋" }
             ].map((feature, i) => (
-              <div key={i} className="bg-white p-6 rounded-xl border border-slate-200 text-center">
+              <div key={i} className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 text-center">
                 <div className="text-2xl mb-2">{feature.icon}</div>
-                <h4 className="font-semibold text-slate-800 mb-1">{feature.title}</h4>
-                <p className="text-xs text-slate-500">{feature.desc}</p>
+                <h4 className="font-semibold text-slate-800 dark:text-slate-200 mb-1">{feature.title}</h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400">{feature.desc}</p>
               </div>
             ))}
           </div>
@@ -187,7 +187,7 @@ const App: React.FC = () => {
         {history.length > 0 && (
           <div className="mt-20">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold text-slate-900">Recent Architecture</h3>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-slate-50">Recent Architecture</h3>
               <button 
                 onClick={handleClearHistory}
                 className="text-xs font-medium text-slate-400 hover:text-red-500 transition-colors uppercase tracking-widest"
@@ -199,7 +199,7 @@ const App: React.FC = () => {
               {history.map((item) => (
                 <div 
                   key={item.id} 
-                  className="bg-white border border-slate-200 rounded-xl p-4 flex items-center justify-between hover:border-indigo-200 transition-all cursor-pointer group"
+                  className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 flex items-center justify-between hover:border-indigo-200 dark:hover:border-indigo-900 transition-all cursor-pointer group"
                   onClick={() => {
                     setCurrentResult(item.result);
                     setUserInput(item.originalInput);
@@ -207,21 +207,21 @@ const App: React.FC = () => {
                   }}
                 >
                   <div className="flex items-center space-x-4">
-                    <div className="bg-slate-100 p-2 rounded-lg group-hover:bg-indigo-50 transition-colors">
-                      <svg className="w-4 h-4 text-slate-500 group-hover:text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="bg-slate-100 dark:bg-slate-800 p-2 rounded-lg group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/50 transition-colors">
+                      <svg className="w-4 h-4 text-slate-500 dark:text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-slate-900 truncate max-w-xs md:max-w-md">
+                      <p className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate max-w-xs md:max-w-md">
                         {item.originalInput}
                       </p>
-                      <p className="text-xs text-slate-400">
+                      <p className="text-xs text-slate-400 dark:text-slate-500">
                         {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </p>
                     </div>
                   </div>
-                  <svg className="w-4 h-4 text-slate-300 group-hover:text-indigo-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 text-slate-300 dark:text-slate-600 group-hover:text-indigo-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </div>
@@ -232,7 +232,7 @@ const App: React.FC = () => {
       </main>
 
       {/* Persistent Footer CTA */}
-      <footer className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md border-t border-slate-200 p-4">
+      <footer className="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 p-4">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
           <p className="text-xs text-slate-500 font-medium">
             Developed by Expert Prompt Engineers

@@ -18,17 +18,17 @@ const PromptCard: React.FC<PromptCardProps> = ({ result }) => {
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* Refined Prompt Section */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center">
-          <h2 className="text-sm font-semibold text-slate-900 uppercase tracking-wider flex items-center">
-            <svg className="w-4 h-4 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
+        <div className="bg-slate-50 dark:bg-slate-950 px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100 uppercase tracking-wider flex items-center">
+            <svg className="w-4 h-4 mr-2 text-indigo-500 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
             Refined Prompt
           </h2>
           <button
             onClick={copyToClipboard}
-            className="text-xs font-medium text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 px-3 py-1 rounded-full transition-all flex items-center"
+            className="text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 px-3 py-1 rounded-full transition-all flex items-center"
           >
             {copied ? (
               <>
@@ -48,7 +48,7 @@ const PromptCard: React.FC<PromptCardProps> = ({ result }) => {
           </button>
         </div>
         <div className="p-6">
-          <pre className="mono text-sm text-slate-800 whitespace-pre-wrap leading-relaxed select-all bg-slate-50 p-4 rounded-lg border border-slate-100">
+          <pre className="mono text-sm text-slate-800 dark:text-slate-200 whitespace-pre-wrap leading-relaxed select-all bg-slate-50 dark:bg-slate-950 p-4 rounded-lg border border-slate-100 dark:border-slate-800">
             {result.refinedPrompt}
           </pre>
         </div>
@@ -56,30 +56,30 @@ const PromptCard: React.FC<PromptCardProps> = ({ result }) => {
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Why it works */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-          <h3 className="text-sm font-semibold text-slate-900 mb-4 flex items-center">
-            <svg className="w-4 h-4 mr-2 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-6">
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-4 flex items-center">
+            <svg className="w-4 h-4 mr-2 text-amber-500 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
             </svg>
             Why This Works
           </h3>
-          <p className="text-sm text-slate-600 leading-relaxed">
+          <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
             {result.whyThisWorks}
           </p>
         </div>
 
         {/* Suggested Variables */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-          <h3 className="text-sm font-semibold text-slate-900 mb-4 flex items-center">
-            <svg className="w-4 h-4 mr-2 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-6">
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-4 flex items-center">
+            <svg className="w-4 h-4 mr-2 text-emerald-500 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
             </svg>
             Suggested Variables
           </h3>
           <ul className="space-y-2">
             {result.suggestedVariables.map((v, i) => (
-              <li key={i} className="text-sm text-slate-600 flex items-start">
-                <span className="text-indigo-500 mr-2 font-bold">•</span>
+              <li key={i} className="text-sm text-slate-600 dark:text-slate-400 flex items-start">
+                <span className="text-indigo-500 dark:text-indigo-400 mr-2 font-bold">•</span>
                 {v}
               </li>
             ))}
