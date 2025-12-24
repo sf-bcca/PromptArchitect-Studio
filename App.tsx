@@ -142,7 +142,15 @@ const App: React.FC = () => {
 
             <div className="flex justify-between items-center">
               <p className="text-xs text-slate-400 dark:text-slate-500">
-                Uses Gemini 3 Flash Reasoning Engine
+                {currentResult?.provider ? (
+                  <>
+                    Uses <span className="font-semibold text-slate-600 dark:text-slate-300">
+                      {currentResult.provider === "ollama" ? "Ollama" : "Gemini"}
+                    </span> ({currentResult.model})
+                  </>
+                ) : (
+                  "Uses Gemini 3 Flash Reasoning Engine"
+                )}
               </p>
               <button
                 type="submit"

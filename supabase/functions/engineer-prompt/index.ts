@@ -31,7 +31,7 @@ serve(async (req) => {
       Return the response in pure JSON format with the following structure:
       {
         "refinedPrompt": "The fully engineered prompt text...",
-        "explanation": "A brief explanation of the techniques used (e.g., persona, constraints)...",
+        "whyThisWorks": "A brief explanation of the techniques used (e.g., persona, constraints)...",
         "suggestedVariables": ["variable1", "variable2"]
       }
       
@@ -101,14 +101,23 @@ serve(async (req) => {
     let parsedResult;
     try {
         parsedResult = JSON.parse(cleanedText);
+        // Ensure field naming is consistent if the model used 'explanation' instead of 'whyThisWorks'
+        if (parsedResult.explanation && !parsedResult.whyThisWorks) {
+            parsedResult.whyThisWorks = parsedResult.explanation;
+            delete parsedResult.explanation;
+        }
     } catch (e) {
         console.error("Failed to parse JSON:", cleanedText);
         parsedResult = {
             refinedPrompt: cleanedText,
-            explanation: "Raw output returned due to parsing error. Provider: " + provider,
+            whyThisWorks: "Raw output returned due to parsing error. Provider: " + provider,
             suggestedVariables: []
         };
     }
+
+    // Add metadata
+    parsedResult.provider = provider;
+    parsedResult.model = provider === "ollama" ? Deno.env.get("OLLAMA_MODEL") || "llama3.2" : Deno.env.get("GEMINI_MODEL") || "gemini-3-flash-preview";
 
     return new Response(JSON.stringify(parsedResult), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
