@@ -1,0 +1,81 @@
+{
+  "auditReport": {
+    "overallSummary": "The repository documentation is largely coherent but contains critical security contradictions and accuracy issues regarding the development environment. The most severe finding is a discrepancy between the documented security model (API keys in Edge Functions) and the actual code configuration (API keys injected via Vite), which poses a high risk of credential leakage. Additionally, there is 'split-brain' package management (npm vs pnpm) and claims of automated testing capabilities (Playwright) that are not implemented in the codebase.",
+    "documentAudits": [
+      {
+        "filePath": "INSTALL.md",
+        "status": "Issues Found",
+        "findings": [
+          {
+            "type": "Security Risk / Inaccurate",
+            "description": "The documentation correctly states that 'GEMINI_API_KEY' is managed by the Supabase Edge Function, but the repository includes this key in `.env.example` and `vite.config.ts` attempts to inject it into the client-side code. This contradicts the documentation and creates a security vulnerability where users might accidentally expose their API key in the frontend bundle.",
+            "location": "Section 'Environment Configuration' vs vite.config.ts (Lines 16-19) & .env.example",
+            "severity": "High",
+            "suggestedCorrection": "Remove 'GEMINI_API_KEY' from `.env.example`. Remove the `define` block injecting `process.env.GEMINI_API_KEY` in `vite.config.ts`."
+          },
+          {
+            "type": "Incomplete Instruction / Inconsistency",
+            "description": "The guide offers `npm install` as the primary installation method, but the repository contains both `package-lock.json` and `pnpm-lock.yaml`. The `Dockerfile` exclusively uses `pnpm`. This 'split-brain' state leads to inconsistent dependency versions between local development and production builds.",
+            "location": "Section 'Setup Steps', Step 2",
+            "severity": "Medium",
+            "suggestedCorrection": "Standardize on `pnpm` to match the Docker configuration. Remove `package-lock.json` from the repository. Update instructions to exclusively use `pnpm install`."
+          }
+        ]
+      },
+      {
+        "filePath": "LLM_SETUP.md",
+        "status": "Issues Found",
+        "findings": [
+          {
+            "type": "Security Risk",
+            "description": "Similar to INSTALL.md, this file accurately describes the backend-managed model, but the accompanying `.env.example` and code configuration undermine this by encouraging local key definition which `vite.config.ts` then exposes.",
+            "location": "Section 'Setting up Google Gemini'",
+            "severity": "High",
+            "suggestedCorrection": "Explicitly warn users NOT to add `GEMINI_API_KEY` to their local `.env` file if it is not required by the client. Ensure the codebase reflects this by removing the injection logic."
+          }
+        ]
+      },
+      {
+        "filePath": "AGENTS.md",
+        "status": "Issues Found",
+        "findings": [
+          {
+            "type": "Inaccurate / Missing Feature",
+            "description": "The document claims 'Playwright (Verification Agent)' provides 'end-to-end (E2E) testing and verification'. However, the repository contains no test files, no `e2e` directory, and the `package.json` lacks a `test` script.",
+            "location": "Section 'Verification & Monitoring Agents'",
+            "severity": "Medium",
+            "suggestedCorrection": "Remove the Playwright section or mark it as 'Planned/Roadmap'. Alternatively, implement the missing test infrastructure."
+          }
+        ]
+      },
+      {
+        "filePath": "CONTRIBUTING.md",
+        "status": "Issues Found",
+        "findings": [
+          {
+            "type": "Inaccurate",
+            "description": "The guide implies a flat structure or specific folder locations that do not match reality. It mentions a `functions` directory, but the actual path is `supabase/functions`.",
+            "location": "General Text / implied directory structure",
+            "severity": "Low",
+            "suggestedCorrection": "Update references to point to `supabase/functions` instead of just `functions`."
+          }
+        ]
+      },
+      {
+        "filePath": "README.md",
+        "status": "Verified",
+        "findings": []
+      },
+      {
+        "filePath": "USAGE.md",
+        "status": "Verified",
+        "findings": []
+      },
+      {
+        "filePath": "DEPLOY.md",
+        "status": "Verified",
+        "findings": []
+      }
+    ]
+  }
+}

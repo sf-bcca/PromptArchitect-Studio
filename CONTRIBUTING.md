@@ -23,6 +23,7 @@ Thank you for your interest in contributing to PromptArchitect-Studio! We value 
         npm run secretlint
         ```
     *   **Never** commit `.env` files or hardcoded API keys.
+    *   Note: Backend logic resides in `supabase/functions/`, not a root `functions/` directory.
 
 5.  **Commit and Push**
     *   Commit your changes with a clear message.
