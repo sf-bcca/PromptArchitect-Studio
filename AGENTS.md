@@ -2,15 +2,19 @@
 
 This document outlines the AI agents, Model Context Protocol (MCP) servers, and internal engine components used in the development and operation of the **PromptArchitect-Studio** project.
 
-## Reasoning Engine
+## Reasoning Engines
 
 ### **Google Gemini 3 Flash**
 
-All intelligent operations within PromptArchitect-Studio are powered by the **Gemini 3 Flash** reasoning engine.
-
-- **Role**: Core intelligence provider.
+- **Role**: High-performance intelligence provider.
 - **Capabilities**: Expert prompt engineering, structural reasoning, and high-velocity response generation.
-- **Implementation**: Accessed via Supabase Edge Functions for secure, server-side processing.
+- **Implementation**: Default provider accessed via Supabase Edge Functions.
+
+### **Ollama (Llama 3.2)**
+
+- **Role**: Self-hosted intelligence provider.
+- **Capabilities**: Local reasoning, privacy-focused engineering, and efficient processing on commodity hardware.
+- **Implementation**: Containerized service running Llama 3.2, integrated via OpenAI-compatible API.
 
 ---
 
@@ -56,6 +60,13 @@ All intelligent operations within PromptArchitect-Studio are powered by the **Ge
 **Role:** Pre-Commit Guard
 
 - **Husky & SecretLint**: Automated "agents" that intercept commits to prevent credential leaks and ensure code quality standards are met before code reaches the repository.
+
+### **Cloudflare Access (Service Auth)**
+
+**Role:** Infrastructure Security Guard
+
+- **Description**: Projects the self-hosted Ollama instance by requiring Service Tokens for all API requests.
+- **Effect**: Ensures that only the authorized Supabase Edge Function can access the reasoning engine.
 
 ---
 
