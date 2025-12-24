@@ -1,6 +1,10 @@
 
 import React from 'react';
 
+/**
+ * The application header component.
+ * Displays the branding and navigation links.
+ */
 const Header: React.FC = () => {
   return (
     <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10 transition-colors duration-200">

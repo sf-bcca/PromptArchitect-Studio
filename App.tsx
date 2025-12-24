@@ -5,14 +5,25 @@ import { engineerPrompt } from './services/geminiService';
 import { supabase } from './services/supabaseClient';
 import { PromptHistoryItem, RefinedPromptResult } from './types';
 
+/**
+ * The main application component for PromptArchitect-Studio.
+ * Handles user input, interacts with the backend engineering service, and manages history state.
+ */
 const App: React.FC = () => {
+  // State for storing the raw user input text
   const [userInput, setUserInput] = useState('');
+  // State for tracking the loading status of the API request
   const [isLoading, setIsLoading] = useState(false);
+  // State for storing the most recently refined prompt result
   const [currentResult, setCurrentResult] = useState<RefinedPromptResult | null>(null);
+  // State for storing error messages
   const [error, setError] = useState<string | null>(null);
+  // State for storing the list of historical prompts
   const [history, setHistory] = useState<PromptHistoryItem[]>([]);
 
-  // Load history from Supabase
+  /**
+   * Effect hook to load prompt history from Supabase on component mount.
+   */
   useEffect(() => {
     const fetchHistory = async () => {
       const { data, error } = await supabase
@@ -37,8 +48,10 @@ const App: React.FC = () => {
     fetchHistory();
   }, []);
 
-  // Sync currentResult to history when it updates (Local state management)
-  // The Edge Function already saved the item to DB, so we just update the UI list
+  /**
+   * Effect hook to sync the current result to the history list locally.
+   * Note: The Edge Function persists the data to the DB; this updates the UI immediately.
+   */
   useEffect(() => {
     if (currentResult && (currentResult as any).id) {
       const newItem: PromptHistoryItem = {
@@ -55,6 +68,11 @@ const App: React.FC = () => {
     }
   }, [currentResult]);
 
+  /**
+   * Handles the form submission to engineer the prompt.
+   *
+   * @param {React.FormEvent} e - The form submission event.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!userInput.trim()) return;
@@ -74,6 +92,10 @@ const App: React.FC = () => {
     }
   };
 
+  /**
+   * Clears the local history state and resets the form.
+   * Note: This currently only clears the local view, not the database.
+   */
   const handleClearHistory = () => {
     setHistory([]);
     setCurrentResult(null);
