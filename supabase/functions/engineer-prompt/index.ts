@@ -28,9 +28,8 @@ serve(async (req) => {
 
     const genAI = new GoogleGenerativeAI(apiKey);
     
-    // User requested "Gemini 3 Flash Preview", but that model is not available via the standard v1 API.
-    // Using 'gemini-2.5-flash' instead, which is the recommended fast model for most applications.
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    // Using 'gemini-3-flash-preview' as requested.
+    const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
 
     const prompt = `
       You are an expert Prompt Engineer. Your goal is to rewrite the following raw user idea into a strictly structured, high-performance prompt for an LLM.
