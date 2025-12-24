@@ -1,0 +1,19 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # Pass these variables from the host environment (or .env file) to the build process
+        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
+        VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
+    ports:
+      # Map the container's port 80 to a host port defined by APP_PORT (defaulting to 8080)
+      - "${APP_PORT:-8080}:80"
+    restart: always
+    environment:
+      # Although these are baked into the build, we can document them here for clarity.
+      # Runtime environment variables don't affect the static build in Nginx unless handled explicitly,
+      # but this block is good for documentation or if we add a runtime config server later.
+      - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
+      - VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
