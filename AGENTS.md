@@ -48,12 +48,12 @@ This document outlines the AI agents, Model Context Protocol (MCP) servers, and 
 
 ## Verification & Monitoring Agents
 
-### **Playwright (Verification Agent)**
+### **Playwright (Verification Agent)** (Planned)
 
 **Role:** Automated QA Engineer
 
-- **Description**: Provides end-to-end (E2E) testing and verification of the application's user interface and functional flows.
-- **Usage**: Automated verification steps ensure that features remain stable across updates.
+- **Description**: Will provide end-to-end (E2E) testing and verification of the application's user interface and functional flows.
+- **Usage**: Future automated verification steps to ensure that features remain stable across updates.
 
 ### **Security & Quality Hooks**
 
