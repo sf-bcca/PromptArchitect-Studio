@@ -14,33 +14,50 @@ serve(async (req) => {
   }
 
   try {
-    const { userInput } = await req.json();
+    const { userInput, model, provider: reqProvider } = await req.json();
 
     if (!userInput) {
       throw new Error("Missing userInput in request body");
     }
 
-    const provider = Deno.env.get("LLM_PROVIDER") || "gemini";
+    // Allow client to override provider, default to env var or gemini
+    const provider = reqProvider || Deno.env.get("LLM_PROVIDER") || "gemini";
     let text = "";
 
     const systemPrompt = `
-      You are an expert Prompt Engineer. Your goal is to rewrite the following raw user idea into a strictly structured, high-performance prompt for an LLM.
-      
-      User Idea: "${userInput}"
-      
-      Return the response in pure JSON format with the following structure:
+      ROLE: You are an expert Prompt Engineer. You are NOT an AI assistant that answers questions. Your ONLY goal is to take a raw idea and rewrite it into a professional, high-quality prompt for ANOTHER AI to answer.
+
+      INPUT: "${userInput}"
+
+      OBJECTIVE:
+      - Do NOT answer the input.
+      - **MANDATORY FRAMEWORK**: You MUST use the **CO-STAR** framework for every "Refined Prompt".
+        1. **C**ontext: detailed background.
+        2. **O**bjective: precise goal.
+        3. **S**tyle: specific expert persona (e.g., "Cynical VC with 20 years exp").
+        4. **T**one: emotion/attitude (e.g., "Direct, skeptical").
+        5. **A**udience: target reader.
+        6. **R**esponse: strict format requirements.
+
+      - **Expert Profile**: Do not just say "You are an X". Add specificity: "You are an X with Y years experience in Z field."
+      - **Geographical Constraints**: Respect locations (e.g., "Grenada, MS" vs "Grenada").
+
+      EXAMPLE:
+      Input: "Pitch a B2B SaaS."
+      Refined Prompt: "CONTEXT: We are pre-seed B2B SaaS founders. OBJECTIVE: Critique our pitch deck. STYLE: You are a cynical Silicon Valley Venture Capitalist with 20 years of experience in SaaS. TONE: Direct, professional, slightly skeptical. AUDIENCE: Internal founding team. RESPONSE: Provide a bulleted list of the top 3 risks, followed by a raw 'Investment Verdict'."
+
+      OUTPUT FORMAT (Strict JSON):
       {
         "refinedPrompt": "The fully engineered prompt text...",
-        "whyThisWorks": "A brief explanation of the techniques used (e.g., persona, constraints)...",
+        "whyThisWorks": "A detailed explanation of the prompt engineering techniques used...",
         "suggestedVariables": ["variable1", "variable2"]
       }
-      
-      Do not include markdown formatting (like \`\`\`json). Just the raw JSON string.
     `;
 
     if (provider === "ollama") {
       const ollamaUrl = Deno.env.get("OLLAMA_URL") || "http://localhost:11434";
-      const ollamaModel = Deno.env.get("OLLAMA_MODEL") || "llama3.2";
+      // Allow overriding the model from the client, otherwise fallback to env or default
+      const ollamaModel = model || Deno.env.get("OLLAMA_MODEL") || "llama3.2";
 
       console.log(`Using Ollama provider at ${ollamaUrl} with model ${ollamaModel}`);
 
@@ -62,9 +79,10 @@ serve(async (req) => {
         body: JSON.stringify({
           model: ollamaModel,
           messages: [{ role: "user", content: systemPrompt }],
+          format: "json", // Force valid JSON output
           stream: false,
           options: {
-            temperature: 0.1, // Keep it deterministic for structured output
+            temperature: 0.3, // Slightly higher creativity for better explanations
           },
         }),
       });
@@ -95,24 +113,41 @@ serve(async (req) => {
       text = response.text();
     }
 
-    // Clean up potential markdown formatting if the model persists in sending it
-    const cleanedText = text.replace(/```json/g, "").replace(/```/g, "").trim();
+    // Clean up potentially messy JSON
+    let cleanedText = text.replace(/```json/g, "").replace(/```/g, "").trim();
     
+    // Fix common JSON errors from small models (unescaped newlines)
+    cleanedText = cleanedText.replace(/(?<!\\)\n/g, "\\n");
+
     let parsedResult;
     try {
         parsedResult = JSON.parse(cleanedText);
-        // Ensure field naming is consistent if the model used 'explanation' instead of 'whyThisWorks'
+        
+        // Handle field mapping
         if (parsedResult.explanation && !parsedResult.whyThisWorks) {
             parsedResult.whyThisWorks = parsedResult.explanation;
-            delete parsedResult.explanation;
         }
     } catch (e) {
-        console.error("Failed to parse JSON:", cleanedText);
-        parsedResult = {
-            refinedPrompt: cleanedText,
-            whyThisWorks: "Raw output returned due to parsing error. Provider: " + provider,
-            suggestedVariables: []
-        };
+        console.warn("JSON Parse Failed, attempting Regex fallback:", e);
+        
+        // Regex Fallback Strategy
+        const promptMatch = text.match(/"refinedPrompt":\s*"([^"]*)"/);
+        const whyMatch = text.match(/"whyThisWorks":\s*"([^"]*)"/);
+        
+        if (promptMatch) {
+            parsedResult = {
+                refinedPrompt: promptMatch[1],
+                whyThisWorks: whyMatch ? whyMatch[1] : "Explanation could not be parsed.",
+                suggestedVariables: []
+            };
+        } else {
+            // Last resort: Just show the raw text as the refined prompt
+            parsedResult = {
+                refinedPrompt: text,
+                whyThisWorks: "Raw output returned due to parsing error. Provider: " + provider,
+                suggestedVariables: []
+            };
+        }
     }
 
     // Add metadata

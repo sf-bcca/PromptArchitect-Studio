@@ -12,6 +12,8 @@ import { PromptHistoryItem, RefinedPromptResult } from "./types";
 const App: React.FC = () => {
   // State for storing the raw user input text
   const [userInput, setUserInput] = useState("");
+  // State for selected LLM model
+  const [selectedModel, setSelectedModel] = useState("llama3.2");
   // State for tracking the loading status of the API request
   const [isLoading, setIsLoading] = useState(false);
   // State for storing the most recently refined prompt result
@@ -21,6 +23,15 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   // State for storing the list of historical prompts
   const [history, setHistory] = useState<PromptHistoryItem[]>([]);
+
+  // Available models configuration
+  const models = [
+    { id: "llama3.2", name: "Ollama (Llama 3.2 3B)", provider: "ollama" },
+    { id: "llama3.1", name: "Ollama (Llama 3.1 8B)", provider: "ollama" },
+    { id: "mistral", name: "Ollama (Mistral 7B)", provider: "ollama" },
+    { id: "gemma2", name: "Ollama (Gemma 2)", provider: "ollama" },
+    { id: "gemini-1.5-flash", name: "Google Gemini (Cloud)", provider: "gemini" },
+  ];
 
   /**
    * Effect hook to load prompt history from Supabase on component mount.
@@ -81,8 +92,12 @@ const App: React.FC = () => {
     setIsLoading(true);
     setError(null);
 
+    // Find the full model object to get the provider
+    const selectedModelObj = models.find((m) => m.id === selectedModel);
+    const provider = selectedModelObj ? selectedModelObj.provider : "ollama";
+
     try {
-      const result = await engineerPrompt(userInput);
+      const result = await engineerPrompt(userInput, selectedModel, provider);
       setCurrentResult(result);
       // No need to manually add to history here, the useEffect on currentResult will handle UI
       // and the Edge Function already saved it to the database.
@@ -123,12 +138,28 @@ const App: React.FC = () => {
         <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 p-6 sm:p-8 mb-12 transition-all hover:shadow-xl">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label
-                htmlFor="prompt-input"
-                className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
-              >
-                What are you trying to achieve?
-              </label>
+              <div className="flex justify-between items-end mb-2">
+                <label
+                  htmlFor="prompt-input"
+                  className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+                >
+                  What are you trying to achieve?
+                </label>
+                <div className="flex items-center">
+                  <select
+                    value={selectedModel}
+                    onChange={(e) => setSelectedModel(e.target.value)}
+                    disabled={isLoading}
+                    className="block w-48 pl-3 pr-8 py-1.5 text-xs border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-xs rounded-lg bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-300 shadow-sm"
+                  >
+                    {models.map((model) => (
+                      <option key={model.id} value={model.id}>
+                        {model.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
               <textarea
                 id="prompt-input"
                 rows={4}
