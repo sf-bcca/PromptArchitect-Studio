@@ -3,12 +3,22 @@ import React, { useState } from 'react';
 import { RefinedPromptResult } from '../types';
 
 interface PromptCardProps {
+  /** The result object containing the refined prompt and analysis */
   result: RefinedPromptResult;
 }
 
+/**
+ * A component that displays the engineered prompt, the reasoning behind it, and suggested variables.
+ * Allows the user to copy the prompt to the clipboard.
+ *
+ * @param {PromptCardProps} props - The component props.
+ */
 const PromptCard: React.FC<PromptCardProps> = ({ result }) => {
   const [copied, setCopied] = useState(false);
 
+  /**
+   * Copies the refined prompt text to the system clipboard and shows a success state briefly.
+   */
   const copyToClipboard = () => {
     navigator.clipboard.writeText(result.refinedPrompt);
     setCopied(true);

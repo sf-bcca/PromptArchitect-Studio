@@ -25,6 +25,13 @@ PromptArchitect-Studio is a powerful web-based tool designed to elevate your int
 - **⚡ Gemini 3 Flash Reasoning**: Powered by Google's latest thinking-capable model for precision engineering.
 - **🕰️ History & Persistence**: Save and revisit your engineered architectures using Supabase integration.
 
+## 📚 Documentation
+
+- **[Installation Guide](INSTALL.md)**: Setup instructions and environment configuration.
+- **[Usage Guide](USAGE.md)**: How to use the application.
+- **[Contributing Guide](CONTRIBUTING.md)**: Workflow and standards for developers.
+- **[Agents & Tools](AGENTS.md)**: Information about the AI agents and tools used in this project.
+
 ## 🛠️ Tech Stack
 
 PromptArchitect-Studio is built with modern, high-performance technologies:
@@ -42,39 +49,32 @@ PromptArchitect-Studio is built with modern, high-performance technologies:
 
 - [Node.js](https://nodejs.org/) (v18 or higher)
 - A Gemini API Key
+- Supabase account and project
 
 ### Local Installation
 
-1.  **Clone the repository:**
+1.  **Clone and Install**:
 
     ```bash
     git clone https://github.com/sf-bcca/PromptArchitect-Studio.git
     cd PromptArchitect-Studio
-    ```
-
-2.  **Install dependencies:**
-
-    ```bash
     npm install
     ```
 
-3.  **Configure environment variables:**
-    Create a `.env.local` file in the root directory and add your Gemini API key:
+2.  **Configure**:
+    Create a `.env.local` file in the root directory and add your credentials:
 
     ```env
-    GEMINI_API_KEY=your_gemini_api_key_here
+    VITE_SUPABASE_URL=your_supabase_url
+    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
     ```
 
-4.  **Launch the development server:**
-
+3.  **Launch the development server:**
     ```bash
     npm run dev
     ```
 
-5.  **View the app:**
-    Open your browser and navigate to `http://localhost:5173`.
-
----
+## 🌐 Deployment
 
 <div align="center">
   <p>Developed with ❤️ by Expert Prompt Engineers</p>
