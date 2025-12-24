@@ -9,6 +9,6 @@ until curl -s http://localhost:11434/api/tags > /dev/null; do
 done
 
 echo "✅ Ollama is up. Pulling Llama 3.2 model..."
-docker exec -it ollama ollama pull llama3.2
+docker exec ollama ollama pull llama3.2
 
 echo "🎉 Done! Llama 3.2 is ready to use."
