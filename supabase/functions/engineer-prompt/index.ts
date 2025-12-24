@@ -44,9 +44,21 @@ serve(async (req) => {
 
       console.log(`Using Ollama provider at ${ollamaUrl} with model ${ollamaModel}`);
 
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      
+      // Cloudflare Access Service Auth headers
+      const cfId = Deno.env.get("CF_ACCESS_CLIENT_ID");
+      const cfSecret = Deno.env.get("CF_ACCESS_CLIENT_SECRET");
+      
+      if (cfId && cfSecret) {
+        console.log("Adding Cloudflare Access headers to request");
+        headers["CF-Access-Client-Id"] = cfId;
+        headers["CF-Access-Client-Secret"] = cfSecret;
+      }
+
       const response = await fetch(`${ollamaUrl}/api/chat`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({
           model: ollamaModel,
           messages: [{ role: "user", content: systemPrompt }],
