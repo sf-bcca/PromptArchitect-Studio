@@ -3,6 +3,11 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 
+/**
+ * Entry point for the React application.
+ * Finds the root element in the DOM and mounts the main App component.
+ */
+
 const rootElement = document.getElementById('root');
 if (!rootElement) {
   throw new Error("Could not find root element to mount to");

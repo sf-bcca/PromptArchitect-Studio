@@ -67,7 +67,6 @@ PromptArchitect-Studio is built with modern, high-performance technologies:
     ```env
     VITE_SUPABASE_URL=your_supabase_url
     VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-    GEMINI_API_KEY=your_gemini_api_key_here
     ```
 
 3.  **Launch the development server:**
@@ -76,8 +75,6 @@ PromptArchitect-Studio is built with modern, high-performance technologies:
     ```
 
 ## 🌐 Deployment
-
-## You can view the live app on AI Studio: [PromptArchitect Studio](https://ai.studio/apps/drive/137GCqdjoo3ebo5Tv43emk1BS0fiWvkY6)
 
 <div align="center">
   <p>Developed with ❤️ by Expert Prompt Engineers</p>
