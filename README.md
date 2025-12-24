@@ -22,11 +22,12 @@ PromptArchitect-Studio is a powerful web-based tool designed to elevate your int
 - **👤 Persona Engineering**: Automatically assigns expert roles and personas to your tasks.
 - **🎯 Constraint Driven**: Defines clear boundaries to ensure focused and high-quality AI outputs.
 - **📋 Structured Output Control**: Generates prompts that demand specific formats for easy integration.
-- **⚡ Gemini 3 Flash Reasoning**: Powered by Google's latest thinking-capable model for precision engineering.
+- **⚡ Dual-Engine Support**: Choice between Google Gemini 3 Flash and self-hosted **Llama 3.2** via Ollama.
 - **🕰️ History & Persistence**: Save and revisit your engineered architectures using Supabase integration.
 
 ## 📚 Documentation
 
+- **[LLM Setup Guide](LLM_SETUP.md)**: Instructions for Gemini and self-hosted Ollama.
 - **[Installation Guide](INSTALL.md)**: Setup instructions and environment configuration.
 - **[Usage Guide](USAGE.md)**: How to use the application.
 - **[Contributing Guide](CONTRIBUTING.md)**: Workflow and standards for developers.
@@ -39,7 +40,7 @@ PromptArchitect-Studio is built with modern, high-performance technologies:
 - **Frontend**: [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
 - **Build Tool**: [Vite 6](https://vite.dev/)
 - **Styling**: Vanilla CSS (Premium Aesthetics)
-- **AI Engine**: [Google Gemini 3 Flash](https://ai.google.dev/)
+- **AI Engines**: [Google Gemini 3 Flash](https://ai.google.dev/) & [Ollama](https://ollama.com/) (Llama 3.2)
 - **Backend/DB**: [Supabase](https://supabase.com/)
 - **Git Hooks**: [Husky](https://typicode.github.io/husky/) + [SecretLint](https://github.com/secretlint/secretlint)
 

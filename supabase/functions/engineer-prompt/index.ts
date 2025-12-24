@@ -9,7 +9,6 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
@@ -21,17 +20,10 @@ serve(async (req) => {
       throw new Error("Missing userInput in request body");
     }
 
-    const apiKey = Deno.env.get("GEMINI_API_KEY");
-    if (!apiKey) {
-      throw new Error("GEMINI_API_KEY is not set");
-    }
+    const provider = Deno.env.get("LLM_PROVIDER") || "gemini";
+    let text = "";
 
-    const genAI = new GoogleGenerativeAI(apiKey);
-    
-    // Using 'gemini-3-flash-preview' as requested.
-    const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
-
-    const prompt = `
+    const systemPrompt = `
       You are an expert Prompt Engineer. Your goal is to rewrite the following raw user idea into a strictly structured, high-performance prompt for an LLM.
       
       User Idea: "${userInput}"
@@ -46,9 +38,50 @@ serve(async (req) => {
       Do not include markdown formatting (like \`\`\`json). Just the raw JSON string.
     `;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+    if (provider === "ollama") {
+      const ollamaUrl = Deno.env.get("OLLAMA_URL") || "http://localhost:11434";
+      const ollamaModel = Deno.env.get("OLLAMA_MODEL") || "llama3.2";
+
+      console.log(`Using Ollama provider at ${ollamaUrl} with model ${ollamaModel}`);
+
+      const response = await fetch(`${ollamaUrl}/api/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: ollamaModel,
+          messages: [{ role: "user", content: systemPrompt }],
+          stream: false,
+          options: {
+            temperature: 0.1, // Keep it deterministic for structured output
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Ollama API error: ${response.status} - ${errorText}`);
+      }
+
+      const data = await response.json();
+      text = data.message?.content || "";
+
+    } else {
+      // Default to Gemini
+      const apiKey = Deno.env.get("GEMINI_API_KEY");
+      if (!apiKey) {
+        throw new Error("GEMINI_API_KEY is not set");
+      }
+
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const modelName = Deno.env.get("GEMINI_MODEL") || "gemini-3-flash-preview";
+      const model = genAI.getGenerativeModel({ model: modelName });
+
+      console.log(`Using Gemini provider with model ${modelName}`);
+      
+      const result = await model.generateContent(systemPrompt);
+      const response = await result.response;
+      text = response.text();
+    }
 
     // Clean up potential markdown formatting if the model persists in sending it
     const cleanedText = text.replace(/```json/g, "").replace(/```/g, "").trim();
@@ -58,20 +91,12 @@ serve(async (req) => {
         parsedResult = JSON.parse(cleanedText);
     } catch (e) {
         console.error("Failed to parse JSON:", cleanedText);
-        // Fallback if JSON parsing fails
         parsedResult = {
             refinedPrompt: cleanedText,
-            explanation: "Raw output returned due to parsing error.",
+            explanation: "Raw output returned due to parsing error. Provider: " + provider,
             suggestedVariables: []
         };
     }
-
-    // Save to Supabase DB (Optional - keeping it simple for now, relying on client to fetch history or adding insert logic here if needed)
-    // For this recreation, we'll return the result directly. 
-    // If the original function saved to DB, we'd need the Supabase client here too.
-    // Based on previous logs, the client fetches history separately, so saving here is good practice.
-    
-    // TODO: Verify if DB insert is required. For now, returning data to frontend.
 
     return new Response(JSON.stringify(parsedResult), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
