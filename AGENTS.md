@@ -7,7 +7,7 @@ This document outlines the AI agents, Model Context Protocol (MCP) servers, and 
 ### **Google Gemini Models (Cloud)**
 
 - **Gemini 1.5 Flash**: High-speed, cost-effective reasoning.
-- **Gemini Flash-Lite 2.5 (Latest)**: Extremely efficient model for high-frequency tasks (points to `gemini-flash-lite-latest`).
+- **Gemini Flash-Lite 2.5 (Latest)**: Extremely efficient model for high-frequency tasks (points to `gemini-2.5-flash-lite`).
 - **Gemma 3 12B (Cloud)**: Google's open model hosted via API, offering multimodal reasoning without local resource usage.
 
 - **Implementation**: Accessed via Supabase Edge Function directly to Google AI Studio API.
