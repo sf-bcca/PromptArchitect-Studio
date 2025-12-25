@@ -4,11 +4,13 @@ This document outlines the AI agents, Model Context Protocol (MCP) servers, and 
 
 ## Reasoning Engines
 
-### **Google Gemini 3 Flash**
+### **Google Gemini Models (Cloud)**
 
-- **Role**: High-performance intelligence provider.
-- **Capabilities**: Expert prompt engineering, structural reasoning, and high-velocity response generation.
-- **Implementation**: Default provider accessed via Supabase Edge Functions.
+- **Gemini 1.5 Flash**: High-speed, cost-effective reasoning.
+- **Gemini 2.0 Flash-Lite**: Extremely efficient model for high-frequency tasks (Experimental).
+- **Gemma 3 12B (Cloud)**: Google's open model hosted via API, offering multimodal reasoning without local resource usage.
+
+- **Implementation**: Accessed via Supabase Edge Function directly to Google AI Studio API.
 
 ### **Ollama (Llama 3.2)**
 

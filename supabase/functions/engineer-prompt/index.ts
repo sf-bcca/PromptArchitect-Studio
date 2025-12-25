@@ -103,12 +103,13 @@ serve(async (req) => {
       }
 
       const genAI = new GoogleGenerativeAI(apiKey);
-      const modelName = Deno.env.get("GEMINI_MODEL") || "gemini-3-flash-preview";
-      const model = genAI.getGenerativeModel({ model: modelName });
+      // Use model from request, or env var, or default to flash
+      const modelName = model || Deno.env.get("GEMINI_MODEL") || "gemini-1.5-flash"; 
+      const genModel = genAI.getGenerativeModel({ model: modelName });
 
       console.log(`Using Gemini provider with model ${modelName}`);
       
-      const result = await model.generateContent(systemPrompt);
+      const result = await genModel.generateContent(systemPrompt);
       const response = await result.response;
       text = response.text();
     }
