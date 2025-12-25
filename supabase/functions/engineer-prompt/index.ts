@@ -104,7 +104,7 @@ serve(async (req) => {
 
       const genAI = new GoogleGenerativeAI(apiKey);
       // Use model from request, or env var, or default to flash
-      const modelName = model || Deno.env.get("GEMINI_MODEL") || "gemini-1.5-flash"; 
+      const modelName = model || Deno.env.get("GEMINI_MODEL") || "gemini-3.0-flash"; 
       const genModel = genAI.getGenerativeModel({ model: modelName });
 
       console.log(`Using Gemini provider with model ${modelName}`);
@@ -153,7 +153,11 @@ serve(async (req) => {
 
     // Add metadata
     parsedResult.provider = provider;
-    parsedResult.model = provider === "ollama" ? Deno.env.get("OLLAMA_MODEL") || "llama3.2" : Deno.env.get("GEMINI_MODEL") || "gemini-3-flash-preview";
+    // Add metadata
+    parsedResult.provider = provider;
+    parsedResult.model = provider === "ollama" 
+      ? (model || Deno.env.get("OLLAMA_MODEL") || "llama3.2")
+      : (model || Deno.env.get("GEMINI_MODEL") || "gemini-3.0-flash");
 
     return new Response(JSON.stringify(parsedResult), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
