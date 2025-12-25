@@ -9,7 +9,6 @@ This document outlines the AI agents, Model Context Protocol (MCP) servers, and 
 - **Gemini 3.0 Flash (Latest)**: The new standard for speed and intelligence (`gemini-3.0-flash`).
 - **Gemini 3.0 Pro (Preview)**: Google's most powerful reasoning model (`gemini-3-pro-preview`).
 - **Gemini Flash-Lite 2.5**: Extremely efficient model for high-frequency tasks (`gemini-2.5-flash-lite`).
-- **Gemma 3 12B (Cloud)**: Specialized model offering multimodal reasoning.
 
 - **Implementation**: Accessed via Supabase Edge Function directly to Google AI Studio API.
 
