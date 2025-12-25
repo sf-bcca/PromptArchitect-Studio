@@ -12,11 +12,15 @@ This document outlines the AI agents, Model Context Protocol (MCP) servers, and 
 
 - **Implementation**: Accessed via Supabase Edge Function directly to Google AI Studio API.
 
-### **Ollama (Llama 3.2)**
+### **Local Models (Ollama)**
 
-- **Role**: Self-hosted intelligence provider.
-- **Capabilities**: Local reasoning, privacy-focused engineering, and efficient processing on commodity hardware.
-- **Implementation**: Containerized service running Llama 3.2, integrated via OpenAI-compatible API.
+Hosted on your own server. Best for privacy and offline usage.
+
+- **Llama 3.2 (3B)**: Meta's latest lightweight model. Fast and efficient.
+- **Gemma 2 (2B)**: Google's open model, optimized for local devices.
+- **Note**: Larger models (8B+) are disabled to prevent server overload.
+
+- **Implementation**: Containerized service running Ollama, accessed via Cloudflare Tunnel.
 
 ---
 
