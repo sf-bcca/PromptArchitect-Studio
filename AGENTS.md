@@ -17,6 +17,7 @@ This document outlines the AI agents, Model Context Protocol (MCP) servers, and 
 Hosted on your own server. Best for privacy and offline usage.
 
 - **Llama 3.2 (3B)**: Meta's latest lightweight model. Fast and efficient.
+- **Gemma 3 (4B)**: Google's latest multimodal model. Powerful reasoning in a compact size.
 - **Gemma 2 (2B)**: Google's open model, optimized for local devices.
 - **Note**: Larger models (8B+) are disabled to prevent server overload.
 
