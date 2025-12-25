@@ -30,8 +30,6 @@ const App: React.FC = () => {
     { id: "llama3.1", name: "Ollama (Llama 3.1 8B)", provider: "ollama" },
     { id: "mistral", name: "Ollama (Mistral 7B)", provider: "ollama" },
     { id: "gemma2", name: "Ollama (Gemma 2)", provider: "ollama" },
-    { id: "gemma3:12b", name: "Ollama (Gemma 3 12B)", provider: "ollama" },
-    { id: "gemma3:4b", name: "Ollama (Gemma 3 4B)", provider: "ollama" },
     { id: "gemini-1.5-flash", name: "Google Gemini (Cloud)", provider: "gemini" },
   ];
 

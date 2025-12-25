@@ -16,12 +16,6 @@ This document outlines the AI agents, Model Context Protocol (MCP) servers, and 
 - **Capabilities**: Local reasoning, privacy-focused engineering, and efficient processing on commodity hardware.
 - **Implementation**: Containerized service running Llama 3.2, integrated via OpenAI-compatible API.
 
-### **Google Gemma 3**
-
-- **Role**: Specialized Local Intelligence.
-- **Capabilities**: High-efficiency multimodal reasoning (4B/12B) with architectural consistency to Gemini.
-- **Implementation**: Running on self-hosted Ollama instance.
-
 ---
 
 ## Core Development Agents
