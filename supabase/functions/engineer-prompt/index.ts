@@ -16,12 +16,53 @@ serve(async (req) => {
   try {
     const { userInput, model, provider: reqProvider } = await req.json();
 
-    if (!userInput) {
-      throw new Error("Missing userInput in request body");
+    // Input Validation
+    const ALLOWED_PROVIDERS = ["gemini", "ollama"];
+    const ALLOWED_MODELS = {
+      ollama: ["llama3.2", "gemma2:2b", "gemma3:4b"],
+      gemini: [
+        // App.tsx models
+        "gemini-2.5-flash-lite", "gemini-3.0-flash", "gemini-3-pro-preview",
+        // Standard/Legacy models
+        "gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro"
+      ],
+    };
+
+    if (reqProvider && !ALLOWED_PROVIDERS.includes(reqProvider)) {
+        return new Response(JSON.stringify({ error: `Invalid provider. Allowed: ${ALLOWED_PROVIDERS.join(", ")}` }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+            status: 400,
+        });
     }
 
     // Allow client to override provider, default to env var or gemini
     const provider = reqProvider || Deno.env.get("LLM_PROVIDER") || "gemini";
+
+    if (model) {
+        // Validation check depends on the resolved provider.
+        const validModelsForProvider = ALLOWED_MODELS[provider as keyof typeof ALLOWED_MODELS];
+
+        // If the provider is known (in ALLOWED_MODELS), enforce the allowlist.
+        // If the provider is NOT known (e.g. custom env var), we skip model validation to avoid blocking valid custom setups,
+        // unless the code structure implies only these providers are supported (which it does).
+        // Since the code below only handles 'ollama' and 'gemini' (else block), we should strictly enforce it.
+
+        if (validModelsForProvider && !validModelsForProvider.includes(model)) {
+             return new Response(JSON.stringify({ error: `Invalid model for provider '${provider}'. Allowed: ${validModelsForProvider.join(", ")}` }), {
+                headers: { ...corsHeaders, "Content-Type": "application/json" },
+                status: 400,
+            });
+        }
+
+        // If validModelsForProvider is undefined, it means the provider is not in our allowlist.
+        // But since we validated reqProvider, this only happens if Deno.env.get("LLM_PROVIDER") returns something else.
+        // In that case, the subsequent code will default to Gemini logic (in the else block), likely failing if the provider is meant to be something else.
+        // For security, we should probably block it if we are strict, but for now, we just validate if we know the provider.
+    }
+
+    if (!userInput) {
+      throw new Error("Missing userInput in request body");
+    }
     let text = "";
 
     const systemPrompt = `
