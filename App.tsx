@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Header from "./components/Header";
 import PromptCard from "./components/PromptCard";
+import Auth from "./components/Auth";
 import { engineerPrompt } from "./services/geminiService";
 import { supabase } from "./services/supabaseClient";
 import { PromptHistoryItem, RefinedPromptResult } from "./types";
+import { Session } from "@supabase/supabase-js";
 
 /**
  * The main application component for PromptArchitect-Studio.
@@ -23,6 +25,12 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   // State for storing the list of historical prompts
   const [history, setHistory] = useState<PromptHistoryItem[]>([]);
+  // State for managing user session
+  const [session, setSession] = useState<Session | null>(null);
+  // State for showing the auth modal
+  const [showAuth, setShowAuth] = useState(false);
+  
+  const historyRef = useRef<HTMLDivElement>(null);
 
   // Available models configuration
   const models = [
@@ -35,10 +43,33 @@ const App: React.FC = () => {
   ];
 
   /**
-   * Effect hook to load prompt history from Supabase on component mount.
+   * Effect hook to manage auth session.
+   */
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (session) setShowAuth(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  /**
+   * Effect hook to load prompt history from Supabase when session changes.
    */
   useEffect(() => {
     const fetchHistory = async () => {
+      if (!session) {
+        setHistory([]);
+        return;
+      }
+
       const { data, error } = await supabase
         .from("prompt_history")
         .select("*")
@@ -59,11 +90,10 @@ const App: React.FC = () => {
     };
 
     fetchHistory();
-  }, []);
+  }, [session]);
 
   /**
    * Effect hook to sync the current result to the history list locally.
-   * Note: The Edge Function persists the data to the DB; this updates the UI immediately.
    */
   useEffect(() => {
     if (currentResult && (currentResult as any).id) {
@@ -98,10 +128,10 @@ const App: React.FC = () => {
     const provider = selectedModelObj ? selectedModelObj.provider : "ollama";
 
     try {
+      // The Edge Function handles persistence if the user is authenticated.
+      // We pass the session access token implicitly or explicitly via the invoke call.
       const result = await engineerPrompt(userInput, selectedModel, provider);
       setCurrentResult(result);
-      // No need to manually add to history here, the useEffect on currentResult will handle UI
-      // and the Edge Function already saved it to the database.
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred.");
     } finally {
@@ -111,17 +141,36 @@ const App: React.FC = () => {
 
   /**
    * Clears the local history state and resets the form.
-   * Note: This currently only clears the local view, not the database.
    */
-  const handleClearHistory = () => {
+  const handleClearHistory = async () => {
+    if (session) {
+      // If logged in, we could optionally delete from DB too.
+      // For now, let's just clear the local view as per original behavior,
+      // but maybe suggest deleting from DB in the future.
+      const { error } = await supabase
+        .from("prompt_history")
+        .delete()
+        .eq("user_id", session.user.id);
+      
+      if (error) console.error("Failed to clear DB history:", error);
+    }
+    
     setHistory([]);
     setCurrentResult(null);
     setUserInput("");
   };
 
+  const handleScrollToHistory = () => {
+    historyRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-200">
-      <Header />
+      <Header 
+        session={session} 
+        onShowAuth={() => setShowAuth(true)} 
+        onScrollToHistory={handleScrollToHistory}
+      />
 
       <main className="max-w-4xl mx-auto px-4 py-12 pb-32">
         <div className="text-center mb-12">
@@ -134,6 +183,24 @@ const App: React.FC = () => {
             any LLM.
           </p>
         </div>
+
+        {/* Auth Modal Overlay */}
+        {showAuth && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/50 backdrop-blur-sm">
+            <div className="relative w-full max-w-md">
+              <button 
+                onClick={() => setShowAuth(false)}
+                className="absolute -top-12 right-0 text-white hover:text-indigo-400 transition-colors"
+                aria-label="Close"
+              >
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              <Auth />
+            </div>
+          </div>
+        )}
 
         {/* Input Form */}
         <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 p-6 sm:p-8 mb-12 transition-all hover:shadow-xl">
@@ -173,17 +240,28 @@ const App: React.FC = () => {
             </div>
 
             <div className="flex justify-between items-center">
-              <p className="text-xs text-slate-400 dark:text-slate-500">
-                {currentResult?.provider ? (
-                  <>
-                    Uses <span className="font-semibold text-slate-600 dark:text-slate-300">
-                      {currentResult.provider === "ollama" ? "Ollama" : "Gemini"}
-                    </span> ({currentResult.model})
-                  </>
-                ) : (
-                  "Uses Gemini 3 Flash Reasoning Engine"
+              <div className="flex flex-col">
+                <p className="text-xs text-slate-400 dark:text-slate-500">
+                  {currentResult?.provider ? (
+                    <>
+                      Uses <span className="font-semibold text-slate-600 dark:text-slate-300">
+                        {currentResult.provider === "ollama" ? "Ollama" : "Gemini"}
+                      </span> ({currentResult.model})
+                    </>
+                  ) : (
+                    "Uses Gemini 3 Flash Reasoning Engine"
+                  )}
+                </p>
+                {!session && (
+                  <button 
+                    type="button"
+                    onClick={() => setShowAuth(true)}
+                    className="text-[10px] text-indigo-500 hover:text-indigo-600 font-medium text-left mt-0.5"
+                  >
+                    Login to save history
+                  </button>
                 )}
-              </p>
+              </div>
               <button
                 type="submit"
                 disabled={isLoading || !userInput.trim()}
@@ -305,8 +383,8 @@ const App: React.FC = () => {
         )}
 
         {/* History Section */}
-        {history.length > 0 && (
-          <div className="mt-20">
+        {session && (
+          <div className="mt-20 scroll-mt-20" ref={historyRef}>
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-xl font-bold text-slate-900 dark:text-slate-50">
                 Recent Architecture
@@ -318,67 +396,75 @@ const App: React.FC = () => {
                 Clear History
               </button>
             </div>
-            <div className="space-y-4">
-              {history.map((item) => (
-                <div
-                  key={item.id}
-                  className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 flex items-center justify-between hover:border-indigo-200 dark:hover:border-indigo-900 transition-all cursor-pointer group"
-                  onClick={() => {
-                    setCurrentResult(item.result);
-                    setUserInput(item.originalInput);
-                    window.scrollTo({ top: 300, behavior: "smooth" });
-                  }}
-                >
-                  <div className="flex items-center space-x-4">
-                    <div className="bg-slate-100 dark:bg-slate-800 p-2 rounded-lg group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/50 transition-colors">
-                      <svg
-                        className="w-4 h-4 text-slate-500 dark:text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate max-w-xs md:max-w-md">
-                        {item.originalInput}
-                      </p>
-                      <p className="text-xs text-slate-400 dark:text-slate-500">
-                        {new Date(item.timestamp).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </p>
-                    </div>
-                  </div>
-                  <svg
-                    className="w-4 h-4 text-slate-300 dark:text-slate-600 group-hover:text-indigo-400 transition-colors"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+            {history.length > 0 ? (
+              <div className="space-y-4">
+                {history.map((item) => (
+                  <div
+                    key={item.id}
+                    className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 flex items-center justify-between hover:border-indigo-200 dark:hover:border-indigo-900 transition-all cursor-pointer group"
+                    onClick={() => {
+                      setCurrentResult(item.result);
+                      setUserInput(item.originalInput);
+                      window.scrollTo({ top: 300, behavior: "smooth" });
+                    }}
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </div>
-              ))}
-            </div>
+                    <div className="flex items-center space-x-4">
+                      <div className="bg-slate-100 dark:bg-slate-800 p-2 rounded-lg group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/50 transition-colors">
+                        <svg
+                          className="w-4 h-4 text-slate-500 dark:text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate max-w-xs md:max-w-md">
+                          {item.originalInput}
+                        </p>
+                        <p className="text-xs text-slate-400 dark:text-slate-500">
+                          {new Date(item.timestamp).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                    <svg
+                      className="w-4 h-4 text-slate-300 dark:text-slate-600 group-hover:text-indigo-400 transition-colors"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="bg-white dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl p-12 text-center">
+                <p className="text-slate-400 dark:text-slate-500 text-sm">
+                  Your prompt history will appear here once you start engineering.
+                </p>
+              </div>
+            )}
           </div>
         )}
       </main>
 
       {/* Persistent Footer CTA */}
-      <footer className="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 p-4">
+      <footer className="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 p-4 z-40">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
           <p className="text-xs text-slate-500 font-medium">
             Developed by Expert Prompt Engineers
