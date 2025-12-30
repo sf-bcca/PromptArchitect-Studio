@@ -2,15 +2,26 @@
 
 This document outlines the AI agents, Model Context Protocol (MCP) servers, and internal engine components used in the development and operation of the **PromptArchitect-Studio** project.
 
-## Reasoning Engine
+## Reasoning Engines
 
-### **Google Gemini 3 Flash**
+### **Google Gemini Models (Cloud)**
 
-All intelligent operations within PromptArchitect-Studio are powered by the **Gemini 3 Flash** reasoning engine.
+- **Gemini 3.0 Flash**: The new standard for speed and intelligence (`gemini-3.0-flash`).
+- **Gemini 3.0 Pro (Preview)**: Google's most powerful reasoning model (`gemini-3-pro-preview`).
+- **Gemini Flash-Lite 2.5**: Extremely efficient model for high-frequency tasks (`gemini-2.5-flash-lite`).
 
-- **Role**: Core intelligence provider.
-- **Capabilities**: Expert prompt engineering, structural reasoning, and high-velocity response generation.
-- **Implementation**: Accessed via Supabase Edge Functions for secure, server-side processing.
+- **Implementation**: Managed by the **Prompt Architect** service (Supabase Edge Function), utilizing a modern Google Generative AI SDK (v0.24+) for reliable multi-model support.
+
+### **Local Models (Ollama)**
+
+Hosted on your own server. Best for privacy and offline usage.
+
+- **Llama 3.2 (3B)**: Meta's latest lightweight model. Fast and efficient.
+- **Gemma 3 (4B)**: Google's latest multimodal model. Powerful reasoning in a compact size.
+- **Gemma 2 (2B)**: Google's open model, optimized for local devices.
+- **Note**: Larger models (8B+) are disabled to prevent server overload.
+
+- **Implementation**: Containerized service running Ollama, accessed via Cloudflare Tunnel.
 
 ---
 
@@ -44,18 +55,25 @@ All intelligent operations within PromptArchitect-Studio are powered by the **Ge
 
 ## Verification & Monitoring Agents
 
-### **Playwright (Verification Agent)**
+### **Playwright (Verification Agent)** (Planned)
 
 **Role:** Automated QA Engineer
 
-- **Description**: Provides end-to-end (E2E) testing and verification of the application's user interface and functional flows.
-- **Usage**: Automated verification steps ensure that features remain stable across updates.
+- **Description**: Will provide end-to-end (E2E) testing and verification of the application's user interface and functional flows.
+- **Usage**: Future automated verification steps to ensure that features remain stable across updates.
 
 ### **Security & Quality Hooks**
 
 **Role:** Pre-Commit Guard
 
 - **Husky & SecretLint**: Automated "agents" that intercept commits to prevent credential leaks and ensure code quality standards are met before code reaches the repository.
+
+### **Cloudflare Access (Service Auth)**
+
+**Role:** Infrastructure Security Guard
+
+- **Description**: Projects the self-hosted Ollama instance by requiring Service Tokens for all API requests.
+- **Effect**: Ensures that only the authorized Supabase Edge Function can access the reasoning engine.
 
 ---
 

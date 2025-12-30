@@ -9,6 +9,10 @@ export interface RefinedPromptResult {
   whyThisWorks: string;
   /** A list of dynamic variables found in the prompt (e.g., [Target Audience]). */
   suggestedVariables: string[];
+  /** The LLM provider used (e.g., 'gemini', 'ollama'). */
+  provider?: string;
+  /** The specific model used (e.g., 'llama3.2', 'gemini-3-flash-preview'). */
+  model?: string;
 }
 
 /**

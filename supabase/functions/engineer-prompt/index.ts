@@ -1,6 +1,7 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai@0.1.3";
+import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai@0.24.1";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.48.1";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -9,69 +10,199 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
 
   try {
-    const { userInput } = await req.json();
+    const { userInput, model, provider: reqProvider } = await req.json();
+
+    // Initialize Supabase Client for DB persistence
+    const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Identify the user from the Authorization header
+    const authHeader = req.headers.get("Authorization");
+    let userId: string | null = null;
+    
+    if (authHeader) {
+      const token = authHeader.replace("Bearer ", "");
+      const { data: { user } } = await supabase.auth.getUser(token);
+      if (user) userId = user.id;
+    }
+
+    // Input Validation
+    const ALLOWED_PROVIDERS = ["gemini", "ollama"];
+    const ALLOWED_MODELS = {
+      ollama: ["llama3.2", "gemma2:2b", "gemma3:4b"],
+      gemini: [
+        // App.tsx models
+        "gemini-2.5-flash-lite", "gemini-3.0-flash", "gemini-3-pro-preview",
+        // Standard/Legacy models
+        "gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro"
+      ],
+    };
+
+    if (reqProvider && !ALLOWED_PROVIDERS.includes(reqProvider)) {
+        return new Response(JSON.stringify({ error: `Invalid provider. Allowed: ${ALLOWED_PROVIDERS.join(", ")}` }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+            status: 400,
+        });
+    }
+
+    // Allow client to override provider, default to env var or gemini
+    const provider = reqProvider || Deno.env.get("LLM_PROVIDER") || "gemini";
+
+    if (model) {
+        const validModelsForProvider = ALLOWED_MODELS[provider as keyof typeof ALLOWED_MODELS];
+        if (validModelsForProvider && !validModelsForProvider.includes(model)) {
+             return new Response(JSON.stringify({ error: `Invalid model for provider '${provider}'. Allowed: ${validModelsForProvider.join(", ")}` }), {
+                headers: { ...corsHeaders, "Content-Type": "application/json" },
+                status: 400,
+            });
+        }
+    }
 
     if (!userInput) {
       throw new Error("Missing userInput in request body");
     }
+    let text = "";
 
-    const apiKey = Deno.env.get("GEMINI_API_KEY");
-    if (!apiKey) {
-      throw new Error("GEMINI_API_KEY is not set");
-    }
+    const systemPrompt = `
+      ROLE: You are an expert Prompt Engineer. You are NOT an AI assistant that answers questions. Your ONLY goal is to take a raw idea and rewrite it into a professional, high-quality prompt for ANOTHER AI to answer.
 
-    const genAI = new GoogleGenerativeAI(apiKey);
-    
-    // Using 'gemini-3-flash-preview' as requested.
-    const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
+      INPUT: "${userInput}"
 
-    const prompt = `
-      You are an expert Prompt Engineer. Your goal is to rewrite the following raw user idea into a strictly structured, high-performance prompt for an LLM.
-      
-      User Idea: "${userInput}"
-      
-      Return the response in pure JSON format with the following structure:
+      OBJECTIVE:
+      - Do NOT answer the input.
+      - **MANDATORY FRAMEWORK**: You MUST use the **CO-STAR** framework for every "Refined Prompt".
+        1. **C**ontext: detailed background.
+        2. **O**bjective: precise goal.
+        3. **S**tyle: specific expert persona (e.g., "Cynical VC with 20 years exp").
+        4. **T**one: emotion/attitude (e.g., "Direct, skeptical").
+        5. **A**udience: target reader.
+        6. **R**esponse: strict format requirements.
+
+      - **Expert Profile**: Do not just say "You are an X". Add specificity: "You are an X with Y years experience in Z field."
+
+      OUTPUT FORMAT (Strict JSON):
       {
         "refinedPrompt": "The fully engineered prompt text...",
-        "explanation": "A brief explanation of the techniques used (e.g., persona, constraints)...",
+        "whyThisWorks": "A detailed explanation of the prompt engineering techniques used...",
         "suggestedVariables": ["variable1", "variable2"]
       }
-      
-      Do not include markdown formatting (like \`\`\`json). Just the raw JSON string.
     `;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+    if (provider === "ollama") {
+      const ollamaUrl = Deno.env.get("OLLAMA_URL") || "http://localhost:11434";
+      const ollamaModel = model || Deno.env.get("OLLAMA_MODEL") || "llama3.2";
 
-    // Clean up potential markdown formatting if the model persists in sending it
-    const cleanedText = text.replace(/```json/g, "").replace(/```/g, "").trim();
-    
+      console.log(`Using Ollama provider at ${ollamaUrl} with model ${ollamaModel}`);
+
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      const cfId = Deno.env.get("CF_ACCESS_CLIENT_ID");
+      const cfSecret = Deno.env.get("CF_ACCESS_CLIENT_SECRET");
+      
+      if (cfId && cfSecret) {
+        headers["CF-Access-Client-Id"] = cfId;
+        headers["CF-Access-Client-Secret"] = cfSecret;
+      }
+
+      const response = await fetch(`${ollamaUrl}/api/chat`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          model: ollamaModel,
+          messages: [{ role: "user", content: systemPrompt }],
+          format: "json",
+          stream: false,
+          options: {
+            temperature: 0.3,
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Ollama API error: ${response.status} - ${errorText}`);
+      }
+
+      const data = await response.json();
+      text = data.message?.content || "";
+
+    } else {
+      const apiKey = Deno.env.get("GEMINI_API_KEY");
+      if (!apiKey) {
+        throw new Error("GEMINI_API_KEY is not set");
+      }
+
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const modelName = model || Deno.env.get("GEMINI_MODEL") || "gemini-3.0-flash"; 
+      const genModel = genAI.getGenerativeModel({ model: modelName });
+
+      console.log(`Using Gemini provider with model ${modelName}`);
+      
+      const result = await genModel.generateContent(systemPrompt);
+      const response = await result.response;
+      text = response.text();
+    }
+
+    // Clean up potentially messy JSON
+    let cleanedText = text.replace(/```json/g, "").replace(/```/g, "").trim();
+    cleanedText = cleanedText.replace(/(?<!\\)\n/g, "\\n");
+
     let parsedResult;
     try {
         parsedResult = JSON.parse(cleanedText);
+        if (parsedResult.explanation && !parsedResult.whyThisWorks) {
+            parsedResult.whyThisWorks = parsedResult.explanation;
+        }
     } catch (e) {
-        console.error("Failed to parse JSON:", cleanedText);
-        // Fallback if JSON parsing fails
-        parsedResult = {
-            refinedPrompt: cleanedText,
-            explanation: "Raw output returned due to parsing error.",
-            suggestedVariables: []
-        };
+        console.warn("JSON Parse Failed, attempting Regex fallback:", e);
+        const promptMatch = text.match(/"refinedPrompt":\s*"([^"]*)"/);
+        const whyMatch = text.match(/"whyThisWorks":\s*"([^"]*)"/);
+        
+        if (promptMatch) {
+            parsedResult = {
+                refinedPrompt: promptMatch[1],
+                whyThisWorks: whyMatch ? whyMatch[1] : "Explanation could not be parsed.",
+                suggestedVariables: []
+            };
+        } else {
+            parsedResult = {
+                refinedPrompt: text,
+                whyThisWorks: "Raw output returned due to parsing error. Provider: " + provider,
+                suggestedVariables: []
+            };
+        }
     }
 
-    // Save to Supabase DB (Optional - keeping it simple for now, relying on client to fetch history or adding insert logic here if needed)
-    // For this recreation, we'll return the result directly. 
-    // If the original function saved to DB, we'd need the Supabase client here too.
-    // Based on previous logs, the client fetches history separately, so saving here is good practice.
-    
-    // TODO: Verify if DB insert is required. For now, returning data to frontend.
+    parsedResult.provider = provider;
+    parsedResult.model = provider === "ollama" 
+      ? (model || Deno.env.get("OLLAMA_MODEL") || "llama3.2")
+      : (model || Deno.env.get("GEMINI_MODEL") || "gemini-3.0-flash");
+
+    // PERSISTENCE: Save result to DB if user is authenticated
+    if (userId) {
+      console.log(`Saving history for user: ${userId}`);
+      const { data: insertedData, error: dbError } = await supabase
+        .from("prompt_history")
+        .insert({
+          user_id: userId,
+          original_input: userInput,
+          result: parsedResult
+        })
+        .select()
+        .single();
+      
+      if (dbError) {
+        console.error("Failed to save history to DB:", dbError);
+      } else {
+        // Add the inserted ID to the result so the frontend can track it
+        parsedResult.id = insertedData.id;
+      }
+    }
 
     return new Response(JSON.stringify(parsedResult), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

@@ -3,8 +3,10 @@
 ## Prerequisites
 
 Before you begin, ensure you have the following installed:
+
 - [Node.js](https://nodejs.org/) (v18 or higher)
-- [npm](https://www.npmjs.com/) (usually comes with Node.js) or [pnpm](https://pnpm.io/)
+- [pnpm](https://pnpm.io/) (Recommended, as used in Docker)
+- [npm](https://www.npmjs.com/) (Alternative)
 
 ## Setup Steps
 
@@ -18,8 +20,6 @@ Before you begin, ensure you have the following installed:
 2.  **Install Dependencies**
 
     ```bash
-    npm install
-    # or
     pnpm install
     ```
 
@@ -32,13 +32,11 @@ Before you begin, ensure you have the following installed:
     VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
     ```
 
-    > **Note:** The `GEMINI_API_KEY` is securely managed by the Supabase Edge Function (`engineer-prompt`) and does not need to be configured locally for the frontend to work.
+    > **Note:** The `GEMINI_API_KEY` or `OLLAMA_URL` are securely managed by the Supabase Edge Function (`engineer-prompt`). See [LLM Setup Guide](LLM_SETUP.md) for backend configuration instructions.
 
 4.  **Start Development Server**
 
     ```bash
-    npm run dev
-    # or
     pnpm dev
     ```
 
