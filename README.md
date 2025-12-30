@@ -13,6 +13,8 @@
 
 ---
 
+> ⏱️ **Get started in under 5 minutes** — Clone, configure, and engineer your first prompt.
+
 ## 🌟 Overview
 
 PromptArchitect-Studio is a powerful web-based tool designed to elevate your interaction with Large Language Models (LLMs). By applying advanced prompt engineering techniques—such as persona assignment, strict constraint definition, and output formatting—this tool transforms simple user inputs into comprehensive, high-performing prompt frameworks.
@@ -25,57 +27,94 @@ PromptArchitect-Studio is a powerful web-based tool designed to elevate your int
 - **⚡ Dual-Engine Support**: Choice between Google Gemini 3 Flash and self-hosted **Llama 3.2** via Ollama.
 - **🕰️ History & Persistence**: Save and revisit your engineered architectures using Supabase integration.
 
-## 📚 Documentation
+## 🏗️ Architecture
 
-- **[LLM Setup Guide](LLM_SETUP.md)**: Instructions for Gemini and self-hosted Ollama.
-- **[Installation Guide](INSTALL.md)**: Setup instructions and environment configuration.
-- **[Usage Guide](USAGE.md)**: How to use the application.
-- **[Contributing Guide](CONTRIBUTING.md)**: Workflow and standards for developers.
-- **[Agents & Tools](AGENTS.md)**: Information about the AI agents and tools used in this project.
+```mermaid
+flowchart LR
+    subgraph Client
+        A[React App]
+    end
+    subgraph Supabase
+        B[Edge Function<br/>Prompt Architect]
+        C[(PostgreSQL)]
+    end
+    subgraph LLM Providers
+        D[Gemini API]
+        E[Ollama<br/>Self-Hosted]
+    end
 
-## 🛠️ Tech Stack
+    A -->|User Input| B
+    B -->|Store History| C
+    B -->|API Call| D
+    B -->|Cloudflare Tunnel| E
+    B -->|Engineered Prompt| A
+```
 
-PromptArchitect-Studio is built with modern, high-performance technologies:
-
-- **Frontend**: [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
-- **Build Tool**: [Vite 6](https://vite.dev/)
-- **Styling**: Vanilla CSS (Premium Aesthetics)
-- **AI Engines**: [Google Gemini 3 Flash](https://ai.google.dev/) & [Ollama](https://ollama.com/) (Llama 3.2)
-- **Backend/DB**: [Supabase](https://supabase.com/)
-- **Git Hooks**: [Husky](https://typicode.github.io/husky/) + [SecretLint](https://github.com/secretlint/secretlint)
-
-## 🚦 Getting Started
+## 🚦 Quick Start
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) (v18 or higher)
-- A Gemini API Key
-- Supabase account and project
+- [Node.js](https://nodejs.org/) v18+ and [pnpm](https://pnpm.io/)
+- A [Supabase](https://supabase.com/) account and project
+- A [Gemini API Key](https://aistudio.google.com/) (for cloud LLM)
 
-### Local Installation
+### Installation
 
-1.  **Clone and Install**:
+```bash
+# Clone the repository
+git clone https://github.com/sf-bcca/PromptArchitect-Studio.git
+cd PromptArchitect-Studio
 
-    ```bash
-    git clone https://github.com/sf-bcca/PromptArchitect-Studio.git
-    cd PromptArchitect-Studio
-    npm install
-    ```
+# Install dependencies
+pnpm install
 
-2.  **Configure**:
-    Create a `.env.local` file in the root directory and add your credentials:
+# Configure environment
+cp .env.example .env.local
+# Edit .env.local with your Supabase credentials
 
-    ```env
-    VITE_SUPABASE_URL=your_supabase_url
-    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-    ```
+# Start development server
+pnpm dev
+```
 
-3.  **Launch the development server:**
-    ```bash
-    npm run dev
-    ```
+Open [http://localhost:5173](http://localhost:5173) — you're ready to engineer prompts!
+
+## 📚 Documentation
+
+| Guide                                 | Description                                    |
+| ------------------------------------- | ---------------------------------------------- |
+| [Installation Guide](INSTALL.md)      | Detailed setup and environment configuration   |
+| [LLM Setup Guide](LLM_SETUP.md)       | Configure Gemini or self-hosted Ollama         |
+| [Usage Guide](USAGE.md)               | How to use the application effectively         |
+| [Deployment Guide](DEPLOY.md)         | Docker deployment for production               |
+| [Contributing Guide](CONTRIBUTING.md) | Workflow and standards for developers          |
+| [Agents & Tools](AGENTS.md)           | AI agents and MCP servers used in this project |
+
+## 🛠️ Tech Stack
+
+| Layer          | Technology                                                                                          |
+| -------------- | --------------------------------------------------------------------------------------------------- |
+| **Frontend**   | [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)                      |
+| **Build Tool** | [Vite 6](https://vite.dev/)                                                                         |
+| **Styling**    | Vanilla CSS (Premium Aesthetics)                                                                    |
+| **AI Engines** | [Google Gemini 3 Flash](https://ai.google.dev/) & [Ollama](https://ollama.com/) (Llama 3.2)         |
+| **Backend/DB** | [Supabase](https://supabase.com/)                                                                   |
+| **Git Hooks**  | [Husky](https://typicode.github.io/husky/) + [SecretLint](https://github.com/secretlint/secretlint) |
 
 ## 🌐 Deployment
+
+For production deployment using Docker and Nginx:
+
+1. **Docker Compose** — See [DEPLOY.md](DEPLOY.md) for complete instructions
+2. **Reverse Proxy** — Configure Nginx Proxy Manager for SSL termination
+3. **Updates** — `git pull && docker-compose up -d --build`
+
+## 🆘 Need Help?
+
+- **Common Issues**: Check the [Troubleshooting](DEPLOY.md#5-troubleshooting) section
+- **LLM Errors**: See [LLM Setup Guide](LLM_SETUP.md) for provider configuration
+- **Bug Reports**: Open an [issue on GitHub](https://github.com/sf-bcca/PromptArchitect-Studio/issues)
+
+---
 
 <div align="center">
   <p>Developed with ❤️ by Expert Prompt Engineers</p>

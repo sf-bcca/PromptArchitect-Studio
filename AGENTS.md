@@ -72,7 +72,7 @@ Hosted on your own server. Best for privacy and offline usage.
 
 **Role:** Infrastructure Security Guard
 
-- **Description**: Projects the self-hosted Ollama instance by requiring Service Tokens for all API requests.
+- **Description**: Protects the self-hosted Ollama instance by requiring Service Tokens for all API requests.
 - **Effect**: Ensures that only the authorized Supabase Edge Function can access the reasoning engine.
 
 ---

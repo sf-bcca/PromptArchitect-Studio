@@ -1,45 +1,83 @@
 # Installation Guide
 
+> ⏱️ **Setup takes ~5 minutes**
+
 ## Prerequisites
 
 Before you begin, ensure you have the following installed:
 
-- [Node.js](https://nodejs.org/) (v18 or higher)
-- [pnpm](https://pnpm.io/) (Recommended, as used in Docker)
-- [npm](https://www.npmjs.com/) (Alternative)
+| Requirement                    | Version | Notes                                 |
+| ------------------------------ | ------- | ------------------------------------- |
+| [Node.js](https://nodejs.org/) | v18+    | LTS recommended                       |
+| [pnpm](https://pnpm.io/)       | Latest  | `npm install -g pnpm` to install      |
+| Supabase Account               | —       | [Sign up free](https://supabase.com/) |
 
 ## Setup Steps
 
-1.  **Clone the Repository**
+### 1. Clone the Repository
 
-    ```bash
-    git clone https://github.com/sf-bcca/PromptArchitect-Studio.git
-    cd PromptArchitect-Studio
-    ```
+```bash
+git clone https://github.com/sf-bcca/PromptArchitect-Studio.git
+cd PromptArchitect-Studio
+```
 
-2.  **Install Dependencies**
+### 2. Install Dependencies
 
-    ```bash
-    pnpm install
-    ```
+```bash
+pnpm install
+```
 
-3.  **Environment Configuration**
+### 3. Configure Environment
 
-    Create a `.env.local` file in the root directory. You will need Supabase credentials.
+Create a `.env.local` file in the root directory with your Supabase credentials:
 
-    ```env
-    VITE_SUPABASE_URL=your_supabase_project_url
-    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-    ```
+```bash
+cp .env.example .env.local
+```
 
-    > **Note:** The `GEMINI_API_KEY` or `OLLAMA_URL` are securely managed by the Supabase Edge Function (`engineer-prompt`). See [LLM Setup Guide](LLM_SETUP.md) for backend configuration instructions.
+Edit `.env.local` and add your values:
 
-4.  **Start Development Server**
+```ini
+VITE_SUPABASE_URL=https://your-project-id.supabase.co
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-    ```bash
-    pnpm dev
-    ```
+> **Note:** The `GEMINI_API_KEY` or `OLLAMA_URL` are securely managed by the Supabase Edge Function. See [LLM Setup Guide](LLM_SETUP.md) for backend configuration.
 
-5.  **Access the Application**
+### 4. Start Development Server
 
-    Open your browser and navigate to the local URL provided in the terminal (usually `http://localhost:5173`).
+```bash
+pnpm dev
+```
+
+### 5. Verify Installation
+
+You should see output similar to:
+
+```
+  VITE v6.2.0  ready in 500 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+```
+
+Open [http://localhost:5173](http://localhost:5173) in your browser. You should see the PromptArchitect-Studio interface.
+
+**✅ Success!** You're ready to start engineering prompts.
+
+---
+
+## Common Issues
+
+| Problem                    | Solution                                                                         |
+| -------------------------- | -------------------------------------------------------------------------------- |
+| `pnpm: command not found`  | Install pnpm: `npm install -g pnpm`                                              |
+| Port 5173 already in use   | Stop other dev servers or use `pnpm dev -- --port 5174`                          |
+| Supabase connection errors | Verify `.env.local` has correct `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` |
+| Module not found errors    | Delete `node_modules` and run `pnpm install` again                               |
+
+## Next Steps
+
+- [Configure LLM Provider](LLM_SETUP.md) — Set up Gemini or Ollama
+- [Learn the Interface](USAGE.md) — How to use the application
+- [Deploy to Production](DEPLOY.md) — Docker deployment guide
