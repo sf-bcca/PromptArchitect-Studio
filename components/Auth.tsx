@@ -26,6 +26,9 @@ const Auth: React.FC = () => {
         const { error } = await supabase.auth.signUp({
           email,
           password,
+          options: {
+            emailRedirectTo: window.location.origin,
+          },
         });
         if (error) throw error;
         setMessage({ type: 'success', text: 'Check your email for the confirmation link!' });
