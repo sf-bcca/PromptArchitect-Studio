@@ -10,7 +10,7 @@ This document outlines the AI agents, Model Context Protocol (MCP) servers, and 
 - **Gemini 3.0 Pro (Preview)**: Google's most powerful reasoning model (`gemini-3-pro-preview`).
 - **Gemini Flash-Lite 2.5**: Extremely efficient model for high-frequency tasks (`gemini-2.5-flash-lite`).
 
-- **Implementation**: Accessed via Supabase Edge Function directly to Google AI Studio API.
+- **Implementation**: Managed by the **Prompt Architect** service (Supabase Edge Function), utilizing a modern Google Generative AI SDK (v0.24+) for reliable multi-model support.
 
 ### **Local Models (Ollama)**
 

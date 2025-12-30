@@ -63,4 +63,4 @@ If running Supabase locally (`supabase start`), you can use the internal Docker 
 
 ---
 
-**Tip**: You can switch between providers at any time by updating the `LLM_PROVIDER` secret.
+**Tip**: You can switch between providers at any time by updating the `LLM_PROVIDER` secret. If you encounter issues with newer Gemini models, ensure the Supabase Edge Function is using the latest version of the `@google/generative-ai` SDK.
