@@ -49,6 +49,7 @@ Hosted on your own server. Best for privacy and offline usage.
 **Role:** Expert Prompt Engineer
 
 - **Description**: A specialized internal service (Supabase Edge Function) that transforms raw user ideas into structured prompt frameworks.
+- **Privacy-by-Design**: Prompt history is strictly private and user-scoped. Each entry is tagged with the user's encrypted ID and protected by Row Level Security (RLS), ensuring that users can only access their own history.
 - **Process**: Applies advanced techniques such as persona assignment, constraint definition, and variable extraction to ensure optimal LLM performance.
 
 ---

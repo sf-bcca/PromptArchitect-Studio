@@ -4,26 +4,35 @@ create extension if not exists "uuid-ossp";
 -- Create the prompt_history table
 create table if not exists public.prompt_history (
   id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users(id) on delete cascade,
   original_input text not null,
   result jsonb not null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
 -- Add a comment to the table
-comment on table public.prompt_history is 'Stores the history of engineered prompts.';
+comment on table public.prompt_history is 'Stores the history of engineered prompts, scoped to individual users.';
+
+-- Create index for efficient user-based lookups
+create index if not exists prompt_history_user_id_idx on public.prompt_history(user_id);
 
 -- Enable Row Level Security (RLS)
 alter table public.prompt_history enable row level security;
 
--- Create a policy to allow anonymous read access (adjust based on actual requirements)
-create policy "Allow public read access"
+-- PRIVACY: Users can only read their own history
+create policy "Users can read own history"
   on public.prompt_history
   for select
-  to anon
-  using (true);
+  to authenticated
+  using (auth.uid() = user_id);
 
--- Create a policy to allow anonymous insert access (since the edge function likely inserts, or the client does?
--- The code in App.tsx reads, but the insert happens in the Edge Function according to comments:
--- "The Edge Function already saved the item to DB".
--- Edge functions usually use the service_role key, bypassing RLS.
--- So we might not strictly need an insert policy for anon if only the edge function writes.)
+-- PRIVACY: Users can only delete their own history
+create policy "Users can delete own history"
+  on public.prompt_history
+  for delete
+  to authenticated
+  using (auth.uid() = user_id);
+
+-- NOTE: Insert operations are handled by the Edge Function using service_role key,
+-- which bypasses RLS. This is intentional for secure server-side insertions.
+
