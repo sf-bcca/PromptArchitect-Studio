@@ -3,25 +3,18 @@ import Header from "./components/Header";
 import PromptCard from "./components/PromptCard";
 import Auth from "./components/Auth";
 import { engineerPrompt } from "./services/geminiService";
-import { supabase } from "./services/supabaseClient";
-import { PromptHistoryItem, RefinedPromptResult } from "./types";
-import { Session } from "@supabase/supabase-js";
-/**
- * Represents the structure of a row in the 'prompt_history' table.
- */
-interface PromptHistoryRow {
-  id: string;
-  original_input: string;
-  result: RefinedPromptResult;
-  created_at: string;
-  user_id: string;
-}
+import { RefinedPromptResult, PromptHistoryItem } from "./types";
+import { useSession } from "./context/SessionProvider";
+import { usePromptHistory } from "./hooks/usePromptHistory";
 
 /**
  * The main application component for PromptArchitect-Studio.
  * Handles user input, interacts with the backend engineering service, and manages history state.
  */
 const App: React.FC = () => {
+  const { session, showAuth, setShowAuth } = useSession();
+  const { history, setHistory, fetchHistory, addToHistory, clearHistory } = usePromptHistory(session);
+
   // State for storing the raw user input text
   const [userInput, setUserInput] = useState("");
   // State for selected LLM model
@@ -33,13 +26,7 @@ const App: React.FC = () => {
     useState<RefinedPromptResult | null>(null);
   // State for storing error messages
   const [error, setError] = useState<string | null>(null);
-  // State for storing the list of historical prompts
-  const [history, setHistory] = useState<PromptHistoryItem[]>([]);
-  // State for managing user session
-  const [session, setSession] = useState<Session | null>(null);
-  // State for showing the auth modal
-  const [showAuth, setShowAuth] = useState(false);
-  
+
   const historyRef = useRef<HTMLDivElement>(null);
 
   // Available models configuration
@@ -53,54 +40,11 @@ const App: React.FC = () => {
   ];
 
   /**
-   * Effect hook to manage auth session.
-   */
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      if (session) setShowAuth(false);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  /**
    * Effect hook to load prompt history from Supabase when session changes.
    */
   useEffect(() => {
-    const fetchHistory = async () => {
-      if (!session) {
-        setHistory([]);
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from("prompt_history")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(10);
-
-      if (data && !error) {
-        const mappedHistory: PromptHistoryItem[] = data.map((item: PromptHistoryRow) => ({
-          id: item.id,
-          originalInput: item.original_input,
-          result: item.result,
-          timestamp: new Date(item.created_at).getTime(),
-        }));
-        setHistory(mappedHistory);
-      } else if (error) {
-        console.error("Failed to fetch history:", error);
-      }
-    };
-
     fetchHistory();
-  }, [session]);
+  }, [session, fetchHistory]);
 
   /**
    * Effect hook to sync the current result to the history list locally.
@@ -113,13 +57,9 @@ const App: React.FC = () => {
         result: currentResult,
         timestamp: Date.now(),
       };
-      setHistory((prev) => {
-        // Avoid duplicates if we already have this ID in history
-        if (prev.find((h) => h.id === newItem.id)) return prev;
-        return [newItem, ...prev].slice(0, 10);
-      });
+      addToHistory(newItem);
     }
-  }, [currentResult]);
+  }, [currentResult, userInput, addToHistory]);
 
   /**
    * Handles the form submission to engineer the prompt.
@@ -157,19 +97,7 @@ const App: React.FC = () => {
    * Clears the local history state and resets the form.
    */
   const handleClearHistory = async () => {
-    if (session && session.user) {
-      // If logged in, we could optionally delete from DB too.
-      // For now, let's just clear the local view as per original behavior,
-      // but maybe suggest deleting from DB in the future.
-      const { error } = await supabase
-        .from("prompt_history")
-        .delete()
-        .eq("user_id", session.user.id);
-      
-      if (error) console.error("Failed to clear DB history:", error);
-    }
-    
-    setHistory([]);
+    await clearHistory();
     setCurrentResult(null);
     setUserInput("");
   };
@@ -181,8 +109,6 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-200">
       <Header 
-        session={session} 
-        onShowAuth={() => setShowAuth(true)} 
         onScrollToHistory={handleScrollToHistory}
       />
 

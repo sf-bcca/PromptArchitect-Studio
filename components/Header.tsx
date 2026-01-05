@@ -1,10 +1,8 @@
 import React from 'react';
 import { supabase } from '../services/supabaseClient';
-import { Session } from '@supabase/supabase-js';
+import { useSession } from '../context/SessionProvider';
 
 interface HeaderProps {
-  session: Session | null;
-  onShowAuth: () => void;
   onScrollToHistory: () => void;
 }
 
@@ -12,7 +10,9 @@ interface HeaderProps {
  * The application header component.
  * Displays the branding, navigation links, and auth controls.
  */
-const Header: React.FC<HeaderProps> = ({ session, onShowAuth, onScrollToHistory }) => {
+const Header: React.FC<HeaderProps> = ({ onScrollToHistory }) => {
+  const { session, setShowAuth } = useSession();
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
   };
@@ -58,7 +58,7 @@ const Header: React.FC<HeaderProps> = ({ session, onShowAuth, onScrollToHistory 
             </div>
           ) : (
             <button
-              onClick={onShowAuth}
+              onClick={() => setShowAuth(true)}
               className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-all shadow-sm active:transform active:scale-95"
             >
               Sign In
