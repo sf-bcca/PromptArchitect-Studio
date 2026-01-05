@@ -6,6 +6,16 @@ import { engineerPrompt } from "./services/geminiService";
 import { supabase } from "./services/supabaseClient";
 import { PromptHistoryItem, RefinedPromptResult } from "./types";
 import { Session } from "@supabase/supabase-js";
+/**
+ * Represents the structure of a row in the 'prompt_history' table.
+ */
+interface PromptHistoryRow {
+  id: string;
+  original_input: string;
+  result: RefinedPromptResult;
+  created_at: string;
+  user_id: string;
+}
 
 /**
  * The main application component for PromptArchitect-Studio.
@@ -77,7 +87,7 @@ const App: React.FC = () => {
         .limit(10);
 
       if (data && !error) {
-        const mappedHistory: PromptHistoryItem[] = data.map((item) => ({
+        const mappedHistory: PromptHistoryItem[] = data.map((item: PromptHistoryRow) => ({
           id: item.id,
           originalInput: item.original_input,
           result: item.result,
@@ -96,9 +106,9 @@ const App: React.FC = () => {
    * Effect hook to sync the current result to the history list locally.
    */
   useEffect(() => {
-    if (currentResult && (currentResult as any).id) {
+    if (currentResult && currentResult.id) {
       const newItem: PromptHistoryItem = {
-        id: (currentResult as any).id,
+        id: currentResult.id,
         originalInput: userInput,
         result: currentResult,
         timestamp: Date.now(),
@@ -132,8 +142,12 @@ const App: React.FC = () => {
       // We pass the session access token implicitly or explicitly via the invoke call.
       const result = await engineerPrompt(userInput, selectedModel, provider);
       setCurrentResult(result);
-    } catch (err: any) {
-      setError(err.message || "An unexpected error occurred.");
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unexpected error occurred.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -143,7 +157,7 @@ const App: React.FC = () => {
    * Clears the local history state and resets the form.
    */
   const handleClearHistory = async () => {
-    if (session) {
+    if (session && session.user) {
       // If logged in, we could optionally delete from DB too.
       // For now, let's just clear the local view as per original behavior,
       // but maybe suggest deleting from DB in the future.

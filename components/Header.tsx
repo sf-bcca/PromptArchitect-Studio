@@ -44,7 +44,7 @@ const Header: React.FC<HeaderProps> = ({ session, onShowAuth, onScrollToHistory 
           
           <div className="h-6 w-px bg-slate-200 dark:bg-slate-800 hidden sm:block"></div>
 
-          {session ? (
+          {session && session.user ? (
             <div className="flex items-center space-x-4">
               <span className="hidden md:block text-xs font-medium text-slate-400 dark:text-slate-500">
                 {session.user.email}
