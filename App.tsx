@@ -407,7 +407,7 @@ const App: React.FC = () => {
       <footer className="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 p-4 z-40">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
           <p className="text-xs text-slate-500 font-medium">
-            Developed by Expert Prompt Engineers
+            Developed by Shedrick Flowers
           </p>
           <div className="flex space-x-4">
             <a
