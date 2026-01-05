@@ -39,8 +39,10 @@ const Auth: React.FC = () => {
         });
         if (error) throw error;
       }
-    } catch (error: any) {
-      setMessage({ type: 'error', text: error.message });
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "An unexpected error occurred.";
+      setMessage({ type: "error", text: errorMessage });
     } finally {
       setIsLoading(false);
     }
