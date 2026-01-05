@@ -4,9 +4,9 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Copy package files and install dependencies
-# We use pnpm as per the project structure
-COPY package.json pnpm-lock.yaml ./
-RUN corepack enable && corepack prepare pnpm@latest --activate && pnpm install --frozen-lockfile
+# We use npm as per the project structure
+COPY package.json package-lock.json ./
+RUN npm install && npm install @rollup/rollup-linux-x64-musl --save-optional
 
 # Copy source code
 COPY . .
@@ -21,7 +21,7 @@ ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
 ENV VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
 
 # Build the application
-RUN pnpm run build
+RUN npm run build
 
 # Stage 2: Serve the application with Nginx
 FROM nginx:alpine

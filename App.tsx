@@ -50,9 +50,9 @@ const App: React.FC = () => {
    * Effect hook to sync the current result to the history list locally.
    */
   useEffect(() => {
-    if (currentResult && (currentResult as any).id) {
+    if (currentResult && currentResult.id) {
       const newItem: PromptHistoryItem = {
-        id: (currentResult as any).id,
+        id: currentResult.id,
         originalInput: userInput,
         result: currentResult,
         timestamp: Date.now(),
@@ -82,8 +82,12 @@ const App: React.FC = () => {
       // We pass the session access token implicitly or explicitly via the invoke call.
       const result = await engineerPrompt(userInput, selectedModel, provider);
       setCurrentResult(result);
-    } catch (err: any) {
-      setError(err.message || "An unexpected error occurred.");
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unexpected error occurred.");
+      }
     } finally {
       setIsLoading(false);
     }

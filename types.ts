@@ -3,6 +3,8 @@
  * Represents the structured result of an engineered prompt from the AI service.
  */
 export interface RefinedPromptResult {
+  /** A unique identifier for the result, typically assigned on creation. */
+  id?: string;
   /** The final engineered prompt text, ready for use with an LLM. */
   refinedPrompt: string;
   /** An explanation of the techniques used to generate the prompt. */
