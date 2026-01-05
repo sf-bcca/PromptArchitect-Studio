@@ -6,7 +6,7 @@ WORKDIR /app
 # Copy package files and install dependencies
 # We use npm as per the project structure
 COPY package.json package-lock.json ./
-RUN npm install
+RUN npm install && npm install @rollup/rollup-linux-x64-musl --save-optional
 
 # Copy source code
 COPY . .
