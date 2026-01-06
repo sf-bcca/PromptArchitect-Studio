@@ -56,12 +56,19 @@ Hosted on your own server. Best for privacy and offline usage.
 
 ## Verification & Monitoring Agents
 
-### **Playwright (Verification Agent)** (Planned)
+### **Playwright (Verification Agent)**
 
 **Role:** Automated QA Engineer
 
-- **Description**: Will provide end-to-end (E2E) testing and verification of the application's user interface and functional flows.
-- **Usage**: Future automated verification steps to ensure that features remain stable across updates.
+- **Description**: Provides end-to-end (E2E) testing and verification of the application's user interface and functional flows.
+- **Usage**: Runs automated verification steps to ensure that features remain stable across updates (`npm run test:e2e`).
+
+### **Vitest (Unit Tester)**
+
+**Role:** Component Inspector
+
+- **Description**: Fast unit testing framework powered by Vite.
+- **Usage**: Validates individual components and internal logic ensures correctness before code integration (`npm test`).
 
 ### **Security & Quality Hooks**
 

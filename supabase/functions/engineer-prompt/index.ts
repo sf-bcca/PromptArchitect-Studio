@@ -2,12 +2,20 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai@0.24.1";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.48.1";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
 };
+
+// Define the validation schema for the LLM output
+const RefinedPromptSchema = z.object({
+  refinedPrompt: z.string().describe("The fully engineered prompt text"),
+  whyThisWorks: z.string().describe("Explanation of techniques used"),
+  suggestedVariables: z.array(z.string()).describe("List of dynamic variables like [Audience]"),
+});
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -87,11 +95,14 @@ serve(async (req) => {
       - **Expert Profile**: Do not just say "You are an X". Add specificity: "You are an X with Y years experience in Z field."
 
       OUTPUT FORMAT (Strict JSON):
+      You MUST return a valid JSON object matching this schema:
       {
-        "refinedPrompt": "The fully engineered prompt text...",
-        "whyThisWorks": "A detailed explanation of the prompt engineering techniques used...",
-        "suggestedVariables": ["variable1", "variable2"]
+        "refinedPrompt": "string",
+        "whyThisWorks": "string",
+        "suggestedVariables": ["string", "string"]
       }
+      
+      Do NOT include any markdown formatting like \`\`\`json. Just return the raw JSON string.
     `;
 
     if (provider === "ollama") {
@@ -139,7 +150,12 @@ serve(async (req) => {
 
       const genAI = new GoogleGenerativeAI(apiKey);
       const modelName = model || Deno.env.get("GEMINI_MODEL") || "gemini-3.0-flash"; 
-      const genModel = genAI.getGenerativeModel({ model: modelName });
+      const genModel = genAI.getGenerativeModel({ 
+          model: modelName,
+          generationConfig: {
+              responseMimeType: "application/json",
+          } 
+      });
 
       console.log(`Using Gemini provider with model ${modelName}`);
       
@@ -148,33 +164,28 @@ serve(async (req) => {
       text = response.text();
     }
 
-    // Clean up potentially messy JSON
+    // Attempt to clean and parse
     let cleanedText = text.replace(/```json/g, "").replace(/```/g, "").trim();
-    cleanedText = cleanedText.replace(/(?<!\\)\n/g, "\\n");
-
+    
     let parsedResult;
     try {
-        parsedResult = JSON.parse(cleanedText);
-        if (parsedResult.explanation && !parsedResult.whyThisWorks) {
-            parsedResult.whyThisWorks = parsedResult.explanation;
-        }
-    } catch (e) {
-        console.warn("JSON Parse Failed, attempting Regex fallback:", e);
-        const promptMatch = text.match(/"refinedPrompt":\s*"([^"]*)"/);
-        const whyMatch = text.match(/"whyThisWorks":\s*"([^"]*)"/);
+        const json = JSON.parse(cleanedText);
+        // Validating with Zod
+        parsedResult = RefinedPromptSchema.parse(json);
+    } catch (e: any) {
+        console.error("Validation Failed:", e);
+        console.warn("Raw Output was:", text);
         
-        if (promptMatch) {
-            parsedResult = {
-                refinedPrompt: promptMatch[1],
-                whyThisWorks: whyMatch ? whyMatch[1] : "Explanation could not be parsed.",
-                suggestedVariables: []
-            };
-        } else {
+        // Fallback: Attempt to reconstruct a minimal valid object if at least prompt is present
+        // This is a "best effort" repair for models that refuse to output perfect JSON
+        if (text.includes("refinedPrompt")) {
             parsedResult = {
                 refinedPrompt: text,
-                whyThisWorks: "Raw output returned due to parsing error. Provider: " + provider,
-                suggestedVariables: []
-            };
+                 whyThisWorks: "Output could not be strictly parsed. Providing raw response.",
+                 suggestedVariables: []
+            }
+        } else {
+             throw new Error("Model failed to generate valid JSON: " + e.message);
         }
     }
 

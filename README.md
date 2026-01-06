@@ -98,6 +98,7 @@ Open [http://localhost:5173](http://localhost:5173) — you're ready to engineer
 | **Styling**    | Vanilla CSS (Premium Aesthetics)                                                                    |
 | **AI Engines** | [Google Gemini 3 Flash](https://ai.google.dev/) & [Ollama](https://ollama.com/) (Llama 3.2)         |
 | **Backend/DB** | [Supabase](https://supabase.com/)                                                                   |
+| **Testing**    | [Vitest](https://vitest.dev/) + [Playwright](https://playwright.dev/)                               |
 | **Git Hooks**  | [Husky](https://typicode.github.io/husky/) + [SecretLint](https://github.com/secretlint/secretlint) |
 
 ## 🌐 Deployment

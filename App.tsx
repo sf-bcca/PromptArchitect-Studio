@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import Header from "./components/Header";
-import PromptCard from "./components/PromptCard";
 import Auth from "./components/Auth";
+import PromptForm from "./components/PromptForm";
+import ResultDisplay from "./components/ResultDisplay";
+import HistoryList from "./components/HistoryList";
 import { engineerPrompt } from "./services/geminiService";
 import { RefinedPromptResult, PromptHistoryItem } from "./types";
 import { useSession } from "./context/SessionProvider";
@@ -13,7 +15,7 @@ import { usePromptHistory } from "./hooks/usePromptHistory";
  */
 const App: React.FC = () => {
   const { session, showAuth, setShowAuth } = useSession();
-  const { history, setHistory, fetchHistory, addToHistory, clearHistory } = usePromptHistory(session);
+  const { history, fetchHistory, addToHistory, clearHistory } = usePromptHistory(session);
 
   // State for storing the raw user input text
   const [userInput, setUserInput] = useState("");
@@ -106,6 +108,12 @@ const App: React.FC = () => {
     historyRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const handleSelectHistoryItem = (result: RefinedPromptResult, originalInput: string) => {
+    setCurrentResult(result);
+    setUserInput(originalInput);
+    window.scrollTo({ top: 300, behavior: "smooth" });
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-200">
       <Header 
@@ -142,264 +150,32 @@ const App: React.FC = () => {
           </div>
         )}
 
-        {/* Input Form */}
-        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 p-6 sm:p-8 mb-12 transition-all hover:shadow-xl">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <div className="flex justify-between items-end mb-2">
-                <label
-                  htmlFor="prompt-input"
-                  className="block text-sm font-medium text-slate-700 dark:text-slate-300"
-                >
-                  What are you trying to achieve?
-                </label>
-                <div className="flex items-center">
-                  <select
-                    value={selectedModel}
-                    onChange={(e) => setSelectedModel(e.target.value)}
-                    disabled={isLoading}
-                    className="block w-48 pl-3 pr-8 py-1.5 text-xs border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-xs rounded-lg bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-300 shadow-sm"
-                  >
-                    {models.map((model) => (
-                      <option key={model.id} value={model.id}>
-                        {model.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <textarea
-                id="prompt-input"
-                rows={4}
-                className="block w-full rounded-xl border-slate-200 dark:border-slate-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-slate-900 dark:text-slate-100 bg-slate-50 dark:bg-slate-950 p-4 transition-all resize-none border"
-                placeholder="e.g., 'Help me write a prompt for an email to my boss asking for a raise' or 'Create a prompt for a fitness coach AI'..."
-                value={userInput}
-                onChange={(e) => setUserInput(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
+        <PromptForm
+          userInput={userInput}
+          setUserInput={setUserInput}
+          handleSubmit={handleSubmit}
+          isLoading={isLoading}
+          selectedModel={selectedModel}
+          setSelectedModel={setSelectedModel}
+          models={models}
+          currentResult={currentResult}
+          session={session}
+          setShowAuth={setShowAuth}
+        />
 
-            <div className="flex justify-between items-center">
-              <div className="flex flex-col">
-                <p className="text-xs text-slate-400 dark:text-slate-500">
-                  {currentResult?.provider ? (
-                    <>
-                      Uses <span className="font-semibold text-slate-600 dark:text-slate-300">
-                        {currentResult.provider === "ollama" ? "Ollama" : "Gemini"}
-                      </span> ({currentResult.model})
-                    </>
-                  ) : (
-                    "Uses Gemini 3 Flash Reasoning Engine"
-                  )}
-                </p>
-                {!session && (
-                  <button 
-                    type="button"
-                    onClick={() => setShowAuth(true)}
-                    className="text-[10px] text-indigo-500 hover:text-indigo-600 font-medium text-left mt-0.5"
-                  >
-                    Login to save history
-                  </button>
-                )}
-              </div>
-              <button
-                type="submit"
-                disabled={isLoading || !userInput.trim()}
-                className={`flex items-center px-6 py-3 rounded-xl text-white font-semibold transition-all shadow-md ${
-                  isLoading || !userInput.trim()
-                    ? "bg-slate-300 cursor-not-allowed"
-                    : "bg-indigo-600 hover:bg-indigo-700 active:transform active:scale-95"
-                }`}
-              >
-                {isLoading ? (
-                  <>
-                    <svg
-                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Engineering...
-                  </>
-                ) : (
-                  <>
-                    Transform Prompt
-                    <svg
-                      className="ml-2 w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M14 5l7 7m0 0l-7 7m7-7H3"
-                      />
-                    </svg>
-                  </>
-                )}
-              </button>
-            </div>
-          </form>
-        </div>
+        <ResultDisplay 
+          result={currentResult} 
+          error={error} 
+          isLoading={isLoading} 
+        />
 
-        {/* Error State */}
-        {error && (
-          <div className="bg-red-50 dark:bg-red-900/30 border-l-4 border-red-400 dark:border-red-500 p-4 mb-8 rounded-r-xl">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg
-                  className="h-5 w-5 text-red-400 dark:text-red-400"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm text-red-700 dark:text-red-200">
-                  {error}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Current Result */}
-        {currentResult && <PromptCard result={currentResult} />}
-
-        {/* Empty State / Initial Instructions */}
-        {!currentResult && !isLoading && !error && (
-          <div className="grid md:grid-cols-3 gap-6 opacity-60">
-            {[
-              {
-                title: "Persona Role",
-                desc: "We assign specialized experts to your tasks.",
-                icon: "👤",
-              },
-              {
-                title: "Constraint Driven",
-                desc: "Strict boundaries ensure focus and quality.",
-                icon: "🎯",
-              },
-              {
-                title: "Output Controlled",
-                desc: "Structured formats for easy integration.",
-                icon: "📋",
-              },
-            ].map((feature, i) => (
-              <div
-                key={i}
-                className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 text-center"
-              >
-                <div className="text-2xl mb-2">{feature.icon}</div>
-                <h4 className="font-semibold text-slate-800 dark:text-slate-200 mb-1">
-                  {feature.title}
-                </h4>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  {feature.desc}
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* History Section */}
         {session && (
-          <div className="mt-20 scroll-mt-20" ref={historyRef}>
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold text-slate-900 dark:text-slate-50">
-                Recent Architecture
-              </h3>
-              <button
-                onClick={handleClearHistory}
-                className="text-xs font-medium text-slate-400 hover:text-red-500 transition-colors uppercase tracking-widest"
-              >
-                Clear History
-              </button>
-            </div>
-            {history.length > 0 ? (
-              <div className="space-y-4">
-                {history.map((item) => (
-                  <div
-                    key={item.id}
-                    className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 flex items-center justify-between hover:border-indigo-200 dark:hover:border-indigo-900 transition-all cursor-pointer group"
-                    onClick={() => {
-                      setCurrentResult(item.result);
-                      setUserInput(item.originalInput);
-                      window.scrollTo({ top: 300, behavior: "smooth" });
-                    }}
-                  >
-                    <div className="flex items-center space-x-4">
-                      <div className="bg-slate-100 dark:bg-slate-800 p-2 rounded-lg group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/50 transition-colors">
-                        <svg
-                          className="w-4 h-4 text-slate-500 dark:text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate max-w-xs md:max-w-md">
-                          {item.originalInput}
-                        </p>
-                        <p className="text-xs text-slate-400 dark:text-slate-500">
-                          {new Date(item.timestamp).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </p>
-                      </div>
-                    </div>
-                    <svg
-                      className="w-4 h-4 text-slate-300 dark:text-slate-600 group-hover:text-indigo-400 transition-colors"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="bg-white dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl p-12 text-center">
-                <p className="text-slate-400 dark:text-slate-500 text-sm">
-                  Your prompt history will appear here once you start engineering.
-                </p>
-              </div>
-            )}
-          </div>
+          <HistoryList
+            ref={historyRef}
+            history={history}
+            onSelectHistoryItem={handleSelectHistoryItem}
+            onClearHistory={handleClearHistory}
+          />
         )}
       </main>
 
