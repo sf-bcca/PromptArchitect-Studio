@@ -1,0 +1,53 @@
+name: Deploy to Production
+
+on:
+  workflow_run:
+    workflows: ["Docker Build & Push"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to Self-Hosted Server
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: 22
+          script_stop: true
+          script: |
+            echo "🚀 Starting deployment..."
+
+            # Navigate to project directory
+            cd /opt/docker/promptarchitect-studio || exit 1
+
+            # Pull latest image from GHCR
+            echo "📦 Pulling latest image..."
+            docker pull ghcr.io/sf-bcca/promptarchitect-studio:latest
+
+            # Restart the container with the new image
+            echo "🔄 Restarting container..."
+            docker-compose up -d --no-build
+
+            # Cleanup old images
+            echo "🧹 Cleaning up old images..."
+            docker image prune -f
+
+            echo "✅ Deployment complete!"
+
+      - name: Post deployment summary
+        run: |
+          echo "## 🚀 Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Target:** \`${{ secrets.DEPLOY_HOST }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Image:** \`ghcr.io/sf-bcca/promptarchitect-studio:latest\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Triggered by:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
