@@ -26,13 +26,13 @@ const FavoritesSection: React.FC<FavoritesSectionProps> = ({ onSelectFavorite })
       </div>
 
       <div className="p-4 bg-slate-50/50 dark:bg-slate-900/50">
-           {/* Mobile-friendly horizontal scroll / Desktop grid */}
-           <div className="flex overflow-x-auto pb-4 gap-4 snap-x sm:grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 sm:overflow-visible sm:pb-0">
+           {/* Vertical stack on mobile, 2-column grid on larger screens */}
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {favorites.map((fav) => (
                 fav.prompt_history && (
                 <div
                     key={fav.id}
-                    className="flex-none w-72 sm:w-auto snap-start bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow relative group"
+                    className="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow relative group"
                 >
                     <div className="absolute top-2 right-2 z-10">
                         <FavoriteButton
