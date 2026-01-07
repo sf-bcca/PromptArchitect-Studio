@@ -29,7 +29,7 @@ PromptArchitect-Studio is a powerful web-based tool designed to elevate your int
 - **🎯 Constraint Driven**: Defines clear boundaries to ensure focused and high-quality AI outputs.
 - **📋 Structured Output Control**: Generates prompts that demand specific formats for easy integration.
 - **⚡ Dual-Engine Support**: Choice between Google Gemini 3 Flash and self-hosted **Llama 3.2** via Ollama.
-- **🕰️ History & Persistence**: Save and revisit your engineered architectures using Supabase integration.
+- **🕰️ History, Favorites & Persistence**: Save, favorite, and revisit your engineered architectures using Supabase integration.
 
 ## 🏗️ Architecture
 
