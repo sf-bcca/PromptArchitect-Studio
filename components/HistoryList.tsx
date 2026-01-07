@@ -1,5 +1,7 @@
 import React, { forwardRef } from 'react';
 import { PromptHistoryItem, RefinedPromptResult } from '../types';
+import { useFavorites } from '../context/FavoritesContext';
+import FavoriteButton from './FavoriteButton';
 
 interface HistoryListProps {
   history: PromptHistoryItem[];
@@ -12,6 +14,17 @@ const HistoryList = forwardRef<HTMLDivElement, HistoryListProps>(({
   onSelectHistoryItem, 
   onClearHistory 
 }, ref) => {
+  const { isFavorite, addFavorite, removeFavorite } = useFavorites();
+
+  const toggleFavorite = (e: React.MouseEvent, itemId: string) => {
+    e.stopPropagation();
+    if (isFavorite(itemId)) {
+      removeFavorite(itemId);
+    } else {
+      addFavorite(itemId);
+    }
+  };
+
   return (
     <div className="mt-20 scroll-mt-20" ref={ref}>
       <div className="flex justify-between items-center mb-6">
@@ -61,19 +74,25 @@ const HistoryList = forwardRef<HTMLDivElement, HistoryListProps>(({
                   </p>
                 </div>
               </div>
-              <svg
-                className="w-4 h-4 text-slate-300 dark:text-slate-600 group-hover:text-indigo-400 transition-colors"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
+              <div className="flex items-center gap-3">
+                <FavoriteButton 
+                  isFavorite={isFavorite(item.id)} 
+                  onClick={(e) => toggleFavorite(e, item.id)} 
                 />
-              </svg>
+                <svg
+                  className="w-4 h-4 text-slate-300 dark:text-slate-600 group-hover:text-indigo-400 transition-colors"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </div>
             </div>
           ))}
         </div>
