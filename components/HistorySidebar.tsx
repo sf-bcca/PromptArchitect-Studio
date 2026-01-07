@@ -112,13 +112,13 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({
         </div>
 
         {/* Filters */}
-        <div className="p-4 pb-2">
-           <div className="flex bg-slate-200 dark:bg-slate-900 p-1 rounded-lg mb-4">
+        <div className="p-4 border-b border-slate-200 dark:border-slate-800/50">
+           <div className="flex bg-slate-200/50 dark:bg-slate-900/50 p-1 rounded-xl">
             <button
               onClick={() => setFilter('all')}
-              className={`flex-1 px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+              className={`flex-1 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
                 filter === 'all'
-                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-sm'
+                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-sm shadow-indigo-500/10'
                   : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
               }`}
             >
@@ -126,13 +126,13 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({
             </button>
             <button
               onClick={() => setFilter('favorites')}
-              className={`flex-1 px-3 py-1.5 text-xs font-medium rounded-md transition-all flex items-center justify-center gap-1 ${
+              className={`flex-1 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
                 filter === 'favorites'
-                  ? 'bg-white dark:bg-slate-800 text-pink-600 dark:text-pink-400 shadow-sm'
+                  ? 'bg-white dark:bg-slate-800 text-pink-600 dark:text-pink-400 shadow-sm shadow-pink-500/10'
                   : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
               }`}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5">
                 <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
               </svg>
               Favorites
