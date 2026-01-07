@@ -99,3 +99,29 @@ Model Context Protocol (MCP) servers extend agent capabilities by providing spec
 - **Container Control**: Direct interaction with the Docker environment.
 - **System Interaction**: Shell command execution for maintenance and setup tasks.
 - **GitHub Operations**: Integration with organizational workflows.
+
+---
+
+## CI/CD Pipeline
+
+Automated GitHub Actions workflows handle testing, building, and deployment:
+
+### **PR Validation Workflow**
+
+- **Trigger**: Pull requests to `main`
+- **Steps**: TypeScript build, unit tests (Vitest), security scan (secretlint + npm audit)
+
+### **E2E Test Workflow**
+
+- **Trigger**: Pull requests + pushes to `main`
+- **Steps**: Playwright browser tests in headless Chrome
+
+### **Docker Build Workflow**
+
+- **Trigger**: Pushes to `main` or version tags (`v*`)
+- **Steps**: Builds Docker image, pushes to GitHub Container Registry (GHCR)
+
+### **Deploy Workflow**
+
+- **Trigger**: After successful Docker build
+- **Steps**: Connects to self-hosted server via Tailscale, pulls latest image, restarts container

@@ -103,11 +103,17 @@ Open [http://localhost:5173](http://localhost:5173) — you're ready to engineer
 
 ## 🌐 Deployment
 
-For production deployment using Docker and Nginx:
+### Automated CI/CD Pipeline
 
-1. **Docker Compose** — See [DEPLOY.md](DEPLOY.md) for complete instructions
-2. **Reverse Proxy** — Configure Nginx Proxy Manager for SSL termination
-3. **Updates** — `git pull && docker-compose up -d --build`
+Pushing to `main` triggers a fully automated deployment:
+
+1. **Tests Run** — PR validation and E2E tests verify your changes
+2. **Docker Build** — Image builds and pushes to [GitHub Container Registry](https://ghcr.io)
+3. **Auto-Deploy** — Server pulls and restarts the container via Tailscale
+
+### Manual Deployment
+
+For manual or first-time deployment, see [DEPLOY.md](DEPLOY.md) for Docker Compose instructions.
 
 ## 🆘 Need Help?
 

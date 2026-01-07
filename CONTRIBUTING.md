@@ -4,6 +4,8 @@ Thank you for your interest in contributing to PromptArchitect-Studio! We value 
 
 ## Workflow
 
+We use a **trunk-based workflow** with automated CI/CD:
+
 1.  **Fork and Clone**
 
     - Fork the repository to your GitHub account.
@@ -11,13 +13,14 @@ Thank you for your interest in contributing to PromptArchitect-Studio! We value 
 
 2.  **Create a Branch**
 
-    - Create a new branch for your feature or fix.
+    - Create a new branch from `main` for your feature or fix.
     - Naming convention: `feature/your-feature-name` or `fix/issue-description`.
 
 3.  **Make Changes**
 
     - Write clean, documented code.
     - Ensure all new functions and components have JSDoc comments.
+    - Run tests locally: `npm test` (unit) and `npm run test:e2e` (E2E).
 
 4.  **Security Checks**
 
@@ -27,22 +30,17 @@ Thank you for your interest in contributing to PromptArchitect-Studio! We value 
       npm run secretlint
       ```
     - **Never** commit `.env` files or hardcoded API keys.
-    - Note: Backend logic resides in `supabase/functions/`, not a root `functions/` directory.
 
-5.  **Commit and Push**
+5.  **Open a Pull Request**
 
-    - Commit your changes with a clear message.
     - Push to your fork: `git push origin feature/your-feature-name`
-
-6.  **Pull Request**
-    - Open a Pull Request (PR) against the `main` branch of the original repository.
-    - Describe your changes and link to any relevant issues.
+    - Open a PR against `main` (trunk-based, no develop branch).
+    - CI will automatically run: build, unit tests, E2E tests, and security scans.
+    - Merging to `main` triggers automatic deployment.
 
 ## Coding Standards
 
 - **TypeScript**: Use strict typing. Avoid `any` whenever possible.
 - **React**: Use functional components and Hooks.
 - **Styling**: Use Vanilla CSS as established in the project's existing design system.
-- **Documentation**:
-  - Use JSDoc for functions and interfaces.
-  - Keep Markdown documentation up-to-date with code changes.
+- **Documentation**: Use JSDoc for functions; keep Markdown docs up-to-date.
