@@ -21,11 +21,31 @@ jobs:
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
           tags: tag:ci
 
-      - name: Deploy via Tailscale SSH
+      - name: Get target IP via Tailscale
+        id: get-ip
         run: |
-          # Use tailscale ssh which handles MagicDNS internally
-          # Using sudo as tailscale may need root to access its socket
-          sudo tailscale ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'ENDSSH'
+          # Wait for Tailscale to stabilize
+          sleep 5
+          # Get the IP address of the target host using tailscale status
+          TARGET_IP=$(sudo tailscale status --json | jq -r '.Peer | to_entries[] | select(.value.HostName=="${{ secrets.DEPLOY_HOST }}" or .value.DNSName=="${{ secrets.DEPLOY_HOST }}.") | .value.TailscaleIPs[0]' | head -1)
+          if [ -z "$TARGET_IP" ] || [ "$TARGET_IP" = "null" ]; then
+            echo "Could not resolve IP for ${{ secrets.DEPLOY_HOST }}"
+            echo "Tailscale peers:"
+            sudo tailscale status
+            exit 1
+          fi
+          echo "Resolved IP: $TARGET_IP"
+          echo "target_ip=$TARGET_IP" >> $GITHUB_OUTPUT
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+      - name: Deploy via SSH
+        run: |
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ secrets.DEPLOY_USER }}@${{ steps.get-ip.outputs.target_ip }} << 'ENDSSH'
             echo "🚀 Starting deployment..."
             
             # Navigate to project directory
