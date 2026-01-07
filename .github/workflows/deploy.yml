@@ -24,7 +24,8 @@ jobs:
       - name: Deploy via Tailscale SSH
         run: |
           # Use tailscale ssh which handles MagicDNS internally
-          tailscale ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'ENDSSH'
+          # Using sudo as tailscale may need root to access its socket
+          sudo tailscale ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'ENDSSH'
             echo "🚀 Starting deployment..."
             
             # Navigate to project directory
