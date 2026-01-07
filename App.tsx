@@ -141,7 +141,7 @@ const App: React.FC = () => {
         <main className="flex-1 overflow-y-auto w-full relative">
           <div className="max-w-4xl mx-auto px-4 py-8 pb-12">
             <div className="text-center mb-12 mt-8">
-              <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-50 sm:text-4xl mb-4">
+              <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 dark:from-indigo-400 dark:via-purple-400 dark:to-indigo-400 sm:text-5xl mb-6 pb-2">
                 Engineer Perfect Prompts
               </h2>
               <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
