@@ -5,7 +5,11 @@
   
   **Transform basic ideas into professional-grade AI prompts with structured engineering techniques.**
   
-  [![Build Status](https://img.shields.io/badge/status-active-success.svg)](#)
+  [![CI: Validation](https://github.com/sf-bcca/PromptArchitect-Studio/actions/workflows/pr-validation.yml/badge.svg)](https://github.com/sf-bcca/PromptArchitect-Studio/actions/workflows/pr-validation.yml)
+  [![CI: E2E Tests](https://github.com/sf-bcca/PromptArchitect-Studio/actions/workflows/e2e-tests.yml/badge.svg)](https://github.com/sf-bcca/PromptArchitect-Studio/actions/workflows/e2e-tests.yml)
+  [![Build: Docker](https://github.com/sf-bcca/PromptArchitect-Studio/actions/workflows/docker-build.yml/badge.svg)](https://github.com/sf-bcca/PromptArchitect-Studio/actions/workflows/docker-build.yml)
+  [![CD: Production](https://github.com/sf-bcca/PromptArchitect-Studio/actions/workflows/deploy.yml/badge.svg)](https://github.com/sf-bcca/PromptArchitect-Studio/actions/workflows/deploy.yml)
+  <br />
   [![Vite](https://img.shields.io/badge/Vite-6.2.0-646CFF.svg)](https://vitejs.dev/)
   [![React](https://img.shields.io/badge/React-19.2.3-61DAFB.svg)](https://reactjs.org/)
   [![Gemini](https://img.shields.io/badge/Gemini-3_Flash-4285F4.svg)](https://deepmind.google/technologies/gemini/)
