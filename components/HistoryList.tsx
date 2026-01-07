@@ -15,6 +15,11 @@ const HistoryList = forwardRef<HTMLDivElement, HistoryListProps>(({
   onClearHistory 
 }, ref) => {
   const { isFavorite, addFavorite, removeFavorite } = useFavorites();
+  const [filter, setFilter] = React.useState<'all' | 'favorites'>('all');
+
+  const filteredHistory = filter === 'all' 
+    ? history 
+    : history.filter(item => isFavorite(item.id));
 
   const toggleFavorite = (e: React.MouseEvent, itemId: string) => {
     e.stopPropagation();
@@ -27,20 +32,50 @@ const HistoryList = forwardRef<HTMLDivElement, HistoryListProps>(({
 
   return (
     <div className="mt-20 scroll-mt-20" ref={ref}>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <h3 className="text-xl font-bold text-slate-900 dark:text-slate-50">
           Recent Architecture
         </h3>
-        <button
-          onClick={onClearHistory}
-          className="text-xs font-medium text-slate-400 hover:text-red-500 transition-colors uppercase tracking-widest"
-        >
-          Clear History
-        </button>
+        
+        <div className="flex items-center gap-4">
+          <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
+            <button
+              onClick={() => setFilter('all')}
+              className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${
+                filter === 'all'
+                  ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-sm'
+                  : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+              }`}
+            >
+              All
+            </button>
+            <button
+              onClick={() => setFilter('favorites')}
+              className={`px-3 py-1 text-xs font-medium rounded-md transition-all flex items-center gap-1 ${
+                filter === 'favorites'
+                  ? 'bg-white dark:bg-slate-700 text-pink-600 dark:text-pink-400 shadow-sm'
+                  : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+              }`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3">
+                <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+              </svg>
+              Favorites
+            </button>
+          </div>
+
+          <button
+            onClick={onClearHistory}
+            className="text-xs font-medium text-slate-400 hover:text-red-500 transition-colors uppercase tracking-widest"
+          >
+            Clear
+          </button>
+        </div>
       </div>
-      {history.length > 0 ? (
+
+      {filteredHistory.length > 0 ? (
         <div className="space-y-4">
-          {history.map((item) => (
+          {filteredHistory.map((item) => (
             <div
               key={item.id}
               className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 flex items-center justify-between hover:border-indigo-200 dark:hover:border-indigo-900 transition-all cursor-pointer group"
@@ -99,7 +134,9 @@ const HistoryList = forwardRef<HTMLDivElement, HistoryListProps>(({
       ) : (
         <div className="bg-white dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl p-12 text-center">
           <p className="text-slate-400 dark:text-slate-500 text-sm">
-            Your prompt history will appear here once you start engineering.
+            {filter === 'favorites' 
+              ? "You haven't added any favorites yet." 
+              : "Your prompt history will appear here once you start engineering."}
           </p>
         </div>
       )}

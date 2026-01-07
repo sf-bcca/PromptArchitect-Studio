@@ -38,12 +38,27 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     if (!session?.user?.id) return;
     try {
       // Optimistic update
-      // We can't easily optimistic update the full object without more data, but we can prevent UI lag
-      // Ideally we re-fetch to get the full joined data or construct it if we have the history item
+      const tempId = `temp-${Date.now()}`;
+      // Create a temporary favorite item to display immediately
+      const tempFavorite: FavoriteItem = {
+        id: tempId,
+        user_id: session.user.id,
+        prompt_history_id: promptHistoryId,
+        created_at: new Date().toISOString(),
+        // We don't have the full joined prompt_history here immediately without looking it up,
+        // but for the purpose of the 'isFavorite' check, we just need the prompt_history_id.
+        // If we need to display it in the FavoritesSection immediately, we might miss the details
+        // until the refresh completes, but the heart icon will fill instantly.
+      };
+      
+      setFavorites(prev => [tempFavorite, ...prev]);
+
       await addFavoriteService(session.user.id, promptHistoryId);
       await refreshFavorites();
     } catch (error) {
       console.error("Failed to add favorite", error);
+      // Revert if failed
+      refreshFavorites();
     }
   };
 
