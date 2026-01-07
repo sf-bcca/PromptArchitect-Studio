@@ -4,6 +4,7 @@ import Auth from "./components/Auth";
 import PromptForm from "./components/PromptForm";
 import ResultDisplay from "./components/ResultDisplay";
 import HistoryList from "./components/HistoryList";
+import FavoritesSection from "./components/FavoritesSection";
 import { engineerPrompt } from "./services/geminiService";
 import { RefinedPromptResult, PromptHistoryItem } from "./types";
 import { useSession } from "./context/SessionProvider";
@@ -170,12 +171,15 @@ const App: React.FC = () => {
         />
 
         {session && (
-          <HistoryList
-            ref={historyRef}
-            history={history}
-            onSelectHistoryItem={handleSelectHistoryItem}
-            onClearHistory={handleClearHistory}
-          />
+          <>
+            <FavoritesSection onSelectFavorite={handleSelectHistoryItem} />
+            <HistoryList
+              ref={historyRef}
+              history={history}
+              onSelectHistoryItem={handleSelectHistoryItem}
+              onClearHistory={handleClearHistory}
+            />
+          </>
         )}
       </main>
 

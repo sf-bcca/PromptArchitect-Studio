@@ -37,7 +37,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, error, isLoading 
   }
 
   if (result) {
-    return <PromptCard result={result} />;
+    return <PromptCard result={result} historyId={result.id} />;
   }
 
   if (!isLoading) {
