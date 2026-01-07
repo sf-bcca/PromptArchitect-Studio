@@ -139,7 +139,7 @@ const App: React.FC = () => {
 
         {/* Main Content Area */}
         <main className="flex-1 overflow-y-auto w-full relative">
-          <div className="max-w-4xl mx-auto px-4 py-8 pb-32">
+          <div className="max-w-4xl mx-auto px-4 py-8 pb-12">
             <div className="text-center mb-12 mt-8">
               <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-50 sm:text-4xl mb-4">
                 Engineer Perfect Prompts
@@ -193,13 +193,9 @@ const App: React.FC = () => {
             )}
             
             {/* Footer embedded in scrollable area */}
-            <div className="mt-20 border-t border-slate-200 dark:border-slate-800 pt-8 pb-4">
-              <div className="flex justify-between items-center text-xs text-slate-500">
+            <div className="mt-12 border-t border-slate-200 dark:border-slate-800 pt-8 pb-4">
+              <div className="flex justify-center items-center text-xs text-slate-500">
                 <p>Developed by Shedrick Flowers</p>
-                <div className="flex space-x-4">
-                  <a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">Guide</a>
-                  <a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">API</a>
-                </div>
               </div>
             </div>
           </div>

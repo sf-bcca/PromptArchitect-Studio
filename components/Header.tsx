@@ -3,7 +3,6 @@ import { supabase } from '../services/supabaseClient';
 import { useSession } from '../context/SessionProvider';
 
 interface HeaderProps {
-  onScrollToHistory?: () => void;
   onToggleSidebar?: () => void;
 }
 
@@ -11,7 +10,7 @@ interface HeaderProps {
  * The application header component.
  * Displays the branding, navigation links, and auth controls.
  */
-const Header: React.FC<HeaderProps> = ({ onScrollToHistory, onToggleSidebar }) => {
+const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
   const { session, setShowAuth } = useSession();
 
   const handleLogout = async () => {
@@ -50,15 +49,6 @@ const Header: React.FC<HeaderProps> = ({ onScrollToHistory, onToggleSidebar }) =
         </div>
         
         <nav className="flex items-center space-x-4 md:space-x-8">
-          <button 
-            onClick={onScrollToHistory}
-            className="text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-          >
-            History
-          </button>
-          
-          <div className="h-6 w-px bg-slate-200 dark:bg-slate-800 hidden sm:block"></div>
-
           {session && session.user ? (
             <div className="flex items-center space-x-4">
               <span className="hidden md:block text-xs font-medium text-slate-400 dark:text-slate-500">
