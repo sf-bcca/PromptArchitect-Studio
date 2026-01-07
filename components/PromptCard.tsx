@@ -1,10 +1,14 @@
 
 import React, { useState } from 'react';
 import { RefinedPromptResult } from '../types';
+import { useFavorites } from '../context/FavoritesContext';
+import FavoriteButton from './FavoriteButton';
 
 interface PromptCardProps {
   /** The result object containing the refined prompt and analysis */
   result: RefinedPromptResult;
+  /** The ID of the prompt history item, required for favoriting. */
+  historyId?: string;
 }
 
 /**
@@ -13,8 +17,23 @@ interface PromptCardProps {
  *
  * @param {PromptCardProps} props - The component props.
  */
-const PromptCard: React.FC<PromptCardProps> = ({ result }) => {
+const PromptCard: React.FC<PromptCardProps> = ({ result, historyId }) => {
   const [copied, setCopied] = useState(false);
+  const { isFavorite, addFavorite, removeFavorite } = useFavorites();
+
+  // Use explicit historyId if provided, otherwise fallback to result.id
+  const targetId = historyId || result.id;
+  const favorited = targetId ? isFavorite(targetId) : false;
+
+  const toggleFavorite = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!targetId) return;
+    if (favorited) {
+      removeFavorite(targetId);
+    } else {
+      addFavorite(targetId);
+    }
+  };
 
   /**
    * Copies the refined prompt text to the system clipboard and shows a success state briefly.
@@ -36,26 +55,31 @@ const PromptCard: React.FC<PromptCardProps> = ({ result }) => {
             </svg>
             Refined Prompt
           </h2>
-          <button
-            onClick={copyToClipboard}
-            className="text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 px-3 py-1 rounded-full transition-all flex items-center"
-          >
-            {copied ? (
-              <>
-                <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Copied!
-              </>
-            ) : (
-              <>
-                <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                </svg>
-                Copy Prompt
-              </>
+          <div className="flex items-center gap-2">
+            {targetId && (
+                <FavoriteButton isFavorite={favorited} onClick={toggleFavorite} />
             )}
-          </button>
+            <button
+                onClick={copyToClipboard}
+                className="text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 px-3 py-1 rounded-full transition-all flex items-center"
+            >
+                {copied ? (
+                <>
+                    <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Copied!
+                </>
+                ) : (
+                <>
+                    <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                    </svg>
+                    Copy Prompt
+                </>
+                )}
+            </button>
+          </div>
         </div>
         <div className="p-6">
           <pre className="mono text-sm text-slate-800 dark:text-slate-200 whitespace-pre-wrap leading-relaxed select-all bg-slate-50 dark:bg-slate-950 p-4 rounded-lg border border-slate-100 dark:border-slate-800">

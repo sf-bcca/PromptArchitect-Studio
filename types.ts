@@ -30,3 +30,15 @@ export interface PromptHistoryItem {
   /** Unix timestamp (in milliseconds) of when the prompt was created. */
   timestamp: number;
 }
+
+/**
+ * Represents a user's favorite prompt, linked to a history item.
+ */
+export interface FavoriteItem {
+  id: string;
+  user_id: string;
+  prompt_history_id: string;
+  created_at: string;
+  /** The full prompt history item, joined for display convenience. */
+  prompt_history?: PromptHistoryItem;
+}

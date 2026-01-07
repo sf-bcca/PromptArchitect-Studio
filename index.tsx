@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import { SessionProvider } from './context/SessionProvider';
+import { FavoritesProvider } from './context/FavoritesContext';
 import './global.css';
 
 /**
@@ -19,7 +20,9 @@ try {
   root.render(
     <React.StrictMode>
       <SessionProvider>
-        <App />
+        <FavoritesProvider>
+          <App />
+        </FavoritesProvider>
       </SessionProvider>
     </React.StrictMode>
   );
