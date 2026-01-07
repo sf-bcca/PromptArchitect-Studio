@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "./components/Header";
 import Auth from "./components/Auth";
 import PromptForm from "./components/PromptForm";
 import ResultDisplay from "./components/ResultDisplay";
-import HistoryList from "./components/HistoryList";
+import HistorySidebar from "./components/HistorySidebar";
 import FavoritesSection from "./components/FavoritesSection";
 import { engineerPrompt } from "./services/geminiService";
 import { RefinedPromptResult, PromptHistoryItem } from "./types";
@@ -18,6 +18,16 @@ const App: React.FC = () => {
   const { session, showAuth, setShowAuth } = useSession();
   const { history, fetchHistory, addToHistory, clearHistory } = usePromptHistory(session);
 
+  // Layout State
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  // Close sidebar by default on mobile on initial load
+  useEffect(() => {
+    if (window.innerWidth < 1024) {
+      setIsSidebarOpen(false);
+    }
+  }, []);
+
   // State for storing the raw user input text
   const [userInput, setUserInput] = useState("");
   // State for selected LLM model
@@ -29,8 +39,6 @@ const App: React.FC = () => {
     useState<RefinedPromptResult | null>(null);
   // State for storing error messages
   const [error, setError] = useState<string | null>(null);
-
-  const historyRef = useRef<HTMLDivElement>(null);
 
   // Available models configuration
   const models = [
@@ -105,106 +113,98 @@ const App: React.FC = () => {
     setUserInput("");
   };
 
-  const handleScrollToHistory = () => {
-    historyRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   const handleSelectHistoryItem = (result: RefinedPromptResult, originalInput: string) => {
     setCurrentResult(result);
     setUserInput(originalInput);
-    window.scrollTo({ top: 300, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-200">
+    <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-200 overflow-hidden">
       <Header 
-        onScrollToHistory={handleScrollToHistory}
+        onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
       />
 
-      <main className="max-w-4xl mx-auto px-4 py-12 pb-32">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-50 sm:text-4xl mb-4">
-            Engineer Perfect Prompts
-          </h2>
-          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Input your basic idea, and we'll apply professional engineering
-            techniques to generate a structured, high-performing framework for
-            any LLM.
-          </p>
-        </div>
+      <div className="flex flex-1 overflow-hidden relative">
+        {/* Sidebar */}
+        {session && (
+          <HistorySidebar
+            isOpen={isSidebarOpen}
+            onClose={() => setIsSidebarOpen(false)}
+            history={history}
+            onSelectHistoryItem={handleSelectHistoryItem}
+            onClearHistory={handleClearHistory}
+          />
+        )}
 
-        {/* Auth Modal Overlay */}
-        {showAuth && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/50 backdrop-blur-sm">
-            <div className="relative w-full max-w-md">
-              <button 
-                onClick={() => setShowAuth(false)}
-                className="absolute -top-12 right-0 text-white hover:text-indigo-400 transition-colors"
-                aria-label="Close"
-              >
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-              <Auth />
+        {/* Main Content Area */}
+        <main className="flex-1 overflow-y-auto w-full relative">
+          <div className="max-w-4xl mx-auto px-4 py-8 pb-32">
+            <div className="text-center mb-12 mt-8">
+              <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-50 sm:text-4xl mb-4">
+                Engineer Perfect Prompts
+              </h2>
+              <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+                Input your basic idea, and we'll apply professional engineering
+                techniques to generate a structured, high-performing framework for
+                any LLM.
+              </p>
+            </div>
+
+            {/* Auth Modal Overlay */}
+            {showAuth && (
+              <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/50 backdrop-blur-sm">
+                <div className="relative w-full max-w-md">
+                  <button 
+                    onClick={() => setShowAuth(false)}
+                    className="absolute -top-12 right-0 text-white hover:text-indigo-400 transition-colors"
+                    aria-label="Close"
+                  >
+                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                  <Auth />
+                </div>
+              </div>
+            )}
+
+            <PromptForm
+              userInput={userInput}
+              setUserInput={setUserInput}
+              handleSubmit={handleSubmit}
+              isLoading={isLoading}
+              selectedModel={selectedModel}
+              setSelectedModel={setSelectedModel}
+              models={models}
+              currentResult={currentResult}
+              session={session}
+              setShowAuth={setShowAuth}
+            />
+
+            <ResultDisplay 
+              result={currentResult} 
+              error={error} 
+              isLoading={isLoading} 
+            />
+
+            {session && (
+              <FavoritesSection onSelectFavorite={handleSelectHistoryItem} />
+            )}
+            
+            {/* Footer embedded in scrollable area */}
+            <div className="mt-20 border-t border-slate-200 dark:border-slate-800 pt-8 pb-4">
+              <div className="flex justify-between items-center text-xs text-slate-500">
+                <p>Developed by Shedrick Flowers</p>
+                <div className="flex space-x-4">
+                  <a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">Guide</a>
+                  <a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">API</a>
+                </div>
+              </div>
             </div>
           </div>
-        )}
-
-        <PromptForm
-          userInput={userInput}
-          setUserInput={setUserInput}
-          handleSubmit={handleSubmit}
-          isLoading={isLoading}
-          selectedModel={selectedModel}
-          setSelectedModel={setSelectedModel}
-          models={models}
-          currentResult={currentResult}
-          session={session}
-          setShowAuth={setShowAuth}
-        />
-
-        <ResultDisplay 
-          result={currentResult} 
-          error={error} 
-          isLoading={isLoading} 
-        />
-
-        {session && (
-          <>
-            <FavoritesSection onSelectFavorite={handleSelectHistoryItem} />
-            <HistoryList
-              ref={historyRef}
-              history={history}
-              onSelectHistoryItem={handleSelectHistoryItem}
-              onClearHistory={handleClearHistory}
-            />
-          </>
-        )}
-      </main>
-
-      {/* Persistent Footer CTA */}
-      <footer className="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 p-4 z-40">
-        <div className="max-w-4xl mx-auto flex justify-between items-center">
-          <p className="text-xs text-slate-500 font-medium">
-            Developed by Shedrick Flowers
-          </p>
-          <div className="flex space-x-4">
-            <a
-              href="#"
-              className="text-xs font-semibold text-indigo-600 hover:text-indigo-700"
-            >
-              Guide
-            </a>
-            <a
-              href="#"
-              className="text-xs font-semibold text-indigo-600 hover:text-indigo-700"
-            >
-              API
-            </a>
-          </div>
-        </div>
-      </footer>
+        </main>
+      </div>
     </div>
   );
 };
