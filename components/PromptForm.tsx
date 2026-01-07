@@ -36,9 +36,9 @@ const PromptForm: React.FC<PromptFormProps> = ({
       <div className="relative bg-white dark:bg-slate-900 rounded-2xl p-1 shadow-2xl">
         <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-950 rounded-xl p-4 sm:p-6 transition-colors">
           <div className="flex justify-between items-center mb-4">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center gap-2">
+            <span className="text-sm font-medium text-slate-500 dark:text-slate-400 flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
-              Input
+              Your Input
             </span>
             <ModelSelector
               selectedModel={selectedModel}
