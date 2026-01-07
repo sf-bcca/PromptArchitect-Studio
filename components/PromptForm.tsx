@@ -52,7 +52,7 @@ const PromptForm: React.FC<PromptFormProps> = ({
             id="prompt-input"
             aria-label="Your Input"
             rows={4}
-            className="block w-full rounded-xl border-none p-0 text-slate-900 dark:text-slate-100 bg-transparent resize-none focus:ring-0 text-lg placeholder:text-slate-300 dark:placeholder:text-slate-700 leading-relaxed"
+            className="block w-full rounded-xl border-none p-3 text-slate-900 dark:text-slate-100 bg-transparent resize-none focus:ring-0 focus:outline-none text-lg placeholder:text-slate-300 dark:placeholder:text-slate-700 leading-relaxed"
             placeholder="Describe your task here... (e.g. 'Write a polite email declining a wedding invitation')"
             value={userInput}
             onChange={(e) => setUserInput(e.target.value)}
