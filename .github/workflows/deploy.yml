@@ -19,12 +19,6 @@ jobs:
         with:
           authkey: ${{ secrets.TS_AUTHKEY }}
 
-      - name: Debug Tailscale
-        run: |
-          echo "Checking Tailscale status..."
-          sudo tailscale status
-          sudo tailscale netcheck
-
       - name: Get target IP via Tailscale
         id: get-ip
         run: |
@@ -50,18 +44,25 @@ jobs:
       - name: Deploy via SSH
         run: |
           ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ secrets.DEPLOY_USER }}@${{ steps.get-ip.outputs.target_ip }} << 'ENDSSH'
+            set -e
             echo "🚀 Starting deployment..."
-            
-            # Navigate to project directory
-            cd /opt/docker/promptarchitect-studio || exit 1
             
             # Pull latest image from GHCR
             echo "📦 Pulling latest image..."
             docker pull ghcr.io/sf-bcca/promptarchitect-studio:latest
             
-            # Restart the container with the new image
-            echo "🔄 Restarting container..."
-            docker-compose up -d --no-build
+            # Stop and remove old container if exists
+            echo "🛑 Stopping old container..."
+            docker stop promptarchitect-studio_web_1 2>/dev/null || true
+            docker rm promptarchitect-studio_web_1 2>/dev/null || true
+            
+            # Start new container with the GHCR image
+            echo "🔄 Starting new container..."
+            docker run -d \
+              --name promptarchitect-studio_web_1 \
+              --restart always \
+              -p 8084:80 \
+              ghcr.io/sf-bcca/promptarchitect-studio:latest
             
             # Cleanup old images
             echo "🧹 Cleaning up old images..."
