@@ -60,16 +60,37 @@ export const usePromptHistory = (session: Session | null) => {
    */
   const clearHistory = async () => {
     if (session) {
-      const { error } = await supabase
+      // First, get the list of favorite IDs so we don't clear them from local state blindly
+      const { data: favorites } = await supabase
+        .from('user_favorites')
+        .select('prompt_history_id')
+        .eq('user_id', session.user.id);
+
+      const favoriteIds = favorites?.map(f => f.prompt_history_id) || [];
+
+      // Delete from DB: Everything EXCEPT the favorite IDs
+      let query = supabase
         .from("prompt_history")
         .delete()
         .eq("user_id", session.user.id);
+      
+      if (favoriteIds.length > 0) {
+        // .not('id', 'in', '(' + favoriteIds.join(',') + ')') // Supabase .not syntax is simpler:
+        query = query.not('id', 'in', `(${favoriteIds.join(',')})`);
+      }
+
+      const { error } = await query;
 
       if (error) {
         console.error("Failed to clear DB history:", error);
       }
+      
+      // Update local state: Keep only favorites
+      setHistory(prev => prev.filter(item => favoriteIds.includes(item.id)));
+    } else {
+      // If not logged in (which shouldn't happen for saving anyway), clear all
+       setHistory([]);
     }
-    setHistory([]);
   };
 
   return { history, setHistory, fetchHistory, addToHistory, clearHistory };
