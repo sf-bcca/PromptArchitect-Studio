@@ -40,6 +40,8 @@ export const getFavorites = async (userId: string): Promise<FavoriteItem[]> => {
 };
 
 export const addFavorite = async (userId: string, promptHistoryId: string) => {
+  console.log('[FavoritesService] Inserting favorite:', { userId, promptHistoryId });
+  
   const { data, error } = await supabase
     .from("user_favorites")
     .insert([
@@ -48,9 +50,11 @@ export const addFavorite = async (userId: string, promptHistoryId: string) => {
     .select();
 
   if (error) {
-    console.error("Error adding favorite:", error);
+    console.error("[FavoritesService] Error adding favorite:", error);
     throw error;
   }
+  
+  console.log('[FavoritesService] Insert successful:', data);
   return data;
 };
 

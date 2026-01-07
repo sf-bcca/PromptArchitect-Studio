@@ -35,29 +35,34 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   }, [refreshFavorites]);
 
   const addFavorite = async (promptHistoryId: string) => {
-    if (!session?.user?.id) return;
+    console.log('[Favorites] addFavorite called with:', { promptHistoryId, userId: session?.user?.id });
+    
+    if (!session?.user?.id) {
+      console.warn('[Favorites] No session/user ID, aborting addFavorite');
+      return;
+    }
+    
     try {
       // Optimistic update
       const tempId = `temp-${Date.now()}`;
-      // Create a temporary favorite item to display immediately
       const tempFavorite: FavoriteItem = {
         id: tempId,
         user_id: session.user.id,
         prompt_history_id: promptHistoryId,
         created_at: new Date().toISOString(),
-        // We don't have the full joined prompt_history here immediately without looking it up,
-        // but for the purpose of the 'isFavorite' check, we just need the prompt_history_id.
-        // If we need to display it in the FavoritesSection immediately, we might miss the details
-        // until the refresh completes, but the heart icon will fill instantly.
       };
       
       setFavorites(prev => [tempFavorite, ...prev]);
 
-      await addFavoriteService(session.user.id, promptHistoryId);
+      console.log('[Favorites] Calling addFavoriteService...');
+      const result = await addFavoriteService(session.user.id, promptHistoryId);
+      console.log('[Favorites] addFavoriteService returned:', result);
+      
       await refreshFavorites();
+      console.log('[Favorites] Refresh complete');
     } catch (error) {
-      console.error("Failed to add favorite", error);
-      // Revert if failed
+      console.error("[Favorites] Failed to add favorite:", error);
+      // Revert optimistic update on failure
       refreshFavorites();
     }
   };
