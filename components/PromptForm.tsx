@@ -50,6 +50,7 @@ const PromptForm: React.FC<PromptFormProps> = ({
 
           <textarea
             id="prompt-input"
+            aria-label="Your Input"
             rows={4}
             className="block w-full rounded-xl border-none p-0 text-slate-900 dark:text-slate-100 bg-transparent resize-none focus:ring-0 text-lg placeholder:text-slate-300 dark:placeholder:text-slate-700 leading-relaxed"
             placeholder="Describe your task here... (e.g. 'Write a polite email declining a wedding invitation')"

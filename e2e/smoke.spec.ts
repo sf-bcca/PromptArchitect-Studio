@@ -9,5 +9,5 @@ test('has title', async ({ page }) => {
 
 test('input field is visible', async ({ page }) => {
     await page.goto('/');
-    await expect(page.getByLabel('What are you trying to achieve?')).toBeVisible();
+    await expect(page.getByRole('textbox', { name: 'Your Input' })).toBeVisible();
 });
