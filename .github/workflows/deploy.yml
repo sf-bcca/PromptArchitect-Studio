@@ -21,35 +21,38 @@ jobs:
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
           tags: tag:ci
 
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          port: 22
-          script_stop: true
-          script: |
-            echo "🚀 Starting deployment..."
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
 
+      - name: Deploy via SSH
+        run: |
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'ENDSSH'
+            echo "🚀 Starting deployment..."
+            
             # Navigate to project directory
             cd /opt/docker/promptarchitect-studio || exit 1
-
+            
             # Pull latest image from GHCR
             echo "📦 Pulling latest image..."
             docker pull ghcr.io/sf-bcca/promptarchitect-studio:latest
-
+            
             # Restart the container with the new image
             echo "🔄 Restarting container..."
             docker-compose up -d --no-build
-
+            
             # Cleanup old images
             echo "🧹 Cleaning up old images..."
             docker image prune -f
-
+            
             echo "✅ Deployment complete!"
+          ENDSSH
 
       - name: Post deployment summary
+        if: success()
         run: |
           echo "## 🚀 Deployment Complete" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
