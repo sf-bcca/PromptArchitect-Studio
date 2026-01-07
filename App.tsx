@@ -19,7 +19,7 @@ const App: React.FC = () => {
   const { history, fetchHistory, addToHistory, clearHistory } = usePromptHistory(session);
 
   // Layout State
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Close sidebar by default on mobile on initial load
   useEffect(() => {

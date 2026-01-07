@@ -141,33 +141,35 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({
         </div>
 
         {/* Scrollable List */}
-        <div className="flex-1 overflow-y-auto px-2 pb-4 space-y-6">
+        <div className="flex-1 overflow-y-auto px-3 pb-4 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-800">
             {Object.entries(groupedHistory).map(([label, items]) => (
                 items.length > 0 && (
-                    <div key={label}>
-                        <h3 className="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 mt-4">{label}</h3>
-                        <div className="space-y-1">
+                    <div key={label} className="mt-4">
+                        <h3 className="px-2 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mb-2">{label}</h3>
+                        <div className="space-y-0.5">
                             {items.map((item) => (
                                 <div
                                     key={item.id}
-                                    className="group flex items-center justify-between p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition-colors relative"
+                                    className="group flex items-center justify-between p-2.5 rounded-xl hover:bg-white dark:hover:bg-slate-900 hover:shadow-sm dark:hover:shadow-indigo-500/5 cursor-pointer transition-all relative border border-transparent hover:border-slate-200 dark:hover:border-slate-800"
                                     onClick={() => {
                                         onSelectHistoryItem(item.result, item.originalInput);
                                         if (window.innerWidth < 1024) onClose();
                                     }}
                                 >
                                     <div className="flex items-center gap-3 min-w-0">
-                                         <svg
-                                            className="w-4 h-4 text-slate-400 shrink-0"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 20.25c4.97 0 9-4.03 9-9s-4.03-9-9-9-9 4.03-9 9 4.03 9 9 9z" />
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6l4 2" />
-                                        </svg>
+                                         <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-900 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/30 flex items-center justify-center shrink-0 transition-colors">
+                                            <svg
+                                                className="w-4 h-4 text-slate-400 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 20.25c4.97 0 9-4.03 9-9s-4.03-9-9-9-9 4.03-9 9 4.03 9 9 9z" />
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6l4 2" />
+                                            </svg>
+                                         </div>
                                         <div className="min-w-0">
-                                            <p className="text-sm text-slate-700 dark:text-slate-300 truncate font-medium">
+                                            <p className="text-sm text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-slate-200 truncate font-medium transition-colors">
                                                 {item.originalInput}
                                             </p>
                                         </div>
@@ -178,7 +180,7 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({
                                          <FavoriteButton 
                                             isFavorite={isFavorite(item.id)} 
                                             onClick={(e) => toggleFavorite(e, item.id)}
-                                            className="!p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-md"
+                                            className="!p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
                                         />
                                     </div>
                                 </div>
