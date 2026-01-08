@@ -73,7 +73,10 @@ serve(async (req) => {
     }
 
     if (!userInput) {
-      throw new Error("Missing userInput in request body");
+      return new Response(JSON.stringify({ error: "Missing userInput in request body" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 400,
+      });
     }
 
     if (typeof userInput !== "string" || userInput.length > 5000) {
@@ -230,7 +233,7 @@ serve(async (req) => {
 
   } catch (error) {
     console.error("Error:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: "An internal error occurred. Please try again later." }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
     });
