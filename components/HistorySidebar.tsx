@@ -94,7 +94,7 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({
       {/* Sidebar Container */}
       <div
         ref={sidebarRef}
-        className={`fixed top-0 left-0 h-full w-80 bg-slate-50 dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 transform transition-transform duration-300 ease-in-out z-50 flex flex-col ${
+        className={`fixed top-0 left-0 h-full w-80 bg-slate-100 dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transform transition-transform duration-300 ease-in-out z-50 flex flex-col ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         } lg:translate-x-0 lg:static lg:h-auto lg:border-none lg:bg-transparent lg:w-72 lg:block ${!isOpen && 'lg:hidden'}`} // On desktop, we control visibility via layout, but if we want it collapsible, we can toggle 'hidden' or width. Let's make it a collapsible sidebar.
       >
@@ -113,7 +113,7 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({
 
         {/* Filters */}
         <div className="p-4 border-b border-slate-200 dark:border-slate-800/50">
-           <div className="flex bg-slate-200/50 dark:bg-slate-900/50 p-1 rounded-xl">
+           <div className="flex bg-slate-200 dark:bg-slate-800 p-1 rounded-xl">
             <button
               onClick={() => setFilter('all')}
               className={`flex-1 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
@@ -150,14 +150,14 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({
                             {items.map((item) => (
                                 <div
                                     key={item.id}
-                                    className="group flex items-center justify-between p-2.5 rounded-xl hover:bg-white dark:hover:bg-slate-900 hover:shadow-sm dark:hover:shadow-indigo-500/5 cursor-pointer transition-all relative border border-transparent hover:border-slate-200 dark:hover:border-slate-800"
+                                    className="group flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-800 hover:shadow-sm dark:hover:shadow-indigo-500/5 cursor-pointer transition-all relative border border-transparent hover:border-slate-300 dark:hover:border-slate-700"
                                     onClick={() => {
                                         onSelectHistoryItem(item.result, item.originalInput);
                                         if (window.innerWidth < 1024) onClose();
                                     }}
                                 >
                                     <div className="flex items-center gap-3 min-w-0">
-                                         <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-900 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/30 flex items-center justify-center shrink-0 transition-colors">
+                                         <div className="w-8 h-8 rounded-lg bg-slate-200 dark:bg-slate-800 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/30 flex items-center justify-center shrink-0 transition-colors">
                                             <svg
                                                 className="w-4 h-4 text-slate-400 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors"
                                                 fill="none"
