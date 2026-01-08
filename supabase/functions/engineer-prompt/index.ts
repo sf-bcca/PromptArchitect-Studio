@@ -75,6 +75,14 @@ serve(async (req) => {
     if (!userInput) {
       throw new Error("Missing userInput in request body");
     }
+
+    if (typeof userInput !== "string" || userInput.length > 5000) {
+      return new Response(JSON.stringify({ error: "Input invalid or too long. Max 5000 characters." }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 400,
+      });
+    }
+
     let text = "";
 
     const systemPrompt = `
