@@ -125,3 +125,8 @@ Automated GitHub Actions workflows handle testing, building, and deployment:
 
 - **Trigger**: After successful Docker build
 - **Steps**: Connects to self-hosted server via Tailscale, pulls latest image, restarts container
+
+### **Edge Function Deploy Workflow**
+
+- **Trigger**: Pushes to `main` (paths: `supabase/functions/**`)
+- **Steps**: Deploys `engineer-prompt` function using Supabase CLI with `--no-verify-jwt` (required for internal app auth).
