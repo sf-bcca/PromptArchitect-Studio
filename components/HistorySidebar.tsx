@@ -96,7 +96,7 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({
         ref={sidebarRef}
         className={`fixed top-0 left-0 h-full w-80 bg-slate-100 dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transform transition-transform duration-300 ease-in-out z-50 flex flex-col ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:translate-x-0 lg:static lg:h-full lg:border-none lg:bg-transparent lg:w-72 lg:block ${!isOpen && 'lg:hidden'}`} // On desktop, we control visibility via layout, but if we want it collapsible, we can toggle 'hidden' or width. Let's make it a collapsible sidebar.
+        } lg:translate-x-0 lg:static lg:h-full lg:border-none lg:bg-transparent lg:w-72 lg:flex ${!isOpen && 'lg:hidden'}`} // On desktop, we control visibility via layout, but if we want it collapsible, we can toggle 'hidden' or width. Let's make it a collapsible sidebar.
       >
         {/* Header */}
         <div className="p-4 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 lg:hidden">
@@ -141,7 +141,7 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({
         </div>
 
         {/* Scrollable List */}
-        <div className="flex-1 overflow-y-auto px-3 pb-4 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-800">
+        <div className="flex-1 overflow-y-auto min-h-0 px-3 pb-4 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-800">
             {Object.entries(groupedHistory).map(([label, items]) => (
                 items.length > 0 && (
                     <div key={label} className="mt-4">
