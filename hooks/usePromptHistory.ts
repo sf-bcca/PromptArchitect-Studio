@@ -12,32 +12,59 @@ import { Session } from '@supabase/supabase-js';
  */
 export const usePromptHistory = (session: Session | null) => {
   const [history, setHistory] = useState<PromptHistoryItem[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const PAGE_SIZE = 20;
 
   /**
    * Fetches the user's prompt history from Supabase.
+   * @param offset The number of items to skip (for pagination)
    */
-  const fetchHistory = useCallback(async () => {
+  const fetchHistory = useCallback(async (offset = 0) => {
     if (!session) {
       setHistory([]);
       return;
     }
 
-    const { data, error } = await supabase
-      .from("prompt_history")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(50);
+    if (offset > 0) {
+        setIsLoadingMore(true);
+    }
 
-    if (data && !error) {
-      const mappedHistory: PromptHistoryItem[] = data.map((item) => ({
-        id: item.id,
-        originalInput: item.original_input,
-        result: item.result,
-        timestamp: new Date(item.created_at).getTime(),
-      }));
-      setHistory(mappedHistory);
-    } else if (error) {
+    try {
+      // If offset is 0, we can fetch slightly more to fill the screen, or just PAGE_SIZE
+      const { data, error } = await supabase
+        .from("prompt_history")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .range(offset, offset + PAGE_SIZE - 1);
+
+      if (error) throw error;
+
+      if (data) {
+        const mappedHistory: PromptHistoryItem[] = data.map((item) => ({
+          id: item.id,
+          originalInput: item.original_input,
+          result: item.result,
+          timestamp: new Date(item.created_at).getTime(),
+        }));
+
+        if (offset === 0) {
+            setHistory(mappedHistory);
+        } else {
+            setHistory(prev => [...prev, ...mappedHistory]);
+        }
+
+        // If we got fewer items than requested, we've reached the end
+        if (data.length < PAGE_SIZE) {
+            setHasMore(false);
+        } else {
+            setHasMore(true);
+        }
+      }
+    } catch (error) {
       console.error("Failed to fetch history:", error);
+    } finally {
+        setIsLoadingMore(false);
     }
   }, [session]);
 
@@ -51,7 +78,8 @@ export const usePromptHistory = (session: Session | null) => {
       if (prev.find((h) => h.id === item.id)) {
         return prev;
       }
-      return [item, ...prev].slice(0, 50);
+      // Prepend without slicing limits to support infinite scroll
+      return [item, ...prev];
     });
   };
 
@@ -93,5 +121,5 @@ export const usePromptHistory = (session: Session | null) => {
     }
   };
 
-  return { history, setHistory, fetchHistory, addToHistory, clearHistory };
+  return { history, setHistory, fetchHistory, addToHistory, clearHistory, hasMore, isLoadingMore };
 };

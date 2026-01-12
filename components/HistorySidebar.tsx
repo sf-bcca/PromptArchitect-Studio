@@ -9,6 +9,9 @@ interface HistorySidebarProps {
   history: PromptHistoryItem[];
   onSelectHistoryItem: (result: RefinedPromptResult, originalInput: string) => void;
   onClearHistory: () => void;
+  onLoadMore: () => void;
+  hasMore: boolean;
+  isLoadingMore: boolean;
 }
 
 const HistorySidebar: React.FC<HistorySidebarProps> = ({
@@ -16,11 +19,32 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({
   onClose,
   history,
   onSelectHistoryItem,
-  onClearHistory
+  onClearHistory,
+  onLoadMore,
+  hasMore,
+  isLoadingMore
 }) => {
   const sidebarRef = useRef<HTMLDivElement>(null);
+  const observerTarget = useRef<HTMLDivElement>(null);
   const { isFavorite, addFavorite, removeFavorite } = useFavorites();
   const [filter, setFilter] = React.useState<'all' | 'favorites'>('all');
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !isLoadingMore) {
+          onLoadMore();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => observer.disconnect();
+  }, [hasMore, isLoadingMore, onLoadMore]);
 
   // Close when clicking outside on mobile (overlay mode)
   useEffect(() => {
@@ -193,6 +217,15 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({
             {filteredHistory.length === 0 && (
                 <div className="p-4 text-center text-slate-400 text-sm">
                     No history found.
+                </div>
+            )}
+            
+            {/* Infinite Scroll Sentinel */}
+            {filter === 'all' && (
+                <div ref={observerTarget} className="h-4 w-full flex items-center justify-center mt-2">
+                    {isLoadingMore && (
+                        <div className="w-4 h-4 border-2 border-slate-300 dark:border-slate-600 border-t-indigo-500 rounded-full animate-spin"></div>
+                    )}
                 </div>
             )}
         </div>
