@@ -5,7 +5,7 @@ import PromptForm from "./components/PromptForm";
 import ResultDisplay from "./components/ResultDisplay";
 import HistorySidebar from "./components/HistorySidebar";
 import FavoritesSection from "./components/FavoritesSection";
-import { engineerPrompt } from "./services/geminiService";
+import { engineerPrompt, generateTitle } from "./services/geminiService";
 import { RefinedPromptResult, PromptHistoryItem } from "./types";
 import { useSession } from "./context/SessionProvider";
 import { usePromptHistory } from "./hooks/usePromptHistory";
@@ -93,6 +93,15 @@ const App: React.FC = () => {
       // We pass the session access token implicitly or explicitly via the invoke call.
       const result = await engineerPrompt(userInput, selectedModel, provider);
       setCurrentResult(result);
+
+      // Auto-generate title in background if persisted
+      if (result.id) {
+        generateTitle(userInput, selectedModel).then((title) => {
+          if (title && renameHistoryItem) {
+            renameHistoryItem(result.id!, title); // Non-null assertion safe due to if check
+          }
+        });
+      }
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);

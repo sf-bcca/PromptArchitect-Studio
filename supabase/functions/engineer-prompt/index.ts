@@ -23,7 +23,7 @@ serve(async (req) => {
   }
 
   try {
-    const { userInput, model, provider: reqProvider } = await req.json();
+    const { userInput, model, provider: reqProvider, task = 'engineer' } = await req.json();
 
     // Initialize Supabase Client for DB persistence
     const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
@@ -88,33 +88,46 @@ serve(async (req) => {
 
     let text = "";
 
-    const systemPrompt = `
-      ROLE: You are an expert Prompt Engineer. You are NOT an AI assistant that answers questions. Your ONLY goal is to take a raw idea and rewrite it into a professional, high-quality prompt for ANOTHER AI to answer.
-
-      INPUT: "${userInput}"
-
-      OBJECTIVE:
-      - Do NOT answer the input.
-      - **MANDATORY FRAMEWORK**: You MUST use the **CO-STAR** framework for every "Refined Prompt".
-        1. **C**ontext: detailed background.
-        2. **O**bjective: precise goal.
-        3. **S**tyle: specific expert persona (e.g., "Cynical VC with 20 years exp").
-        4. **T**one: emotion/attitude (e.g., "Direct, skeptical").
-        5. **A**udience: target reader.
-        6. **R**esponse: strict format requirements.
-
-      - **Expert Profile**: Do not just say "You are an X". Add specificity: "You are an X with Y years experience in Z field."
-
-      OUTPUT FORMAT (Strict JSON):
-      You MUST return a valid JSON object matching this schema:
-      {
-        "refinedPrompt": "string",
-        "whyThisWorks": "string",
-        "suggestedVariables": ["string", "string"]
-      }
-      
-      Do NOT include any markdown formatting like \`\`\`json. Just return the raw JSON string.
-    `;
+    let systemPrompt = "";
+    
+    if (task === 'title') {
+      systemPrompt = `
+        ROLE: You are an expert Editor.
+        INPUT: "${userInput}"
+        OBJECTIVE: Summarize the input into a concise, punchy title (3-6 words max).
+        DO NOT answer the input. Just label it.
+        OUTPUT FORMAT (Strict JSON): { "title": "string" }
+        Example: { "title": "Email to Boss about Raise" }
+      `;
+    } else {
+      systemPrompt = `
+        ROLE: You are an expert Prompt Engineer. You are NOT an AI assistant that answers questions. Your ONLY goal is to take a raw idea and rewrite it into a professional, high-quality prompt for ANOTHER AI to answer.
+  
+        INPUT: "${userInput}"
+  
+        OBJECTIVE:
+        - Do NOT answer the input.
+        - **MANDATORY FRAMEWORK**: You MUST use the **CO-STAR** framework for every "Refined Prompt".
+          1. **C**ontext: detailed background.
+          2. **O**bjective: precise goal.
+          3. **S**tyle: specific expert persona (e.g., "Cynical VC with 20 years exp").
+          4. **T**one: emotion/attitude (e.g., "Direct, skeptical").
+          5. **A**udience: target reader.
+          6. **R**esponse: strict format requirements.
+  
+        - **Expert Profile**: Do not just say "You are an X". Add specificity: "You are an X with Y years experience in Z field."
+  
+        OUTPUT FORMAT (Strict JSON):
+        You MUST return a valid JSON object matching this schema:
+        {
+          "refinedPrompt": "string",
+          "whyThisWorks": "string",
+          "suggestedVariables": ["string", "string"]
+        }
+        
+        Do NOT include any markdown formatting like \`\`\`json. Just return the raw JSON string.
+      `;
+    }
 
     if (provider === "ollama") {
       const ollamaUrl = Deno.env.get("OLLAMA_URL") || "http://localhost:11434";
@@ -181,15 +194,23 @@ serve(async (req) => {
     let parsedResult;
     try {
         const json = JSON.parse(cleanedText);
-        // Validating with Zod
-        parsedResult = RefinedPromptSchema.parse(json);
+        
+        if (task === 'title') {
+            // Simple validation for title
+             if (!json.title) throw new Error("Missing 'title' field in response");
+             parsedResult = { title: json.title };
+        } else {
+            // Validating with Zod for engineering task
+            parsedResult = RefinedPromptSchema.parse(json);
+        }
     } catch (e: any) {
         console.error("Validation Failed:", e);
         console.warn("Raw Output was:", text);
         
-        // Fallback: Attempt to reconstruct a minimal valid object if at least prompt is present
-        // This is a "best effort" repair for models that refuse to output perfect JSON
-        if (text.includes("refinedPrompt")) {
+        // Fallback: Attempt to reconstruct a minimal valid object
+        if (task === 'title') {
+             parsedResult = { title: text.substring(0, 50) }; // Fallback to raw text truncated
+        } else if (text.includes("refinedPrompt")) {
             parsedResult = {
                 refinedPrompt: text,
                  whyThisWorks: "Output could not be strictly parsed. Providing raw response.",
@@ -205,8 +226,9 @@ serve(async (req) => {
       ? (model || Deno.env.get("OLLAMA_MODEL") || "llama3.2")
       : (model || Deno.env.get("GEMINI_MODEL") || "gemini-3.0-flash");
 
-    // PERSISTENCE: Save result to DB if user is authenticated
-    if (userId) {
+    // PERSISTENCE: Save result to DB if user is authenticated AND task is 'engineer'
+    // For 'title', we just return the string and let the client update the existing record.
+    if (userId && task === 'engineer') {
       console.log(`Saving history for user: ${userId}`);
       const { data: insertedData, error: dbError } = await supabase
         .from("prompt_history")

@@ -28,3 +28,28 @@ export const engineerPrompt = async (userInput: string, model?: string, provider
     throw new Error(error.message || "Failed to connect to the engineering service.");
   }
 };
+
+/**
+ * Generates a concise title for a given input using the 'engineer-prompt' Edge Function with task='title'.
+ *
+ * @param {string} userInput - The text to summarize into a title.
+ * @param {string} [model] - Optional model override.
+ * @returns {Promise<string>} A promise that resolves to the generated title.
+ */
+export const generateTitle = async (userInput: string, model?: string): Promise<string> => {
+  try {
+    const { data, error } = await supabase.functions.invoke('engineer-prompt', {
+      body: { userInput, model, task: 'title' }
+    });
+
+    if (error) {
+       console.warn("Supabase Function Error (Title):", error);
+       return ""; // Fail silently for titles
+    }
+
+    return data.title || "";
+  } catch (error) {
+    console.warn("Failed to generate title:", error);
+    return "";
+  }
+};

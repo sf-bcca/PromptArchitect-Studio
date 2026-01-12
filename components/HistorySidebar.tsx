@@ -36,8 +36,28 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [isManageMode, setIsManageMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const longPressTimer = useRef<NodeJS.Timeout | null>(null);
   const isLongPress = useRef(false);
+
+  const toggleSelection = (id: string) => {
+    const newSelected = new Set(selectedIds);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
+    }
+    setSelectedIds(newSelected);
+  };
+
+  const handleBulkDelete = () => {
+    if (confirm(`Delete ${selectedIds.size} items?`)) {
+      selectedIds.forEach(id => onDelete(id));
+      setIsManageMode(false);
+      setSelectedIds(new Set());
+    }
+  };
 
   const handleTouchStart = (id: string) => {
     isLongPress.current = false;
@@ -178,16 +198,42 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({
         } lg:translate-x-0 lg:static lg:h-full lg:border-none lg:bg-transparent lg:w-72 lg:flex ${!isOpen && 'lg:hidden'}`} // On desktop, we control visibility via layout, but if we want it collapsible, we can toggle 'hidden' or width. Let's make it a collapsible sidebar.
       >
         {/* Header */}
+        {/* Header */}
         <div className="p-4 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 lg:hidden">
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">History</h2>
-          <button 
-            onClick={onClose}
-            className="p-1 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-500"
-          >
-             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+            <div className="flex items-center gap-2">
+                 <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">History</h2>
+                 <button 
+                    onClick={() => {
+                        setIsManageMode(!isManageMode);
+                        setSelectedIds(new Set());
+                    }}
+                    className="text-xs text-indigo-500 font-medium px-2 py-1 bg-indigo-50 dark:bg-indigo-900/20 rounded ml-2"
+                 >
+                    {isManageMode ? 'Done' : 'Manage'}
+                 </button>
+            </div>
+           <button 
+             onClick={onClose}
+             className="p-1 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-500"
+           >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+             </svg>
+           </button>
+        </div>
+
+        {/* Desktop Header for Manage Mode */}
+        <div className="hidden lg:flex p-4 items-center justify-between border-b border-slate-200 dark:border-slate-800">
+             <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Recents</h2>
+             <button 
+                onClick={() => {
+                    setIsManageMode(!isManageMode);
+                    setSelectedIds(new Set());
+                }}
+                className="text-xs text-indigo-500 font-medium hover:text-indigo-600 dark:hover:text-indigo-400"
+             >
+                {isManageMode ? 'Done' : 'Manage'}
+             </button>
         </div>
 
         {/* Filters */}
@@ -235,6 +281,10 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({
                                     onTouchMove={handleTouchMove}
                                     onContextMenu={(e) => e.preventDefault()} // Disable native context menu on long press area
                                     onClick={() => {
+                                        if (isManageMode) {
+                                            toggleSelection(item.id);
+                                            return;
+                                        }
                                         if (isLongPress.current) {
                                             isLongPress.current = false;
                                             return;
@@ -244,17 +294,28 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({
                                     }}
                                 >
                                     <div className="flex items-center gap-3 min-w-0">
-                                         <div className="w-8 h-8 rounded-lg bg-slate-200 dark:bg-slate-800 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/30 flex items-center justify-center shrink-0 transition-colors">
-                                            <svg
-                                                className="w-4 h-4 text-slate-400 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 20.25c4.97 0 9-4.03 9-9s-4.03-9-9-9-9 4.03-9 9 4.03 9 9 9z" />
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6l4 2" />
-                                            </svg>
-                                         </div>
+                                        {isManageMode ? (
+                                            <div onClick={(e) => { e.stopPropagation(); toggleSelection(item.id); }} className="shrink-0 cursor-pointer p-1">
+                                                 <input 
+                                                    type="checkbox" 
+                                                    checked={selectedIds.has(item.id)}
+                                                    onChange={() => {}} // handled by div click
+                                                    className="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500 cursor-pointer pointer-events-none"
+                                                 />
+                                            </div>
+                                        ) : (
+                                            <div className="w-8 h-8 rounded-lg bg-slate-200 dark:bg-slate-800 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/30 flex items-center justify-center shrink-0 transition-colors">
+                                                <svg
+                                                    className="w-4 h-4 text-slate-400 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 20.25c4.97 0 9-4.03 9-9s-4.03-9-9-9-9 4.03-9 9 4.03 9 9 9z" />
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6l4 2" />
+                                                </svg>
+                                            </div>
+                                        )}
                                     {editingId === item.id ? (
                                         <div className="flex-1 mr-2" onClick={(e) => e.stopPropagation()}>
                                             <input
@@ -276,7 +337,8 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({
                                     )}
                                     </div>
 
-                                    {/* Action Buttons - visible on hover or if favorite or if menu is open */}
+                                    {/* Action Buttons - visible on hover or if favorite or if menu is open - HIDDEN IN MANAGE MODE */}
+                                    {!isManageMode && (
                                     <div className={`flex items-center gap-1 ${!isFavorite(item.id) && openMenuId !== item.id ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'} transition-opacity`}>
                                         {/* Shows PIN icon if favorite and NOT editing */}
                                         {isFavorite(item.id) && editingId !== item.id && (
@@ -302,6 +364,7 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({
                                             />
                                         </div>
                                     </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
@@ -328,13 +391,18 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({
         {/* Footer Actions */}
         <div className="p-4 border-t border-slate-200 dark:border-slate-800">
              <button
-                onClick={onClearHistory}
-                className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                onClick={isManageMode ? handleBulkDelete : onClearHistory}
+                disabled={isManageMode && selectedIds.size === 0}
+                className={`w-full flex items-center justify-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors ${
+                    isManageMode 
+                    ? 'text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed'
+                    : 'text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20'
+                }`}
              >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                 </svg>
-                Clear History
+                {isManageMode ? `Delete (${selectedIds.size})` : 'Clear History'}
              </button>
         </div>
       </div>
