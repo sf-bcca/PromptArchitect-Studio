@@ -36,6 +36,32 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const isLongPress = useRef(false);
+
+  const handleTouchStart = (id: string) => {
+    isLongPress.current = false;
+    longPressTimer.current = setTimeout(() => {
+      isLongPress.current = true;
+      setOpenMenuId(id);
+      // Haptic feedback
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+    }, 500);
+  };
+
+  const handleTouchEnd = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+    }
+  };
+
+  const handleTouchMove = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+    }
+  };
 
   const startRename = (id: string, currentTitle: string) => {
     setEditingId(id);
@@ -203,8 +229,16 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({
                             {items.map((item) => (
                                 <div
                                     key={item.id}
-                                    className="group flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-800 hover:shadow-sm dark:hover:shadow-indigo-500/5 cursor-pointer transition-all relative border border-transparent hover:border-slate-300 dark:hover:border-slate-700"
+                                    className="group flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-800 hover:shadow-sm dark:hover:shadow-indigo-500/5 cursor-pointer transition-all relative border border-transparent hover:border-slate-300 dark:hover:border-slate-700 select-none"
+                                    onTouchStart={() => handleTouchStart(item.id)}
+                                    onTouchEnd={handleTouchEnd}
+                                    onTouchMove={handleTouchMove}
+                                    onContextMenu={(e) => e.preventDefault()} // Disable native context menu on long press area
                                     onClick={() => {
+                                        if (isLongPress.current) {
+                                            isLongPress.current = false;
+                                            return;
+                                        }
                                         onSelectHistoryItem(item.result, item.originalInput);
                                         if (window.innerWidth < 1024) onClose();
                                     }}
