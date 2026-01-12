@@ -26,7 +26,7 @@ export const usePromptHistory = (session: Session | null) => {
       .from("prompt_history")
       .select("*")
       .order("created_at", { ascending: false })
-      .limit(10);
+      .limit(50);
 
     if (data && !error) {
       const mappedHistory: PromptHistoryItem[] = data.map((item) => ({
@@ -51,7 +51,7 @@ export const usePromptHistory = (session: Session | null) => {
       if (prev.find((h) => h.id === item.id)) {
         return prev;
       }
-      return [item, ...prev].slice(0, 10);
+      return [item, ...prev].slice(0, 50);
     });
   };
 
