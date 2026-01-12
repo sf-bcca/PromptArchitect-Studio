@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { PromptHistoryItem, RefinedPromptResult } from '../types';
 import { useFavorites } from '../context/FavoritesContext';
 import FavoriteButton from './FavoriteButton';
+import HistoryItemMenu from './HistoryItemMenu';
 
 interface HistorySidebarProps {
   isOpen: boolean;
@@ -12,6 +13,8 @@ interface HistorySidebarProps {
   onLoadMore: () => void;
   hasMore: boolean;
   isLoadingMore: boolean;
+  onRename: (id: string, newTitle: string) => void;
+  onDelete: (id: string) => void;
 }
 
 const HistorySidebar: React.FC<HistorySidebarProps> = ({
@@ -22,12 +25,38 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({
   onClearHistory,
   onLoadMore,
   hasMore,
-  isLoadingMore
+  isLoadingMore,
+  onRename,
+  onDelete
 }) => {
   const sidebarRef = useRef<HTMLDivElement>(null);
   const observerTarget = useRef<HTMLDivElement>(null);
   const { isFavorite, addFavorite, removeFavorite } = useFavorites();
   const [filter, setFilter] = React.useState<'all' | 'favorites'>('all');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState("");
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+
+  const startRename = (id: string, currentTitle: string) => {
+    setEditingId(id);
+    setEditValue(currentTitle);
+    setOpenMenuId(null);
+  };
+
+  const submitRename = () => {
+    if (editingId && editValue.trim()) {
+      onRename(editingId, editValue.trim());
+      setEditingId(null);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      submitRename();
+    } else if (e.key === 'Escape') {
+      setEditingId(null);
+    }
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -192,20 +221,52 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6l4 2" />
                                             </svg>
                                          </div>
-                                        <div className="min-w-0">
+                                    {editingId === item.id ? (
+                                        <div className="flex-1 mr-2" onClick={(e) => e.stopPropagation()}>
+                                            <input
+                                                type="text"
+                                                value={editValue}
+                                                onChange={(e) => setEditValue(e.target.value)}
+                                                onKeyDown={handleKeyDown}
+                                                onBlur={submitRename}
+                                                autoFocus
+                                                className="w-full bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-slate-100 text-sm rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                            />
+                                        </div>
+                                    ) : (
+                                        <div className="min-w-0 flex-1">
                                             <p className="text-sm text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-slate-200 truncate font-medium transition-colors">
-                                                {item.originalInput}
+                                                {item.result.customTitle || item.originalInput}
                                             </p>
                                         </div>
+                                    )}
                                     </div>
 
-                                    {/* Action Buttons - visible on hover or if favorite */}
-                                    <div className={`flex items-center gap-1 ${!isFavorite(item.id) ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'} transition-opacity`}>
-                                         <FavoriteButton 
-                                            isFavorite={isFavorite(item.id)} 
-                                            onClick={(e) => toggleFavorite(e, item.id)}
-                                            className="!p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
-                                        />
+                                    {/* Action Buttons - visible on hover or if favorite or if menu is open */}
+                                    <div className={`flex items-center gap-1 ${!isFavorite(item.id) && openMenuId !== item.id ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'} transition-opacity`}>
+                                        {/* Shows PIN icon if favorite and NOT editing */}
+                                        {isFavorite(item.id) && editingId !== item.id && (
+                                            <span className="text-pink-500 mr-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3">
+                                                    <path fillRule="evenodd" d="M6.32 2.577a49.255 49.255 0 0111.36 0c1.497.174 2.57 1.46 2.57 2.93V21a.75.75 0 01-1.085.67L12 18.089l-7.165 3.583A.75.75 0 013.75 21V5.507c0-1.47 1.073-2.756 2.57-2.93z" clipRule="evenodd" />
+                                                </svg>
+                                            </span>
+                                        )}
+                                        
+                                        <div onClick={(e) => e.stopPropagation()}>
+                                            <HistoryItemMenu
+                                                isFavorite={isFavorite(item.id)}
+                                                onToggleFavorite={(e) => toggleFavorite(e, item.id)}
+                                                onRename={() => startRename(item.id, item.result.customTitle || item.originalInput)}
+                                                onDelete={() => onDelete(item.id)}
+                                                isOpen={openMenuId === item.id}
+                                                onToggle={(e) => {
+                                                    e.stopPropagation();
+                                                    setOpenMenuId(openMenuId === item.id ? null : item.id);
+                                                }}
+                                                onClose={() => setOpenMenuId(null)}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             ))}

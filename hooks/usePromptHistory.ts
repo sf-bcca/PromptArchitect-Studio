@@ -84,6 +84,63 @@ export const usePromptHistory = (session: Session | null) => {
   };
 
   /**
+   * Deletes a specific history item.
+   * @param id The ID of the item to delete.
+   */
+  const deleteHistoryItem = async (id: string) => {
+    if (!session) return;
+
+    // Optimistic update
+    setHistory((prev) => prev.filter((item) => item.id !== id));
+
+    const { error } = await supabase
+      .from("prompt_history")
+      .delete()
+      .eq("id", id)
+      .eq("user_id", session.user.id);
+
+    if (error) {
+      console.error("Failed to delete history item:", error);
+      // Revert if failed (fetch again)
+      fetchHistory();
+    }
+  };
+
+  /**
+   * Renames a history item by updating the result JSON.
+   * @param id The ID of the item to rename.
+   * @param newTitle The new custom title.
+   */
+  const renameHistoryItem = async (id: string, newTitle: string) => {
+    if (!session) return;
+
+    // Find the item to update
+    const item = history.find((h) => h.id === id);
+    if (!item) return;
+
+    const updatedResult = { ...item.result, customTitle: newTitle };
+
+    // Optimistic update
+    setHistory((prev) =>
+      prev.map((h) =>
+        h.id === id ? { ...h, result: updatedResult } : h
+      )
+    );
+
+    const { error } = await supabase
+      .from("prompt_history")
+      .update({ result: updatedResult })
+      .eq("id", id)
+      .eq("user_id", session.user.id);
+
+    if (error) {
+        console.error("Failed to rename history item:", error);
+        // Revert
+        fetchHistory();
+    }
+  };
+
+  /**
    * Clears the prompt history from the database (if logged in) and the local state.
    */
   const clearHistory = async () => {
@@ -121,5 +178,5 @@ export const usePromptHistory = (session: Session | null) => {
     }
   };
 
-  return { history, setHistory, fetchHistory, addToHistory, clearHistory, hasMore, isLoadingMore };
+  return { history, setHistory, fetchHistory, addToHistory, clearHistory, deleteHistoryItem, renameHistoryItem, hasMore, isLoadingMore };
 };

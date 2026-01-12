@@ -15,6 +15,8 @@ export interface RefinedPromptResult {
   provider?: string;
   /** The specific model used (e.g., 'llama3.2', 'gemini-3-flash-preview'). */
   model?: string;
+  /** A user-defined custom title for this prompt session. */
+  customTitle?: string;
 }
 
 /**

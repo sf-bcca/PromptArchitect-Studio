@@ -16,7 +16,7 @@ import { usePromptHistory } from "./hooks/usePromptHistory";
  */
 const App: React.FC = () => {
   const { session, showAuth, setShowAuth } = useSession();
-  const { history, fetchHistory, addToHistory, clearHistory, hasMore, isLoadingMore } = usePromptHistory(session);
+  const { history, fetchHistory, addToHistory, clearHistory, hasMore, isLoadingMore, renameHistoryItem, deleteHistoryItem } = usePromptHistory(session);
 
   // Layout State
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -137,6 +137,8 @@ const App: React.FC = () => {
             onLoadMore={() => fetchHistory(history.length)}
             hasMore={hasMore}
             isLoadingMore={isLoadingMore}
+            onRename={renameHistoryItem}
+            onDelete={deleteHistoryItem}
           />
         )}
 
