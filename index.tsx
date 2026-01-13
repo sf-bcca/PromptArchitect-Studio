@@ -4,6 +4,7 @@ import App from './App';
 import { SessionProvider } from './context/SessionProvider';
 import { FavoritesProvider } from './context/FavoritesContext';
 import { NotificationProvider } from './context/NotificationContext';
+import { UserSettingsProvider } from './context/UserSettingsContext';
 import './global.css';
 
 /**
@@ -22,9 +23,11 @@ try {
     <React.StrictMode>
       <SessionProvider>
         <NotificationProvider>
-          <FavoritesProvider>
-            <App />
-          </FavoritesProvider>
+          <UserSettingsProvider>
+            <FavoritesProvider>
+              <App />
+            </FavoritesProvider>
+          </UserSettingsProvider>
         </NotificationProvider>
       </SessionProvider>
     </React.StrictMode>
