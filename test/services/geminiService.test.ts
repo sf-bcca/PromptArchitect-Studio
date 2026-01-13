@@ -47,6 +47,7 @@ describe('geminiService', () => {
      (supabase.functions.invoke as any).mockRejectedValue(new Error('Network fail'));
 
      const promise = engineerPrompt('test input');
+     promise.catch(() => {}); // Prevent unhandled rejection warning
      
      // Advance time to exhaust retries
      await vi.runAllTimersAsync();
@@ -68,6 +69,7 @@ describe('geminiService', () => {
         .mockResolvedValue({ data: { refinedPrompt: 'Success' }, error: null });
 
       const promise = engineerPrompt('test input');
+      promise.catch(() => {}); // Prevent unhandled rejection warning
       
       await vi.runAllTimersAsync();
       const result = await promise;
@@ -80,6 +82,8 @@ describe('geminiService', () => {
       (supabase.functions.invoke as any).mockRejectedValue(new Error('Persistent fail'));
 
       const promise = engineerPrompt('test input');
+      promise.catch(() => {}); // Prevent unhandled rejection warning
+
       await vi.runAllTimersAsync();
 
       try {

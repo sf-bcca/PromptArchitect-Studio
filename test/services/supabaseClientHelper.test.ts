@@ -1,10 +1,11 @@
 import { describe, it, expect } from 'vitest';
+import { PostgrestError } from '@supabase/supabase-js';
 import { handleSupabaseError } from '../../services/supabaseClient';
 import { AppError, ErrorCode } from '../../types';
 
 describe('handleSupabaseError', () => {
     it('should throw AppError wrapping the original error', () => {
-        const originalError = { message: 'DB fail', code: 'PGRST100', details: '', hint: '' } as any;
+        const originalError = { message: 'DB fail', code: 'PGRST100', details: '', hint: '' } as unknown as PostgrestError;
         
         try {
             handleSupabaseError(originalError, 'test_context');
