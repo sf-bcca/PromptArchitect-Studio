@@ -19,7 +19,12 @@ export const UserSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const { notify } = useNotifications();
   const [settings, setSettings] = useState<UserSettings | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [theme, setInternalTheme] = useState<Theme>('dark'); // Default to dark
+  
+  // Initialize from localStorage or default
+  const [theme, setInternalTheme] = useState<Theme>(() => {
+    const saved = localStorage.getItem('theme') as Theme;
+    return saved || 'dark';
+  });
 
   const refreshSettings = useCallback(async () => {
     if (session?.user?.id) {
@@ -29,6 +34,7 @@ export const UserSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
         if (data) {
           setSettings(data);
           setInternalTheme(data.theme);
+          localStorage.setItem('theme', data.theme);
         }
       } catch (error) {
         console.error("Failed to fetch user settings", error);
@@ -56,6 +62,8 @@ export const UserSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
     } else {
       root.classList.add(theme);
     }
+    
+    localStorage.setItem('theme', theme);
   }, [theme]);
 
   const updateSettings = async (updates: Partial<UserSettings>) => {
