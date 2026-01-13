@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
-import { RefinedPromptResult } from '../types';
+import { RefinedPromptResult, PromptHistoryItem } from '../types';
 import CostarSection from './CostarSection';
 import PromptCard from './PromptCard';
+import VersionHistory from './VersionHistory';
 
 interface WorkbenchDisplayProps {
   result: RefinedPromptResult;
   onFork?: (item: any) => void;
+  history?: PromptHistoryItem[];
+  onSelectVersion?: (result: RefinedPromptResult, originalInput: string) => void;
 }
 
-const WorkbenchDisplay: React.FC<WorkbenchDisplayProps> = ({ result, onFork }) => {
+const WorkbenchDisplay: React.FC<WorkbenchDisplayProps> = ({ result, onFork, history = [], onSelectVersion }) => {
   const [activeTab, setActiveTab] = useState<'workbench' | 'preview'>('workbench');
 
   if (!result.costar) {
@@ -19,10 +22,11 @@ const WorkbenchDisplay: React.FC<WorkbenchDisplayProps> = ({ result, onFork }) =
 
   const handleForkClick = () => {
     if (onFork) {
-        // Construct a partial history item for forking
+        // Find current original input from history if possible
+        const histItem = history.find(h => h.id === result.id);
         onFork({
             id: result.id,
-            originalInput: (document.getElementById('prompt-input') as HTMLTextAreaElement)?.value || "", // Fallback
+            originalInput: histItem?.originalInput || (document.getElementById('prompt-input') as HTMLTextAreaElement)?.value || "",
             result: result
         });
     }
@@ -30,6 +34,15 @@ const WorkbenchDisplay: React.FC<WorkbenchDisplayProps> = ({ result, onFork }) =
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {/* Version History Navigation */}
+      {result.id && onSelectVersion && (
+          <VersionHistory 
+            currentItem={{ ...result, id: result.id, originalInput: "" }} 
+            history={history} 
+            onSelectVersion={onSelectVersion} 
+          />
+      )}
+
       {/* Header / Tabs */}
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
         <div className="flex items-center gap-2">

@@ -1,26 +1,37 @@
 import React from 'react';
 import PromptCard from './PromptCard';
 import WorkbenchDisplay from './WorkbenchDisplay';
-import { RefinedPromptResult } from '../types';
+import { RefinedPromptResult, PromptHistoryItem } from '../types';
 
 interface ResultDisplayProps {
   result: RefinedPromptResult | null;
   error: string | null;
   isLoading: boolean;
   onFork?: (item: any) => void;
+  history?: PromptHistoryItem[];
+  onSelectHistoryItem?: (result: RefinedPromptResult, originalInput: string) => void;
 }
 
-const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, error, isLoading, onFork }) => {
+const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, error, isLoading, onFork, history = [], onSelectHistoryItem }) => {
   if (error) {
-    // ...
+    // ... (no changes)
   }
 
   if (result) {
     // If granular data exists, use Workbench. Otherwise fallback to simple card.
     if (result.costar) {
-        return <WorkbenchDisplay result={result} onFork={onFork} />;
+        return <WorkbenchDisplay 
+            result={result} 
+            onFork={onFork} 
+            history={history} 
+            onSelectVersion={onSelectHistoryItem}
+        />;
     }
-    return <PromptCard result={result} historyId={result.id} onFork={onFork} />;
+    return <PromptCard 
+        result={result} 
+        historyId={result.id} 
+        onFork={onFork} 
+    />;
   }
 
   if (!isLoading) {

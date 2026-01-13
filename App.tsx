@@ -177,6 +177,8 @@ const App: React.FC = () => {
               error={error} 
               isLoading={isLoading}
               onFork={handleFork}
+              history={history}
+              onSelectHistoryItem={handleSelectHistoryItem}
             />
             {/* ... */}
 
