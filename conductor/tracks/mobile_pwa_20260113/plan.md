@@ -12,7 +12,7 @@
 - [x] Task: Update `WorkbenchDisplay` to use a tabbed or vertical layout on mobile <!-- id: 6 --> [commit: 13041c0]
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Mobile UI & Touch Optimization' (Protocol in workflow.md) <!-- id: 7 --> [commit: 13041c0]
 
-## Phase 3: Final Polish
+## Phase 3: Final Polish [checkpoint: 4b5f680]
 - [x] Task: Improve Sidebar drawer transitions and backdrop <!-- id: 8 --> [commit: 99bd1c8]
-- [ ] Task: Final responsive audit (margins, font sizes)
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Final Polish' (Protocol in workflow.md)
+- [x] Task: Final responsive audit (margins, font sizes) <!-- id: 9 --> [commit: 4b5f680]
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Final Polish' (Protocol in workflow.md) <!-- id: 10 --> [commit: 4b5f680]
