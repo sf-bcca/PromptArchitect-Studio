@@ -7,7 +7,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: PWA Foundation' (Protocol in workflow.md) <!-- id: 3 --> [commit: 1333989]
 
 ## Phase 2: Mobile UI & Touch Optimization
-- [ ] Task: Create `hooks/useHaptics.ts` for vibration feedback
+- [x] Task: Create `hooks/useHaptics.ts` for vibration feedback <!-- id: 4 --> [commit: 1141fa3]
 - [ ] Task: Audit and update touch targets (buttons, links) to min 44x44px
 - [ ] Task: Update `WorkbenchDisplay` to use a tabbed or vertical layout on mobile
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Mobile UI & Touch Optimization' (Protocol in workflow.md)
