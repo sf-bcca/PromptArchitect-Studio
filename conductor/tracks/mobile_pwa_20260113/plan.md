@@ -1,10 +1,10 @@
 # Track Plan: Mobile Polish & PWA
 
-## Phase 1: PWA Foundation
+## Phase 1: PWA Foundation [checkpoint: 1333989]
 - [x] Task: Create `public/manifest.json` with app metadata <!-- id: 0 --> [commit: b3b46b4]
 - [x] Task: Add PWA meta tags and manifest link to `index.html` <!-- id: 1 --> [commit: 446be0c]
 - [x] Task: Add iOS-specific meta tags and icons in `index.html` <!-- id: 2 --> [commit: 446be0c]
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: PWA Foundation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: PWA Foundation' (Protocol in workflow.md) <!-- id: 3 --> [commit: 1333989]
 
 ## Phase 2: Mobile UI & Touch Optimization
 - [ ] Task: Create `hooks/useHaptics.ts` for vibration feedback
