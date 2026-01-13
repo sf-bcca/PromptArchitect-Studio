@@ -1,4 +1,4 @@
-import { supabase } from "./supabaseClient";
+import { supabase, handleSupabaseError } from "./supabaseClient";
 import { FavoriteItem, PromptHistoryItem } from "../types";
 
 export const getFavorites = async (userId: string): Promise<FavoriteItem[]> => {
@@ -20,8 +20,7 @@ export const getFavorites = async (userId: string): Promise<FavoriteItem[]> => {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("Error fetching favorites:", error);
-    throw error;
+    handleSupabaseError(error, "getFavorites");
   }
 
   // Transform data to match our frontend types
@@ -50,8 +49,7 @@ export const addFavorite = async (userId: string, promptHistoryId: string) => {
     .select();
 
   if (error) {
-    console.error("[FavoritesService] Error adding favorite:", error);
-    throw error;
+    handleSupabaseError(error, "addFavorite");
   }
   
   console.log('[FavoritesService] Insert successful:', data);
@@ -65,7 +63,6 @@ export const removeFavorite = async (userId: string, promptHistoryId: string) =>
     .match({ user_id: userId, prompt_history_id: promptHistoryId });
 
   if (error) {
-    console.error("Error removing favorite:", error);
-    throw error;
+    handleSupabaseError(error, "removeFavorite");
   }
 };
