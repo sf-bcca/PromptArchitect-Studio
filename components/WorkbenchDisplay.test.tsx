@@ -31,18 +31,19 @@ describe('WorkbenchDisplay', () => {
   it('renders workbench tabs', () => {
     render(<WorkbenchDisplay result={granularResult} />);
     expect(screen.getByText('Workbench')).toBeDefined();
-    expect(screen.getByText('Final Prompt')).toBeDefined();
+    expect(screen.getByText('Preview')).toBeDefined();
   });
 
   it('defaults to workbench view showing sections', () => {
     render(<WorkbenchDisplay result={granularResult} />);
-    expect(screen.getByText('Ctx')).toBeDefined();
-    expect(screen.getByText('Obj')).toBeDefined();
+    // Use getAllByText because both mobile and desktop views render it
+    expect(screen.getAllByText('Ctx').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Obj').length).toBeGreaterThan(0);
   });
 
   it('switches to preview view', () => {
     render(<WorkbenchDisplay result={granularResult} />);
-    const previewBtn = screen.getByText('Final Prompt');
+    const previewBtn = screen.getByText('Preview');
     fireEvent.click(previewBtn);
     expect(screen.getByText('Full prompt text')).toBeDefined();
   });
