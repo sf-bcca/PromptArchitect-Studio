@@ -2,7 +2,7 @@
 
 ## Phase 1: Schema & Backend
 - [x] Task: Create a Supabase migration to add `parent_id` to `prompt_history` <!-- id: 0 --> [commit: c027ce9]
-- [ ] Task: Update `types.ts` to include `parentId` in `PromptHistoryItem`
+- [x] Task: Update `types.ts` to include `parentId` in `PromptHistoryItem` <!-- id: 1 --> [commit: 9038822]
 - [ ] Task: Update `engineer-prompt` Edge Function to accept and save `parentId`
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Schema & Backend' (Protocol in workflow.md)
 
