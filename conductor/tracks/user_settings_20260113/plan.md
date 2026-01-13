@@ -2,7 +2,7 @@
 
 ## Phase 1: Database & API
 - [x] Task: Create Supabase migration for `user_settings` table <!-- id: 0 --> [commit: a169b15]
-- [ ] Task: Create `services/userSettings.ts` for database interactions
+- [x] Task: Create `services/userSettings.ts` for database interactions <!-- id: 1 --> [commit: 9b8d2a8]
 - [x] Task: Define `UserSettings` types in `types.ts` <!-- id: 2 --> [commit: c37a6d9]
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Database & API' (Protocol in workflow.md)
 
