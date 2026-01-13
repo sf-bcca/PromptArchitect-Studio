@@ -6,10 +6,10 @@
 - [x] Task: Implement error catching in `services/supabaseClient.ts` <!-- id: 2 --> [commit: a79218e]
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Service Layer Hardening' (Protocol in workflow.md) <!-- id: 3 --> [commit: a7d9111]
 
-## Phase 2: Backend (Edge Function) Reliability
+## Phase 2: Backend (Edge Function) Reliability [checkpoint: 8aba631]
 - [x] Task: Update `engineer-prompt` Edge Function to return consistent JSON error objects <!-- id: 4 --> [commit: 8f5cc50]
 - [x] Task: Add unit tests for edge function error scenarios <!-- id: 5 --> [commit: 9e0cf23]
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Backend (Edge Function) Reliability' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Backend (Edge Function) Reliability' (Protocol in workflow.md) <!-- id: 6 --> [commit: 8aba631]
 
 ## Phase 3: UI Notifications & Feedback
 - [ ] Task: Create a toast/notification system for global error display
