@@ -6,7 +6,18 @@ import { Session } from '@supabase/supabase-js';
 import { useHaptics } from '../hooks/useHaptics';
 
 interface PromptFormProps {
-  // ... (no changes to interface)
+  userInput: string;
+  setUserInput: (input: string) => void;
+  handleSubmit: (e: React.FormEvent) => void;
+  isLoading: boolean;
+  selectedModel: string;
+  setSelectedModel: (modelId: string) => void;
+  models: Model[];
+  currentResult: RefinedPromptResult | null;
+  session: Session | null;
+  setShowAuth: (show: boolean) => void;
+  parentId?: string | null;
+  onCancelFork?: () => void;
 }
 
 const PromptForm: React.FC<PromptFormProps> = ({
