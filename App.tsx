@@ -104,9 +104,22 @@ const App: React.FC = () => {
       setParentId(null);
 
       // Auto-generate title in background if persisted
-      // ...
+      if (result.id) {
+        generateTitle(userInput, selectedModel).then((title) => {
+          if (title && renameHistoryItem) {
+            renameHistoryItem(result.id!, title); // Non-null assertion safe due to if check
+          }
+        });
+      }
     } catch (err) {
-      // ...
+      const appErr = isAppError(err) ? err : new AppError(ErrorCode.UNKNOWN_ERROR, (err as Error).message);
+      
+      setError(appErr.message);
+      
+      // Use toast for critical system errors
+      if (appErr.code === ErrorCode.LLM_SERVICE_UNAVAILABLE || appErr.code === ErrorCode.NETWORK_ERROR) {
+          notify(appErr.message, 'error');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -164,7 +177,16 @@ const App: React.FC = () => {
         {/* Main Content Area */}
         <main className="flex-1 overflow-y-auto w-full relative">
           <div className="max-w-4xl mx-auto px-4 py-8 pb-12">
-            {/* ... */}
+            <div className="text-center mb-12 mt-8">
+              <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 dark:from-indigo-400 dark:via-purple-400 dark:to-indigo-400 sm:text-5xl mb-6 pb-2">
+                Engineer Perfect Prompts
+              </h2>
+              <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+                Input your basic idea, and we'll apply professional engineering
+                techniques to generate a structured, high-performing framework for
+                any LLM.
+              </p>
+            </div>
 
             <PromptForm
               userInput={userInput}
@@ -203,31 +225,32 @@ const App: React.FC = () => {
             </div>
           </div>
         </main>
-      </div>
-            {/* Auth Modal Overlay */}
-            {showAuth && (
-              <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/50 backdrop-blur-sm">
-                <div className="relative w-full max-w-md">
-                  <button 
-                    onClick={() => setShowAuth(false)}
-                    className="absolute -top-12 right-0 text-white hover:text-indigo-400 transition-colors"
-                    aria-label="Close"
-                  >
-                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                  <Auth />
-                </div>
-              </div>
-            )}
 
-            {/* Settings Modal Overlay */}
-            {showSettings && (
-              <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/50 backdrop-blur-sm">
-                <SettingsPanel onClose={() => setShowSettings(false)} />
-              </div>
-            )}
+        {/* Auth Modal Overlay */}
+        {showAuth && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/50 backdrop-blur-sm">
+            <div className="relative w-full max-w-md">
+              <button 
+                onClick={() => setShowAuth(false)}
+                className="absolute -top-12 right-0 text-white hover:text-indigo-400 transition-colors"
+                aria-label="Close"
+              >
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              <Auth />
+            </div>
+          </div>
+        )}
+
+        {/* Settings Modal Overlay */}
+        {showSettings && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/50 backdrop-blur-sm">
+            <SettingsPanel onClose={() => setShowSettings(false)} />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
