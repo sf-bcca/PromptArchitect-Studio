@@ -13,7 +13,7 @@
 - [x] Task: Create `VersionHistory` component to display related prompts <!-- id: 7 --> [commit: be34e65]
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend Implementation' (Protocol in workflow.md) <!-- id: 8 --> [commit: be34e65]
 
-## Phase 3: Integration & Polish
-- [~] Task: Integrate `VersionHistory` into the `HistorySidebar` or `WorkbenchDisplay`
-- [~] Task: Add visual indicators for "Forked" items in the history list
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Integration & Polish' (Protocol in workflow.md)
+## Phase 3: Integration & Polish [checkpoint: db7073b]
+- [x] Task: Integrate `VersionHistory` into the `HistorySidebar` or `WorkbenchDisplay` <!-- id: 9 --> [commit: be34e65]
+- [x] Task: Add visual indicators for "Forked" items in the history list <!-- id: 10 --> [commit: db7073b]
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Integration & Polish' (Protocol in workflow.md) <!-- id: 11 --> [commit: db7073b]
