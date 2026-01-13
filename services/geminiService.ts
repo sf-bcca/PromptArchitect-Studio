@@ -1,6 +1,13 @@
 
 import { supabase } from './supabaseClient';
-import { RefinedPromptResult } from "../types";
+import { RefinedPromptResult, AppError, ErrorCode } from "../types";
+
+const MAX_RETRIES = 3;
+const BASE_DELAY = 1000;
+
+async function delay(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 /**
  * Engineers a refined prompt from a basic user input using the 'engineer-prompt' Supabase Edge Function.
@@ -8,24 +15,48 @@ import { RefinedPromptResult } from "../types";
  * @param {string} userInput - The basic idea or request from the user.
  * @returns {Promise<RefinedPromptResult>} A promise that resolves to the engineered prompt result,
  * including the refined prompt, explanation, and variable suggestions.
- * @throws {Error} Throws an error if the Edge Function invocation fails or if there is a connection issue.
+ * @throws {AppError} Throws an AppError if the Edge Function invocation fails or if there is a connection issue.
  */
 export const engineerPrompt = async (userInput: string, model?: string, provider?: string): Promise<RefinedPromptResult> => {
-  try {
-    // Invoke the Supabase Edge Function 'engineer-prompt' which handles the Gemini API interaction securely
-    const { data, error } = await supabase.functions.invoke('engineer-prompt', {
-      body: { userInput, model, provider }
-    });
+  let attempt = 0;
+  
+  while (true) {
+    try {
+      // Invoke the Supabase Edge Function 'engineer-prompt' which handles the Gemini API interaction securely
+      const { data, error } = await supabase.functions.invoke('engineer-prompt', {
+        body: { userInput, model, provider }
+      });
 
-    if (error) {
-      console.error("Supabase Function Error:", error);
-      throw new Error(error.message || "Failed to engineer prompt.");
+      if (error) {
+        console.error("Supabase Function Error:", error);
+        throw new AppError(
+            ErrorCode.LLM_GENERATION_FAILED, 
+            error.message || "Failed to engineer prompt.", 
+            { originalError: error }
+        );
+      }
+
+      return data as RefinedPromptResult;
+    } catch (error: any) {
+      console.error(`Attempt ${attempt + 1} failed:`, error);
+      
+      // Don't retry if it's already an AppError (system error from function response)
+      if (error instanceof AppError) {
+          throw error;
+      }
+
+      if (attempt >= MAX_RETRIES) {
+        throw new AppError(
+            ErrorCode.NETWORK_ERROR, 
+            error.message || "Failed to connect to the engineering service after multiple attempts.", 
+            { originalError: error }
+        );
+      }
+
+      // Wait before retrying (exponential backoff could be added here)
+      await delay(BASE_DELAY);
+      attempt++;
     }
-
-    return data as RefinedPromptResult;
-  } catch (error: any) {
-    console.error("Connection Error:", error);
-    throw new Error(error.message || "Failed to connect to the engineering service.");
   }
 };
 
