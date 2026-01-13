@@ -7,7 +7,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Service Layer Hardening' (Protocol in workflow.md) <!-- id: 3 --> [commit: a7d9111]
 
 ## Phase 2: Backend (Edge Function) Reliability
-- [ ] Task: Update `engineer-prompt` Edge Function to return consistent JSON error objects
+- [x] Task: Update `engineer-prompt` Edge Function to return consistent JSON error objects <!-- id: 4 --> [commit: 8f5cc50]
 - [ ] Task: Add unit tests for edge function error scenarios
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Backend (Edge Function) Reliability' (Protocol in workflow.md)
 
