@@ -1,10 +1,10 @@
 # Track Plan: Error Handling & User Notifications
 
-## Phase 1: Service Layer Hardening
+## Phase 1: Service Layer Hardening [checkpoint: a7d9111]
 - [x] Task: Define standard Error types in `types.ts` <!-- id: 0 --> [commit: abef6ff]
 - [x] Task: Implement error catching and retry logic in `services/geminiService.ts` <!-- id: 1 --> [commit: e8b823c]
 - [x] Task: Implement error catching in `services/supabaseClient.ts` <!-- id: 2 --> [commit: a79218e]
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Service Layer Hardening' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Service Layer Hardening' (Protocol in workflow.md) <!-- id: 3 --> [commit: a7d9111]
 
 ## Phase 2: Backend (Edge Function) Reliability
 - [ ] Task: Update `engineer-prompt` Edge Function to return consistent JSON error objects
