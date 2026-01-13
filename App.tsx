@@ -7,7 +7,7 @@ import HistorySidebar from "./components/HistorySidebar";
 import FavoritesSection from "./components/FavoritesSection";
 import SettingsPanel from "./components/SettingsPanel";
 import { engineerPrompt, generateTitle } from "./services/geminiService";
-import { RefinedPromptResult, PromptHistoryItem, ErrorCode, isAppError, AppError } from "./types";
+import { RefinedPromptResult, PromptHistoryItem, ErrorCode, isAppError, AppError, MODELS } from "./types";
 import { useSession } from "./context/SessionProvider";
 import { usePromptHistory } from "./hooks/usePromptHistory";
 import { useNotifications } from "./context/NotificationContext";
