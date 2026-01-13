@@ -43,10 +43,8 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onOpenSettings }) => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
-            <h1 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
-              <span className="hidden xs:inline">PromptArchitect</span>
-              <span className="xs:hidden">PA</span>
-              <span className="text-indigo-600 dark:text-indigo-400 ml-1">Studio</span>
+            <h1 className="text-base sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
+              PromptArchitect <span className="text-indigo-600 dark:text-indigo-400">Studio</span>
             </h1>
           </div>
         </div>
