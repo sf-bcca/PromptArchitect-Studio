@@ -29,9 +29,27 @@ export const engineerPrompt = async (userInput: string, model?: string, provider
 
       if (error) {
         console.error("Supabase Function Error:", error);
+        
+        // Default error details
+        let errorCode = ErrorCode.LLM_GENERATION_FAILED;
+        let errorMessage = error.message || "Failed to engineer prompt.";
+
+        // Attempt to parse structured error from response if available
+        // Note: Supabase functions.invoke error objects might contain the response body in various ways
+        // based on the client version. We'll check for errorCode if it's already there or if message is JSON.
+        try {
+            if (error.context?.json) {
+                const body = await error.context.json();
+                if (body.errorCode) errorCode = body.errorCode;
+                if (body.error) errorMessage = body.error;
+            }
+        } catch (e) {
+            // Ignore parse errors, stick to defaults
+        }
+
         throw new AppError(
-            ErrorCode.LLM_GENERATION_FAILED, 
-            error.message || "Failed to engineer prompt.", 
+            errorCode, 
+            errorMessage, 
             { originalError: error }
         );
       }

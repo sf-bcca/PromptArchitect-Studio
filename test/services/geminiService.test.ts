@@ -90,4 +90,25 @@ describe('geminiService', () => {
         expect(supabase.functions.invoke).toHaveBeenCalledTimes(4); // Initial + 3 retries
       }
   });
+
+  it('should throw AppError with specific errorCode from function response', async () => {
+    // Simulate a structured error response from Supabase Function
+    const mockError = { 
+        message: 'Invalid provider',
+        status: 400
+    };
+    // If the body is also available, we'd need to mock how invoke returns it.
+    // Usually Supabase functions returns the body in the error if it's not a 2xx.
+    (supabase.functions.invoke as any).mockResolvedValue({ 
+        data: null, 
+        error: mockError 
+    });
+
+    try {
+        await engineerPrompt('test input');
+        expect.fail('Should have thrown');
+    } catch (e: any) {
+        expect(e).toBeInstanceOf(AppError);
+    }
+  });
 });

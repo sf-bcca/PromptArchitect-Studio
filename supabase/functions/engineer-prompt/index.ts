@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai@0.24.1";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.48.1";
@@ -16,6 +15,29 @@ const RefinedPromptSchema = z.object({
   whyThisWorks: z.string().describe("Explanation of techniques used"),
   suggestedVariables: z.array(z.string()).describe("List of dynamic variables like [Audience]"),
 });
+
+/**
+ * Standard Error Codes mapping to frontend types.ts
+ */
+const ErrorCode = {
+  LLM_SERVICE_UNAVAILABLE: 'LLM_SERVICE_UNAVAILABLE',
+  LLM_GENERATION_FAILED: 'LLM_GENERATION_FAILED',
+  VALIDATION_ERROR: 'VALIDATION_ERROR',
+  NETWORK_ERROR: 'NETWORK_ERROR',
+  AUTH_ERROR: 'AUTH_ERROR',
+  UNKNOWN_ERROR: 'UNKNOWN_ERROR',
+};
+
+function errorResponse(message: string, code: string, status = 400, details?: any) {
+  return new Response(JSON.stringify({ 
+    error: message, 
+    errorCode: code,
+    details 
+  }), {
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+    status,
+  });
+}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -45,49 +67,33 @@ serve(async (req) => {
     const ALLOWED_MODELS = {
       ollama: ["llama3.2", "gemma2:2b", "gemma3:4b"],
       gemini: [
-        // App.tsx models
         "gemini-2.5-flash-lite", "gemini-3.0-flash", "gemini-3-pro-preview",
-        // Standard/Legacy models
         "gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro"
       ],
     };
 
     if (reqProvider && !ALLOWED_PROVIDERS.includes(reqProvider)) {
-        return new Response(JSON.stringify({ error: `Invalid provider. Allowed: ${ALLOWED_PROVIDERS.join(", ")}` }), {
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-            status: 400,
-        });
+        return errorResponse(`Invalid provider. Allowed: ${ALLOWED_PROVIDERS.join(", ")}`, ErrorCode.VALIDATION_ERROR);
     }
 
-    // Allow client to override provider, default to env var or gemini
     const provider = reqProvider || Deno.env.get("LLM_PROVIDER") || "gemini";
 
     if (model) {
         const validModelsForProvider = ALLOWED_MODELS[provider as keyof typeof ALLOWED_MODELS];
         if (validModelsForProvider && !validModelsForProvider.includes(model)) {
-             return new Response(JSON.stringify({ error: `Invalid model for provider '${provider}'. Allowed: ${validModelsForProvider.join(", ")}` }), {
-                headers: { ...corsHeaders, "Content-Type": "application/json" },
-                status: 400,
-            });
+             return errorResponse(`Invalid model for provider '${provider}'. Allowed: ${validModelsForProvider.join(", ")}`, ErrorCode.VALIDATION_ERROR);
         }
     }
 
     if (!userInput) {
-      return new Response(JSON.stringify({ error: "Missing userInput in request body" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 400,
-      });
+      return errorResponse("Missing userInput in request body", ErrorCode.VALIDATION_ERROR);
     }
 
     if (typeof userInput !== "string" || userInput.length > 5000) {
-      return new Response(JSON.stringify({ error: "Input invalid or too long. Max 5000 characters." }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 400,
-      });
+      return errorResponse("Input invalid or too long. Max 5000 characters.", ErrorCode.VALIDATION_ERROR);
     }
 
     let text = "";
-
     let systemPrompt = "";
     
     if (task === 'title') {
@@ -97,119 +103,96 @@ serve(async (req) => {
         OBJECTIVE: Summarize the input into a concise, punchy title (3-6 words max).
         DO NOT answer the input. Just label it.
         OUTPUT FORMAT (Strict JSON): { "title": "string" }
-        Example: { "title": "Email to Boss about Raise" }
       `;
     } else {
       systemPrompt = `
-        ROLE: You are an expert Prompt Engineer. You are NOT an AI assistant that answers questions. Your ONLY goal is to take a raw idea and rewrite it into a professional, high-quality prompt for ANOTHER AI to answer.
-  
+        ROLE: You are an expert Prompt Engineer.
         INPUT: "${userInput}"
-  
         OBJECTIVE:
         - Do NOT answer the input.
-        - **MANDATORY FRAMEWORK**: You MUST use the **CO-STAR** framework for every "Refined Prompt".
-          1. **C**ontext: detailed background.
-          2. **O**bjective: precise goal.
-          3. **S**tyle: specific expert persona (e.g., "Cynical VC with 20 years exp").
-          4. **T**one: emotion/attitude (e.g., "Direct, skeptical").
-          5. **A**udience: target reader.
-          6. **R**esponse: strict format requirements.
-  
-        - **Expert Profile**: Do not just say "You are an X". Add specificity: "You are an X with Y years experience in Z field."
-  
+        - **MANDATORY FRAMEWORK**: Use **CO-STAR**.
         OUTPUT FORMAT (Strict JSON):
-        You MUST return a valid JSON object matching this schema:
         {
           "refinedPrompt": "string",
           "whyThisWorks": "string",
           "suggestedVariables": ["string", "string"]
         }
-        
-        Do NOT include any markdown formatting like \`\`\`json. Just return the raw JSON string.
       `;
     }
 
-    if (provider === "ollama") {
-      const ollamaUrl = Deno.env.get("OLLAMA_URL") || "http://localhost:11434";
-      const ollamaModel = model || Deno.env.get("OLLAMA_MODEL") || "llama3.2";
+    try {
+      if (provider === "ollama") {
+        const ollamaUrl = Deno.env.get("OLLAMA_URL") || "http://localhost:11434";
+        const ollamaModel = model || Deno.env.get("OLLAMA_MODEL") || "llama3.2";
 
-      console.log(`Using Ollama provider at ${ollamaUrl} with model ${ollamaModel}`);
+        const headers: Record<string, string> = { "Content-Type": "application/json" };
+        const cfId = Deno.env.get("CF_ACCESS_CLIENT_ID");
+        const cfSecret = Deno.env.get("CF_ACCESS_CLIENT_SECRET");
+        if (cfId && cfSecret) {
+          headers["CF-Access-Client-Id"] = cfId;
+          headers["CF-Access-Client-Secret"] = cfSecret;
+        }
 
-      const headers: Record<string, string> = { "Content-Type": "application/json" };
-      const cfId = Deno.env.get("CF_ACCESS_CLIENT_ID");
-      const cfSecret = Deno.env.get("CF_ACCESS_CLIENT_SECRET");
-      
-      if (cfId && cfSecret) {
-        headers["CF-Access-Client-Id"] = cfId;
-        headers["CF-Access-Client-Secret"] = cfSecret;
+        const response = await fetch(`${ollamaUrl}/api/chat`, {
+          method: "POST",
+          headers,
+          body: JSON.stringify({
+            model: ollamaModel,
+            messages: [{ role: "user", content: systemPrompt }],
+            format: "json",
+            stream: false,
+            options: { temperature: 0.3 },
+          }),
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Ollama API error: ${response.status} - ${errorText}`);
+        }
+
+        const data = await response.json();
+        text = data.message?.content || "";
+
+      } else {
+        const apiKey = Deno.env.get("GEMINI_API_KEY");
+        if (!apiKey) throw new Error("GEMINI_API_KEY is not set");
+
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const modelName = model || Deno.env.get("GEMINI_MODEL") || "gemini-3.0-flash"; 
+        const genModel = genAI.getGenerativeModel({ 
+            model: modelName,
+            generationConfig: { responseMimeType: "application/json" } 
+        });
+
+        const result = await genModel.generateContent(systemPrompt);
+        const response = await result.response;
+        text = response.text();
       }
-
-      const response = await fetch(`${ollamaUrl}/api/chat`, {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
-          model: ollamaModel,
-          messages: [{ role: "user", content: systemPrompt }],
-          format: "json",
-          stream: false,
-          options: {
-            temperature: 0.3,
-          },
-        }),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Ollama API error: ${response.status} - ${errorText}`);
-      }
-
-      const data = await response.json();
-      text = data.message?.content || "";
-
-    } else {
-      const apiKey = Deno.env.get("GEMINI_API_KEY");
-      if (!apiKey) {
-        throw new Error("GEMINI_API_KEY is not set");
-      }
-
-      const genAI = new GoogleGenerativeAI(apiKey);
-      const modelName = model || Deno.env.get("GEMINI_MODEL") || "gemini-3.0-flash"; 
-      const genModel = genAI.getGenerativeModel({ 
-          model: modelName,
-          generationConfig: {
-              responseMimeType: "application/json",
-          } 
-      });
-
-      console.log(`Using Gemini provider with model ${modelName}`);
-      
-      const result = await genModel.generateContent(systemPrompt);
-      const response = await result.response;
-      text = response.text();
+    } catch (llmError: any) {
+       console.error("LLM Provider Error:", llmError);
+       return errorResponse(
+         `The AI service (${provider}) is currently unavailable or returned an error.`, 
+         ErrorCode.LLM_SERVICE_UNAVAILABLE,
+         503,
+         { originalError: llmError.message }
+       );
     }
 
-    // Attempt to clean and parse
-    let cleanedText = text.replace(/```json/g, "").replace(/```/g, "").trim();
-    
+    // Parse and Validate
     let parsedResult;
     try {
+        const cleanedText = text.replace(/```json/g, "").replace(/```/g, "").trim();
         const json = JSON.parse(cleanedText);
-        
         if (task === 'title') {
-            // Simple validation for title
              if (!json.title) throw new Error("Missing 'title' field in response");
              parsedResult = { title: json.title };
         } else {
-            // Validating with Zod for engineering task
             parsedResult = RefinedPromptSchema.parse(json);
         }
     } catch (e: any) {
         console.error("Validation Failed:", e);
-        console.warn("Raw Output was:", text);
-        
-        // Fallback: Attempt to reconstruct a minimal valid object
         if (task === 'title') {
-             parsedResult = { title: text.substring(0, 50) }; // Fallback to raw text truncated
+             parsedResult = { title: text.substring(0, 50) };
         } else if (text.includes("refinedPrompt")) {
             parsedResult = {
                 refinedPrompt: text,
@@ -217,7 +200,7 @@ serve(async (req) => {
                  suggestedVariables: []
             }
         } else {
-             throw new Error("Model failed to generate valid JSON: " + e.message);
+             return errorResponse("The AI generated an invalid response. Please try again.", ErrorCode.LLM_GENERATION_FAILED, 500, { rawOutput: text });
         }
     }
 
@@ -226,10 +209,8 @@ serve(async (req) => {
       ? (model || Deno.env.get("OLLAMA_MODEL") || "llama3.2")
       : (model || Deno.env.get("GEMINI_MODEL") || "gemini-3.0-flash");
 
-    // PERSISTENCE: Save result to DB if user is authenticated AND task is 'engineer'
-    // For 'title', we just return the string and let the client update the existing record.
+    // PERSISTENCE
     if (userId && task === 'engineer') {
-      console.log(`Saving history for user: ${userId}`);
       const { data: insertedData, error: dbError } = await supabase
         .from("prompt_history")
         .insert({
@@ -241,9 +222,9 @@ serve(async (req) => {
         .single();
       
       if (dbError) {
-        console.error("Failed to save history to DB:", dbError);
+        console.error("Database Save Error:", dbError);
+        // We don't fail the request if persistence fails, but we log it
       } else {
-        // Add the inserted ID to the result so the frontend can track it
         parsedResult.id = insertedData.id;
       }
     }
@@ -253,11 +234,8 @@ serve(async (req) => {
       status: 200,
     });
 
-  } catch (error) {
-    console.error("Error:", error);
-    return new Response(JSON.stringify({ error: "An internal error occurred. Please try again later." }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 500,
-    });
+  } catch (error: any) {
+    console.error("Internal Error:", error);
+    return errorResponse("An unexpected error occurred in the engineering function.", ErrorCode.UNKNOWN_ERROR, 500);
   }
 });
