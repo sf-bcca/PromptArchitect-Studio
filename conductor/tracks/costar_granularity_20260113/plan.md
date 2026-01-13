@@ -12,7 +12,7 @@
 - [x] Task: Ensure backward compatibility for history items without CO-STAR data <!-- id: 6 --> [commit: 6578311]
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend Workbench UI' (Protocol in workflow.md) <!-- id: 7 --> [commit: 6578311]
 
-## Phase 3: Integration & Polish
-- [ ] Task: Update `PromptCard` to optionally show the breakdown or just the final prompt
-- [ ] Task: Add "Copy" buttons for individual sections
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Integration & Polish' (Protocol in workflow.md)
+## Phase 3: Integration & Polish [checkpoint: 6578311]
+- [x] Task: Update `PromptCard` to optionally show the breakdown or just the final prompt <!-- id: 8 --> [commit: 6578311]
+- [x] Task: Add "Copy" buttons for individual sections <!-- id: 9 --> [commit: 6578311]
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Integration & Polish' (Protocol in workflow.md) <!-- id: 10 --> [commit: 6578311]
