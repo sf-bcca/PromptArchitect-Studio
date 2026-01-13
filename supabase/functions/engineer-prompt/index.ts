@@ -14,6 +14,14 @@ const RefinedPromptSchema = z.object({
   refinedPrompt: z.string().describe("The fully engineered prompt text"),
   whyThisWorks: z.string().describe("Explanation of techniques used"),
   suggestedVariables: z.array(z.string()).describe("List of dynamic variables like [Audience]"),
+  costar: z.object({
+    context: z.string().describe("The Context component"),
+    objective: z.string().describe("The Objective component"),
+    style: z.string().describe("The Style component"),
+    tone: z.string().describe("The Tone component"),
+    audience: z.string().describe("The Audience component"),
+    response: z.string().describe("The Response component"),
+  }).describe("Breakdown of the CO-STAR components"),
 });
 
 /**
@@ -29,10 +37,10 @@ const ErrorCode = {
 };
 
 function errorResponse(message: string, code: string, status = 400, details?: any) {
-  return new Response(JSON.stringify({ 
-    error: message, 
+  return new Response(JSON.stringify({
+    error: message,
     errorCode: code,
-    details 
+    details
   }), {
     headers: { ...corsHeaders, "Content-Type": "application/json" },
     status,
@@ -110,13 +118,32 @@ serve(async (req) => {
         INPUT: "${userInput}"
         OBJECTIVE:
         - Do NOT answer the input.
-        - **MANDATORY FRAMEWORK**: Use **CO-STAR**.
+        - **MANDATORY FRAMEWORK**: You MUST use the **CO-STAR** framework for every "Refined Prompt".
+          1. **C**ontext: detailed background.
+          2. **O**bjective: precise goal.
+          3. **S**tyle: specific expert persona.
+          4. **T**one: emotion/attitude.
+          5. **A**udience: target reader.
+          6. **R**esponse: strict format requirements.
+  
         OUTPUT FORMAT (Strict JSON):
+        You MUST return a valid JSON object matching this schema. You MUST populate the 'costar' object with the specific content used in the refined prompt.
         {
-          "refinedPrompt": "string",
-          "whyThisWorks": "string",
-          "suggestedVariables": ["string", "string"]
+          "refinedPrompt": "The complete, aggregated prompt string ready for an LLM",
+          "whyThisWorks": "Explanation string",
+          "suggestedVariables": ["string", "string"],
+          "costar": {
+             "context": "Context string",
+             "objective": "Objective string",
+             "style": "Style string",
+             "tone": "Tone string",
+             "audience": "Audience string",
+             "response": "Response string"
+          }
         }
+        
+        Do NOT include any markdown formatting like 
+        ```json. Just return the raw JSON string.
       `;
     }
 
@@ -159,9 +186,9 @@ serve(async (req) => {
 
         const genAI = new GoogleGenerativeAI(apiKey);
         const modelName = model || Deno.env.get("GEMINI_MODEL") || "gemini-3.0-flash"; 
-        const genModel = genAI.getGenerativeModel({ 
+        const genModel = genAI.getGenerativeModel ({
             model: modelName,
-            generationConfig: { responseMimeType: "application/json" } 
+            generationConfig: { responseMimeType: "application/json" }
         });
 
         const result = await genModel.generateContent(systemPrompt);
@@ -194,10 +221,15 @@ serve(async (req) => {
         if (task === 'title') {
              parsedResult = { title: text.substring(0, 50) };
         } else if (text.includes("refinedPrompt")) {
+            // Partial fallback if schema parsing fails but we have the main prompt
+            // We lose the CO-STAR breakdown here but save the request
             parsedResult = {
                 refinedPrompt: text,
                  whyThisWorks: "Output could not be strictly parsed. Providing raw response.",
-                 suggestedVariables: []
+                 suggestedVariables: [],
+                 costar: { // Fallback empty costar
+                     context: "", objective: "", style: "", tone: "", audience: "", response: ""
+                 }
             }
         } else {
              return errorResponse("The AI generated an invalid response. Please try again.", ErrorCode.LLM_GENERATION_FAILED, 500, { rawOutput: text });
@@ -223,7 +255,6 @@ serve(async (req) => {
       
       if (dbError) {
         console.error("Database Save Error:", dbError);
-        // We don't fail the request if persistence fails, but we log it
       } else {
         parsedResult.id = insertedData.id;
       }

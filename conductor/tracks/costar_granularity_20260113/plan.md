@@ -2,7 +2,7 @@
 
 ## Phase 1: Backend & Schema Updates
 - [x] Task: Update `types.ts` to include optional CO-STAR fields in `RefinedPromptResult` <!-- id: 0 --> [commit: dc06a2c]
-- [ ] Task: Update `engineer-prompt` Edge Function Zod schema and system prompt to request granular JSON output
+- [~] Task: Update `engineer-prompt` Edge Function Zod schema and system prompt to request granular JSON output
 - [ ] Task: Verify Edge Function returns new structure with unit tests
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend & Schema Updates' (Protocol in workflow.md)
 
