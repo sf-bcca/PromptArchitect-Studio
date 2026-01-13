@@ -3,6 +3,7 @@ import { PromptHistoryItem, RefinedPromptResult } from '../types';
 import { useFavorites } from '../context/FavoritesContext';
 import FavoriteButton from './FavoriteButton';
 import HistoryItemMenu from './HistoryItemMenu';
+import { useHaptics } from '../hooks/useHaptics';
 
 interface HistorySidebarProps {
   isOpen: boolean;
@@ -32,6 +33,7 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({
   const sidebarRef = useRef<HTMLDivElement>(null);
   const observerTarget = useRef<HTMLDivElement>(null);
   const { isFavorite, addFavorite, removeFavorite } = useFavorites();
+  const haptics = useHaptics();
   const [filter, setFilter] = React.useState<'all' | 'favorites'>('all');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
@@ -183,40 +185,41 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({
   return (
     <>
       {/* Mobile Overlay Backdrop */}
-      {isOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
-          onClick={onClose}
-        />
-      )}
+      <div 
+        className={`fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300 ${
+          isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={onClose}
+      />
 
       {/* Sidebar Container */}
       <div
         ref={sidebarRef}
-        className={`fixed top-0 left-0 h-full w-80 bg-slate-100 dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transform transition-transform duration-300 ease-in-out z-50 flex flex-col ${
+        className={`fixed top-0 left-0 h-[100dvh] w-[280px] sm:w-80 bg-slate-100 dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transform transition-transform duration-300 ease-out z-50 flex flex-col shadow-2xl lg:shadow-none ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:translate-x-0 lg:static lg:h-full lg:border-none lg:bg-transparent lg:w-72 lg:flex ${!isOpen && 'lg:hidden'}`} // On desktop, we control visibility via layout, but if we want it collapsible, we can toggle 'hidden' or width. Let's make it a collapsible sidebar.
+        } lg:translate-x-0 lg:static lg:h-full lg:border-none lg:bg-transparent lg:w-72 lg:flex ${!isOpen && 'lg:hidden'}`}
       >
         {/* Header */}
-        {/* Header */}
-        <div className="p-4 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 lg:hidden">
+        <div className="p-4 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 lg:hidden min-h-[64px]">
             <div className="flex items-center gap-2">
-                 <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">History</h2>
+                 <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">History</h2>
                  <button 
                     onClick={() => {
+                        haptics.lightImpact();
                         setIsManageMode(!isManageMode);
                         setSelectedIds(new Set());
                     }}
-                    className="text-xs text-indigo-500 font-medium px-2 py-1 bg-indigo-50 dark:bg-indigo-900/20 rounded ml-2"
+                    className="text-xs text-indigo-500 font-bold px-2 py-1 bg-indigo-50 dark:bg-indigo-900/20 rounded ml-2 min-h-[32px]"
                  >
                     {isManageMode ? 'Done' : 'Manage'}
                  </button>
             </div>
            <button 
-             onClick={onClose}
-             className="p-1 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-500"
+             onClick={() => { haptics.lightImpact(); onClose(); }}
+             className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-500 min-h-[44px] min-w-[44px] flex items-center justify-center"
+             aria-label="Close Sidebar"
            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
              </svg>
            </button>
