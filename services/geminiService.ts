@@ -17,14 +17,14 @@ async function delay(ms: number) {
  * including the refined prompt, explanation, and variable suggestions.
  * @throws {AppError} Throws an AppError if the Edge Function invocation fails or if there is a connection issue.
  */
-export const engineerPrompt = async (userInput: string, model?: string, provider?: string): Promise<RefinedPromptResult> => {
+export const engineerPrompt = async (userInput: string, model?: string, provider?: string, parentId?: string | null): Promise<RefinedPromptResult> => {
   let attempt = 0;
   
   while (true) {
     try {
       // Invoke the Supabase Edge Function 'engineer-prompt' which handles the Gemini API interaction securely
       const { data, error } = await supabase.functions.invoke('engineer-prompt', {
-        body: { userInput, model, provider }
+        body: { userInput, model, provider, parentId }
       });
 
       if (error) {

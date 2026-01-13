@@ -14,6 +14,6 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend Implementation' (Protocol in workflow.md) <!-- id: 8 --> [commit: be34e65]
 
 ## Phase 3: Integration & Polish
-- [ ] Task: Integrate `VersionHistory` into the `HistorySidebar` or `WorkbenchDisplay`
-- [ ] Task: Add visual indicators for "Forked" items in the history list
+- [~] Task: Integrate `VersionHistory` into the `HistorySidebar` or `WorkbenchDisplay`
+- [~] Task: Add visual indicators for "Forked" items in the history list
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Integration & Polish' (Protocol in workflow.md)
