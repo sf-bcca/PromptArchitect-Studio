@@ -1,3 +1,16 @@
+
+/**
+ * Represents the granular CO-STAR components of a prompt.
+ */
+export interface CostarComponents {
+  context: string;
+  objective: string;
+  style: string;
+  tone: string;
+  audience: string;
+  response: string;
+}
+
 /**
  * Represents the structured result of an engineered prompt from the AI service.
  */
@@ -10,6 +23,8 @@ export interface RefinedPromptResult {
   whyThisWorks: string;
   /** A list of dynamic variables found in the prompt (e.g., [Target Audience]). */
   suggestedVariables: string[];
+  /** The granular CO-STAR components breakdown. Optional for backward compatibility. */
+  costar?: CostarComponents;
   /** The LLM provider used (e.g., 'gemini', 'ollama'). */
   provider?: string;
   /** The specific model used (e.g., 'llama3.2', 'gemini-3-flash-preview'). */

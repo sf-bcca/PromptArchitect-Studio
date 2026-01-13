@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { AppError, ErrorCode, isAppError } from '../types';
+import { AppError, ErrorCode, isAppError, RefinedPromptResult } from '../types';
 
 describe('AppError', () => {
   it('should create an AppError with code, message, and details', () => {
@@ -10,7 +10,7 @@ describe('AppError', () => {
     expect(error.code).toBe(ErrorCode.LLM_SERVICE_UNAVAILABLE);
     expect(error.message).toBe('Service down');
     expect(error.details).toEqual({ provider: 'Gemini' });
-    expect(error.isUserError).toBe(false); // System errors are not user errors by default
+    expect(error.isUserError).toBe(false); 
   });
 
   it('should correctly identify user errors', () => {
@@ -35,4 +35,24 @@ describe('isAppError', () => {
     expect(isAppError(null)).toBe(false);
     expect(isAppError(undefined)).toBe(false);
   });
+});
+
+describe('RefinedPromptResult Type', () => {
+    it('should support CO-STAR granular fields', () => {
+        const result: RefinedPromptResult = {
+            refinedPrompt: "Full prompt",
+            whyThisWorks: "Because...",
+            suggestedVariables: [],
+            // These should be optional but valid
+            costar: {
+                context: "Context...",
+                objective: "Objective...",
+                style: "Style...",
+                tone: "Tone...",
+                audience: "Audience...",
+                response: "Response..."
+            }
+        };
+        expect(result.costar?.context).toBe("Context...");
+    });
 });
