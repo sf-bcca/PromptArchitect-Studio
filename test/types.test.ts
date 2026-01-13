@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { AppError, ErrorCode, isAppError, RefinedPromptResult } from '../types';
+import { AppError, ErrorCode, isAppError, RefinedPromptResult, PromptHistoryItem } from '../types';
 
 describe('AppError', () => {
   it('should create an AppError with code, message, and details', () => {
@@ -43,7 +43,6 @@ describe('RefinedPromptResult Type', () => {
             refinedPrompt: "Full prompt",
             whyThisWorks: "Because...",
             suggestedVariables: [],
-            // These should be optional but valid
             costar: {
                 context: "Context...",
                 objective: "Objective...",
@@ -54,5 +53,18 @@ describe('RefinedPromptResult Type', () => {
             }
         };
         expect(result.costar?.context).toBe("Context...");
+    });
+});
+
+describe('PromptHistoryItem Type', () => {
+    it('should support parentId field', () => {
+        const item: PromptHistoryItem = {
+            id: 'child-id',
+            originalInput: 'input',
+            result: { refinedPrompt: '', whyThisWorks: '', suggestedVariables: [] },
+            timestamp: 123,
+            parentId: 'parent-id'
+        };
+        expect(item.parentId).toBe('parent-id');
     });
 });

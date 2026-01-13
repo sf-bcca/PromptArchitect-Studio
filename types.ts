@@ -1,4 +1,3 @@
-
 /**
  * Represents the granular CO-STAR components of a prompt.
  */
@@ -45,6 +44,8 @@ export interface PromptHistoryItem {
   result: RefinedPromptResult;
   /** Unix timestamp (in milliseconds) of when the prompt was created. */
   timestamp: number;
+  /** The ID of the parent prompt history item, if this is a fork/version. */
+  parentId?: string;
 }
 
 /**
