@@ -6,9 +6,10 @@ import ResultDisplay from "./components/ResultDisplay";
 import HistorySidebar from "./components/HistorySidebar";
 import FavoritesSection from "./components/FavoritesSection";
 import { engineerPrompt, generateTitle } from "./services/geminiService";
-import { RefinedPromptResult, PromptHistoryItem } from "./types";
+import { RefinedPromptResult, PromptHistoryItem, ErrorCode, isAppError, AppError } from "./types";
 import { useSession } from "./context/SessionProvider";
 import { usePromptHistory } from "./hooks/usePromptHistory";
+import { useNotifications } from "./context/NotificationContext";
 
 /**
  * The main application component for PromptArchitect-Studio.
@@ -17,6 +18,7 @@ import { usePromptHistory } from "./hooks/usePromptHistory";
 const App: React.FC = () => {
   const { session, showAuth, setShowAuth } = useSession();
   const { history, fetchHistory, addToHistory, clearHistory, hasMore, isLoadingMore, renameHistoryItem, deleteHistoryItem } = usePromptHistory(session);
+  const { notify } = useNotifications();
 
   // Layout State
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -103,10 +105,13 @@ const App: React.FC = () => {
         });
       }
     } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("An unexpected error occurred.");
+      const appErr = isAppError(err) ? err : new AppError(ErrorCode.UNKNOWN_ERROR, (err as Error).message);
+      
+      setError(appErr.message);
+      
+      // Use toast for critical system errors
+      if (appErr.code === ErrorCode.LLM_SERVICE_UNAVAILABLE || appErr.code === ErrorCode.NETWORK_ERROR) {
+          notify(appErr.message, 'error');
       }
     } finally {
       setIsLoading(false);

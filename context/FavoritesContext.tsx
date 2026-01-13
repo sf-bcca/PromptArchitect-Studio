@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { FavoriteItem } from '../types';
 import { getFavorites, addFavorite as addFavoriteService, removeFavorite as removeFavoriteService } from '../services/favorites';
 import { useSession } from './SessionProvider';
+import { useNotifications } from './NotificationContext';
 
 interface FavoritesContextType {
   favorites: FavoriteItem[];
@@ -14,7 +15,8 @@ interface FavoritesContextType {
 const FavoritesContext = createContext<FavoritesContextType | undefined>(undefined);
 
 export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { session } = useSession();
+  const { session, setShowAuth } = useSession();
+  const { notify } = useNotifications();
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
 
   const refreshFavorites = useCallback(async () => {
@@ -35,10 +37,9 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   }, [refreshFavorites]);
 
   const addFavorite = async (promptHistoryId: string) => {
-    console.log('[Favorites] addFavorite called with:', { promptHistoryId, userId: session?.user?.id });
-    
     if (!session?.user?.id) {
-      console.warn('[Favorites] No session/user ID, aborting addFavorite');
+      notify("Please login to favorite prompts", "info");
+      setShowAuth(true);
       return;
     }
     
@@ -54,15 +55,13 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       
       setFavorites(prev => [tempFavorite, ...prev]);
 
-      console.log('[Favorites] Calling addFavoriteService...');
-      const result = await addFavoriteService(session.user.id, promptHistoryId);
-      console.log('[Favorites] addFavoriteService returned:', result);
+      await addFavoriteService(session.user.id, promptHistoryId);
+      notify("Added to favorites", "success");
       
       await refreshFavorites();
-      console.log('[Favorites] Refresh complete');
     } catch (error) {
       console.error("[Favorites] Failed to add favorite:", error);
-      // Revert optimistic update on failure
+      notify("Failed to add favorite", "error");
       refreshFavorites();
     }
   };
@@ -70,14 +69,12 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const removeFavorite = async (promptHistoryId: string) => {
     if (!session?.user?.id) return;
     try {
-      // Optimistic update
       setFavorites(prev => prev.filter(f => f.prompt_history_id !== promptHistoryId));
       await removeFavoriteService(session.user.id, promptHistoryId);
-      // No need to refresh if we successfully removed it from local state, but strictly to be safe:
-      // await refreshFavorites();
+      notify("Removed from favorites", "info");
     } catch (error) {
       console.error("Failed to remove favorite", error);
-      // Revert if failed
+      notify("Failed to remove favorite", "error");
       refreshFavorites();
     }
   };
