@@ -2,7 +2,7 @@
 
 ## Phase 1: Service Layer Hardening
 - [x] Task: Define standard Error types in `types.ts` <!-- id: 0 --> [commit: abef6ff]
-- [ ] Task: Implement error catching and retry logic in `services/geminiService.ts`
+- [x] Task: Implement error catching and retry logic in `services/geminiService.ts` <!-- id: 1 --> [commit: e8b823c]
 - [ ] Task: Implement error catching in `services/supabaseClient.ts`
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Service Layer Hardening' (Protocol in workflow.md)
 
