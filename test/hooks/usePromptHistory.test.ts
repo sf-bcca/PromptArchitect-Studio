@@ -10,7 +10,7 @@ const mockFrom = vi.fn(() => ({ select: mockSelect }));
 
 vi.mock('../../services/supabaseClient', () => ({
   supabase: {
-    from: (table: string) => mockFrom(table),
+    from: (table: string) => mockFrom(),
   },
 }));
 

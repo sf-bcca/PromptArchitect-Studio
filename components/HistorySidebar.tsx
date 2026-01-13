@@ -332,7 +332,7 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({
                                         <div className="min-w-0 flex-1">
                                             <p className="text-sm text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-slate-200 truncate font-medium transition-colors flex items-center gap-1.5">
                                                 {item.parentId && (
-                                                    <svg className="w-3 h-3 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" title="Variation">
+                                                    <svg className="w-3 h-3 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                                                     </svg>
                                                 )}

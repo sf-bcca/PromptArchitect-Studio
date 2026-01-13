@@ -45,7 +45,14 @@ const App: React.FC = () => {
   const [parentId, setParentId] = useState<string | null>(null);
 
   // Available models configuration
-  // ... (no changes to models)
+  const models = [
+    { id: "llama3.2", name: "Ollama (Llama 3.2 3B)", provider: "ollama" },
+    { id: "gemma2:2b", name: "Ollama (Gemma 2 2B)", provider: "ollama" },
+    { id: "gemma3:4b", name: "Ollama (Gemma 3 4B)", provider: "ollama" },
+    { id: "gemini-2.5-flash-lite", name: "Gemini Flash-Lite 2.5 (Cloud)", provider: "gemini" },
+    { id: "gemini-3.0-flash", name: "Google Gemini 3.0 Flash (Latest)", provider: "gemini" },
+    { id: "gemini-3-pro-preview", name: "Google Gemini 3.0 Pro (Preview)", provider: "gemini" },
+  ];
 
   /**
    * Effect hook to load prompt history from Supabase when session changes.

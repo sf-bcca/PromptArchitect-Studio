@@ -1,3 +1,4 @@
+
 /**
  * Represents the granular CO-STAR components of a prompt.
  */
@@ -58,6 +59,23 @@ export interface FavoriteItem {
   created_at: string;
   /** The full prompt history item, joined for display convenience. */
   prompt_history?: PromptHistoryItem;
+}
+
+/**
+ * Supported themes for the application.
+ */
+export type Theme = 'dark' | 'light' | 'system';
+
+/**
+ * Represents persistent user preferences and interface settings.
+ */
+export interface UserSettings {
+  id?: string;
+  user_id: string;
+  default_model: string;
+  theme: Theme;
+  ui_state: Record<string, any>;
+  updated_at?: string;
 }
 
 /**
