@@ -9,9 +9,9 @@
 ## Phase 2: Frontend Implementation
 - [x] Task: Update `usePromptHistory` to handle fetching relations (versions) <!-- id: 4 --> [commit: c1f24a9]
 - [x] Task: Update `PromptForm` to support "Forking" mode (pre-fill input, capture parent ID) <!-- id: 5 --> [commit: 03fcd5a]
-- [ ] Task: Add "Fork" button to `WorkbenchDisplay` header
-- [ ] Task: Create `VersionHistory` component to display related prompts
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend Implementation' (Protocol in workflow.md)
+- [x] Task: Add "Fork" button to `WorkbenchDisplay` header <!-- id: 6 --> [commit: 03fcd5a]
+- [x] Task: Create `VersionHistory` component to display related prompts <!-- id: 7 --> [commit: be34e65]
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend Implementation' (Protocol in workflow.md) <!-- id: 8 --> [commit: be34e65]
 
 ## Phase 3: Integration & Polish
 - [ ] Task: Integrate `VersionHistory` into the `HistorySidebar` or `WorkbenchDisplay`
