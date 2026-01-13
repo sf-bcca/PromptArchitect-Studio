@@ -1,7 +1,7 @@
 # Track Plan: Error Handling & User Notifications
 
 ## Phase 1: Service Layer Hardening
-- [ ] Task: Define standard Error types in `types.ts`
+- [x] Task: Define standard Error types in `types.ts` <!-- id: 0 --> [commit: abef6ff]
 - [ ] Task: Implement error catching and retry logic in `services/geminiService.ts`
 - [ ] Task: Implement error catching in `services/supabaseClient.ts`
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Service Layer Hardening' (Protocol in workflow.md)
