@@ -22,6 +22,7 @@ The studio serves a diverse group of AI practitioners:
 
 ## Quality Standards
 - **Performance:** Sub-second response times for the transformation engine and UI interactions.
+- **Mobile-First & PWA:** Installable application experience with touch-optimized interfaces and tactile feedback.
 - **Privacy First:** Secure handling of user prompts and encrypted storage of API credentials.
 - **Seamless Portability:** Container-first architecture ensuring identical behavior across local, dev, and production environments (Docker/Supabase).
 

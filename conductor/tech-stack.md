@@ -2,9 +2,10 @@
 
 ## Frontend & Styling
 - **React 19:** Modern functional component architecture with full concurrent mode support.
-- **TypeScript (~5.8):** Strict typing enforced across the entire application to ensure high maintainability.
+- **TypeScript (~5.8):** Strict typing enforced across the entire application.
 - **Vite 6:** Ultra-fast development server and optimized production build pipeline.
-- **Tailwind CSS 4:** Utility-first styling with advanced CSS-in-JS capabilities and full design token integration.
+- **Tailwind CSS 4:** Utility-first styling with advanced design token integration.
+- **PWA (Progressive Web App):** Manifest-based installation support and mobile-optimized web standards.
 
 ## Backend & Persistence
 - **Supabase:** Core backend-as-a-service providing real-time data synchronization and authentication.
