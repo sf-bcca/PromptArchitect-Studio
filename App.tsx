@@ -5,6 +5,7 @@ import PromptForm from "./components/PromptForm";
 import ResultDisplay from "./components/ResultDisplay";
 import HistorySidebar from "./components/HistorySidebar";
 import FavoritesSection from "./components/FavoritesSection";
+import SettingsPanel from "./components/SettingsPanel";
 import { engineerPrompt, generateTitle } from "./services/geminiService";
 import { RefinedPromptResult, PromptHistoryItem, ErrorCode, isAppError, AppError } from "./types";
 import { useSession } from "./context/SessionProvider";
@@ -24,6 +25,7 @@ const App: React.FC = () => {
 
   // Layout State
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   // Close sidebar by default on mobile on initial load
   useEffect(() => {
@@ -52,16 +54,6 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   // State for tracking parent ID during forking
   const [parentId, setParentId] = useState<string | null>(null);
-
-  // Available models configuration
-  const models = [
-    { id: "llama3.2", name: "Ollama (Llama 3.2 3B)", provider: "ollama" },
-    { id: "gemma2:2b", name: "Ollama (Gemma 2 2B)", provider: "ollama" },
-    { id: "gemma3:4b", name: "Ollama (Gemma 3 4B)", provider: "ollama" },
-    { id: "gemini-2.5-flash-lite", name: "Gemini Flash-Lite 2.5 (Cloud)", provider: "gemini" },
-    { id: "gemini-3.0-flash", name: "Google Gemini 3.0 Flash (Latest)", provider: "gemini" },
-    { id: "gemini-3-pro-preview", name: "Google Gemini 3.0 Pro (Preview)", provider: "gemini" },
-  ];
 
   /**
    * Effect hook to load prompt history from Supabase when session changes.
@@ -99,7 +91,7 @@ const App: React.FC = () => {
     setError(null);
 
     // Find the full model object to get the provider
-    const selectedModelObj = models.find((m) => m.id === selectedModel);
+    const selectedModelObj = MODELS.find((m) => m.id === selectedModel);
     const provider = selectedModelObj ? selectedModelObj.provider : "ollama";
 
     try {
@@ -149,6 +141,7 @@ const App: React.FC = () => {
     <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-200 overflow-hidden">
       <Header 
         onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+        onOpenSettings={() => setShowSettings(true)}
       />
 
       <div className="flex flex-1 overflow-hidden relative">
@@ -180,7 +173,7 @@ const App: React.FC = () => {
               isLoading={isLoading}
               selectedModel={selectedModel}
               setSelectedModel={setSelectedModel}
-              models={models}
+              models={MODELS}
               currentResult={currentResult}
               session={session}
               setShowAuth={setShowAuth}
@@ -211,6 +204,30 @@ const App: React.FC = () => {
           </div>
         </main>
       </div>
+            {/* Auth Modal Overlay */}
+            {showAuth && (
+              <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/50 backdrop-blur-sm">
+                <div className="relative w-full max-w-md">
+                  <button 
+                    onClick={() => setShowAuth(false)}
+                    className="absolute -top-12 right-0 text-white hover:text-indigo-400 transition-colors"
+                    aria-label="Close"
+                  >
+                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                  <Auth />
+                </div>
+              </div>
+            )}
+
+            {/* Settings Modal Overlay */}
+            {showSettings && (
+              <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/50 backdrop-blur-sm">
+                <SettingsPanel onClose={() => setShowSettings(false)} />
+              </div>
+            )}
     </div>
   );
 };
