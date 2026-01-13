@@ -8,7 +8,7 @@
 
 ## Phase 2: Application State Integration
 - [x] Task: Create `context/UserSettingsContext.tsx` to provide settings globally <!-- id: 4 --> [commit: 580fc0e]
-- [ ] Task: Update `App.tsx` to load initial state from settings (model, theme)
+- [x] Task: Update `App.tsx` to load initial state from settings (model, theme) <!-- id: 5 --> [commit: 6f54108]
 - [ ] Task: Implement theme persistence logic (localStorage + DB sync)
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Application State Integration' (Protocol in workflow.md)
 
