@@ -12,7 +12,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Backend (Edge Function) Reliability' (Protocol in workflow.md) <!-- id: 6 --> [commit: 8aba631]
 
 ## Phase 3: UI Notifications & Feedback
-- [ ] Task: Create a toast/notification system for global error display
+- [x] Task: Create a toast/notification system for global error display <!-- id: 7 --> [commit: a86cd49]
 - [ ] Task: Update `PromptForm` to handle and display submission errors
 - [ ] Task: Add E2E tests for simulated service outages
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: UI Notifications & Feedback' (Protocol in workflow.md)
