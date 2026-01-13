@@ -8,9 +8,9 @@
 
 ## Phase 2: Mobile UI & Touch Optimization
 - [x] Task: Create `hooks/useHaptics.ts` for vibration feedback <!-- id: 4 --> [commit: 1141fa3]
-- [ ] Task: Audit and update touch targets (buttons, links) to min 44x44px
-- [ ] Task: Update `WorkbenchDisplay` to use a tabbed or vertical layout on mobile
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Mobile UI & Touch Optimization' (Protocol in workflow.md)
+- [x] Task: Audit and update touch targets (buttons, links) to min 44x44px <!-- id: 5 --> [commit: 13041c0]
+- [x] Task: Update `WorkbenchDisplay` to use a tabbed or vertical layout on mobile <!-- id: 6 --> [commit: 13041c0]
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Mobile UI & Touch Optimization' (Protocol in workflow.md) <!-- id: 7 --> [commit: 13041c0]
 
 ## Phase 3: Final Polish
 - [ ] Task: Improve Sidebar drawer transitions and backdrop
