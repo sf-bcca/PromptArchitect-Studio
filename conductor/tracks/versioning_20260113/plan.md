@@ -7,7 +7,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Schema & Backend' (Protocol in workflow.md) <!-- id: 3 --> [commit: 4405b3c]
 
 ## Phase 2: Frontend Implementation
-- [ ] Task: Update `usePromptHistory` to handle fetching relations (versions)
+- [x] Task: Update `usePromptHistory` to handle fetching relations (versions) <!-- id: 4 --> [commit: c1f24a9]
 - [ ] Task: Update `PromptForm` to support "Forking" mode (pre-fill input, capture parent ID)
 - [ ] Task: Add "Fork" button to `WorkbenchDisplay` header
 - [ ] Task: Create `VersionHistory` component to display related prompts
