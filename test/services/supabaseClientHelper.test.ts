@@ -4,7 +4,7 @@ import { AppError, ErrorCode } from '../../types';
 
 describe('handleSupabaseError', () => {
     it('should throw AppError wrapping the original error', () => {
-        const originalError = { message: 'DB fail', code: 'PGRST100', details: '', hint: '' };
+        const originalError = { message: 'DB fail', code: 'PGRST100', details: '', hint: '' } as any;
         
         try {
             handleSupabaseError(originalError, 'test_context');
