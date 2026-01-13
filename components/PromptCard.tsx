@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { RefinedPromptResult } from '../types';
 import { useFavorites } from '../context/FavoritesContext';
 import FavoriteButton from './FavoriteButton';
+import { useHaptics } from '../hooks/useHaptics';
 
 interface PromptCardProps {
   /** The result object containing the refined prompt and analysis */
@@ -22,6 +23,7 @@ interface PromptCardProps {
 const PromptCard: React.FC<PromptCardProps> = ({ result, historyId, onFork }) => {
   const [copied, setCopied] = useState(false);
   const { isFavorite, addFavorite, removeFavorite } = useFavorites();
+  const haptics = useHaptics();
 
   // Use explicit historyId if provided, otherwise fallback to result.id
   const targetId = historyId || result.id;
@@ -29,6 +31,7 @@ const PromptCard: React.FC<PromptCardProps> = ({ result, historyId, onFork }) =>
 
   const toggleFavorite = (e: React.MouseEvent) => {
     e.stopPropagation();
+    haptics.lightImpact();
     if (!targetId) return;
     if (favorited) {
       removeFavorite(targetId);
@@ -38,6 +41,7 @@ const PromptCard: React.FC<PromptCardProps> = ({ result, historyId, onFork }) =>
   };
 
   const handleForkClick = () => {
+    haptics.mediumImpact();
     if (onFork) {
         onFork({
             id: targetId,
@@ -51,6 +55,7 @@ const PromptCard: React.FC<PromptCardProps> = ({ result, historyId, onFork }) =>
    * Copies the refined prompt text to the system clipboard and shows a success state briefly.
    */
   const copyToClipboard = () => {
+    haptics.lightImpact();
     navigator.clipboard.writeText(result.refinedPrompt);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -60,32 +65,34 @@ const PromptCard: React.FC<PromptCardProps> = ({ result, historyId, onFork }) =>
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* Refined Prompt Section */}
       <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
-        <div className="bg-slate-50 dark:bg-slate-950 px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
-          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100 flex items-center">
+        <div className="bg-slate-50 dark:bg-slate-950 px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex flex-col xs:flex-row justify-between items-center gap-4">
+          <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center">
             <svg className="w-4 h-4 mr-2 text-indigo-500 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
             Refined Prompt
           </h2>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full xs:w-auto">
             {targetId && (
                 <>
                     <button
                         onClick={handleForkClick}
-                        className="text-xs font-medium text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 bg-amber-50 dark:bg-amber-900/30 hover:bg-amber-100 dark:hover:bg-amber-900/50 px-3 py-1 rounded-full transition-all flex items-center"
+                        className="flex-1 xs:flex-none h-[44px] px-4 rounded-full bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 text-xs font-bold transition-all flex items-center justify-center border border-amber-100 dark:border-amber-900/50"
                         title="Create variation"
                     >
-                        <svg className="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                         </svg>
                         Fork
                     </button>
-                    <FavoriteButton isFavorite={favorited} onClick={toggleFavorite} />
+                    <div className="h-[44px] w-[44px] flex items-center justify-center">
+                        <FavoriteButton isFavorite={favorited} onClick={toggleFavorite} />
+                    </div>
                 </>
             )}
             <button
                 onClick={copyToClipboard}
-                className="text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 px-3 py-1 rounded-full transition-all flex items-center"
+                className="flex-1 xs:flex-none h-[44px] px-4 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-xs font-bold transition-all flex items-center justify-center border border-indigo-100 dark:border-indigo-900/50"
             >
                 {copied ? (
                 <>
