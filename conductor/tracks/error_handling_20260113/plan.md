@@ -13,6 +13,6 @@
 
 ## Phase 3: UI Notifications & Feedback
 - [x] Task: Create a toast/notification system for global error display <!-- id: 7 --> [commit: a86cd49]
-- [ ] Task: Update `PromptForm` to handle and display submission errors
-- [ ] Task: Add E2E tests for simulated service outages
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: UI Notifications & Feedback' (Protocol in workflow.md)
+- [x] Task: Update `PromptForm` to handle and display submission errors <!-- id: 8 --> [commit: f60e16a]
+- [x] Task: Add E2E tests for simulated service outages <!-- id: 9 --> [commit: f60e16a]
+- [x] Task: Conductor - User Manual Verification 'Phase 3: UI Notifications & Feedback' (Protocol in workflow.md) <!-- id: 10 --> [commit: f60e16a]
