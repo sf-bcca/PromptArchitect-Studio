@@ -1,4 +1,3 @@
-
 /**
  * Represents the structured result of an engineered prompt from the AI service.
  */
@@ -43,4 +42,51 @@ export interface FavoriteItem {
   created_at: string;
   /** The full prompt history item, joined for display convenience. */
   prompt_history?: PromptHistoryItem;
+}
+
+/**
+ * Standard error codes for the application.
+ */
+export enum ErrorCode {
+  /** The LLM service (Gemini/Ollama) is unreachable or timed out. */
+  LLM_SERVICE_UNAVAILABLE = 'LLM_SERVICE_UNAVAILABLE',
+  /** The service returned a 400/500 error or invalid response. */
+  LLM_GENERATION_FAILED = 'LLM_GENERATION_FAILED',
+  /** The user's input failed validation (e.g., too short). */
+  VALIDATION_ERROR = 'VALIDATION_ERROR',
+  /** Network error connecting to Supabase or Edge Functions. */
+  NETWORK_ERROR = 'NETWORK_ERROR',
+  /** Authentication or authorization failure. */
+  AUTH_ERROR = 'AUTH_ERROR',
+  /** An unexpected or unhandled error occurred. */
+  UNKNOWN_ERROR = 'UNKNOWN_ERROR',
+}
+
+/**
+ * Custom error class for application-specific errors with consistent structure.
+ */
+export class AppError extends Error {
+  public readonly code: ErrorCode;
+  public readonly details?: Record<string, unknown>;
+  public readonly isUserError: boolean;
+
+  constructor(
+    code: ErrorCode,
+    message: string,
+    details?: Record<string, unknown>,
+    isUserError: boolean = false
+  ) {
+    super(message);
+    this.name = 'AppError';
+    this.code = code;
+    this.details = details;
+    this.isUserError = isUserError;
+  }
+}
+
+/**
+ * Type guard to check if an error is an instance of AppError.
+ */
+export function isAppError(error: unknown): error is AppError {
+  return error instanceof AppError;
 }
