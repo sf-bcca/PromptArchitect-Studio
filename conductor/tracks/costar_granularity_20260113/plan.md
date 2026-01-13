@@ -1,10 +1,10 @@
 # Track Plan: Enhanced CO-STAR Granularity & Workbench UI
 
-## Phase 1: Backend & Schema Updates
+## Phase 1: Backend & Schema Updates [checkpoint: 9b32b57]
 - [x] Task: Update `types.ts` to include optional CO-STAR fields in `RefinedPromptResult` <!-- id: 0 --> [commit: dc06a2c]
-- [~] Task: Update `engineer-prompt` Edge Function Zod schema and system prompt to request granular JSON output
-- [ ] Task: Verify Edge Function returns new structure with unit tests
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend & Schema Updates' (Protocol in workflow.md)
+- [x] Task: Update `engineer-prompt` Edge Function Zod schema and system prompt to request granular JSON output <!-- id: 1 --> [commit: ed61cd5]
+- [x] Task: Verify Edge Function returns new structure with unit tests <!-- id: 2 --> [commit: 8aba631]
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Backend & Schema Updates' (Protocol in workflow.md) <!-- id: 3 --> [commit: 9b32b57]
 
 ## Phase 2: Frontend Workbench UI
 - [ ] Task: Create `CostarSection` component for displaying individual fields
