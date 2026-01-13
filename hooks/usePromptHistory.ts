@@ -46,6 +46,7 @@ export const usePromptHistory = (session: Session | null) => {
           originalInput: item.original_input,
           result: item.result,
           timestamp: new Date(item.created_at).getTime(),
+          parentId: item.parent_id,
         }));
 
         if (offset === 0) {
