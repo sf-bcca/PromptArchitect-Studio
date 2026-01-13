@@ -1,5 +1,6 @@
 import React from 'react';
 import PromptCard from './PromptCard';
+import WorkbenchDisplay from './WorkbenchDisplay';
 import { RefinedPromptResult } from '../types';
 
 interface ResultDisplayProps {
@@ -37,6 +38,10 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, error, isLoading 
   }
 
   if (result) {
+    // If granular data exists, use Workbench. Otherwise fallback to simple card.
+    if (result.costar) {
+        return <WorkbenchDisplay result={result} />;
+    }
     return <PromptCard result={result} historyId={result.id} />;
   }
 
