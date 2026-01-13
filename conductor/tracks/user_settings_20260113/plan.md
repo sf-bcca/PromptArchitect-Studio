@@ -1,10 +1,10 @@
 # Track Plan: User Settings & Personalization
 
-## Phase 1: Database & API
+## Phase 1: Database & API [checkpoint: fef7f72]
 - [x] Task: Create Supabase migration for `user_settings` table <!-- id: 0 --> [commit: a169b15]
 - [x] Task: Create `services/userSettings.ts` for database interactions <!-- id: 1 --> [commit: 9b8d2a8]
 - [x] Task: Define `UserSettings` types in `types.ts` <!-- id: 2 --> [commit: c37a6d9]
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Database & API' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Database & API' (Protocol in workflow.md) <!-- id: 3 --> [commit: fef7f72]
 
 ## Phase 2: Application State Integration
 - [ ] Task: Create `context/UserSettingsContext.tsx` to provide settings globally
