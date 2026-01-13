@@ -14,6 +14,8 @@ interface PromptFormProps {
   currentResult: RefinedPromptResult | null;
   session: Session | null;
   setShowAuth: (show: boolean) => void;
+  parentId?: string | null;
+  onCancelFork?: () => void;
 }
 
 const PromptForm: React.FC<PromptFormProps> = ({
@@ -26,26 +28,41 @@ const PromptForm: React.FC<PromptFormProps> = ({
   models,
   currentResult,
   session,
-  setShowAuth
+  setShowAuth,
+  parentId,
+  onCancelFork
 }) => {
   return (
     <div className="relative group z-10 mb-12">
       {/* Glow Effect */}
-      <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl opacity-30 group-hover:opacity-60 transition duration-500 blur-sm"></div>
+      <div className={`absolute -inset-0.5 bg-gradient-to-r rounded-2xl opacity-30 group-hover:opacity-60 transition duration-500 blur-sm ${
+          parentId ? "from-amber-500 via-orange-500 to-yellow-500" : "from-indigo-500 via-purple-500 to-pink-500"
+      }`}></div>
       
       <div className="relative bg-white dark:bg-slate-900 rounded-2xl p-1 shadow-2xl">
         <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-950 rounded-xl p-4 sm:p-6 transition-colors">
           <div className="flex justify-between items-center mb-4">
             <span className="text-sm font-medium text-slate-500 dark:text-slate-400 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
-              Your Input
+              <span className={`w-2 h-2 rounded-full animate-pulse ${parentId ? "bg-amber-500" : "bg-indigo-500"}`}></span>
+              {parentId ? "Forking Variation" : "Your Input"}
             </span>
-            <ModelSelector
-              selectedModel={selectedModel}
-              onModelChange={setSelectedModel}
-              models={models}
-              disabled={isLoading}
-            />
+            <div className="flex items-center gap-3">
+                {parentId && (
+                    <button
+                        type="button"
+                        onClick={onCancelFork}
+                        className="text-xs font-medium text-amber-600 dark:text-amber-400 hover:underline"
+                    >
+                        Cancel Fork
+                    </button>
+                )}
+                <ModelSelector
+                    selectedModel={selectedModel}
+                    onModelChange={setSelectedModel}
+                    models={models}
+                    disabled={isLoading}
+                />
+            </div>
           </div>
 
           <textarea

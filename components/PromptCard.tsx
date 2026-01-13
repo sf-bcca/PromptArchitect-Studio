@@ -9,6 +9,8 @@ interface PromptCardProps {
   result: RefinedPromptResult;
   /** The ID of the prompt history item, required for favoriting. */
   historyId?: string;
+  /** Optional callback for forking the prompt. */
+  onFork?: (item: any) => void;
 }
 
 /**
@@ -17,7 +19,7 @@ interface PromptCardProps {
  *
  * @param {PromptCardProps} props - The component props.
  */
-const PromptCard: React.FC<PromptCardProps> = ({ result, historyId }) => {
+const PromptCard: React.FC<PromptCardProps> = ({ result, historyId, onFork }) => {
   const [copied, setCopied] = useState(false);
   const { isFavorite, addFavorite, removeFavorite } = useFavorites();
 
@@ -32,6 +34,16 @@ const PromptCard: React.FC<PromptCardProps> = ({ result, historyId }) => {
       removeFavorite(targetId);
     } else {
       addFavorite(targetId);
+    }
+  };
+
+  const handleForkClick = () => {
+    if (onFork) {
+        onFork({
+            id: targetId,
+            originalInput: (document.getElementById('prompt-input') as HTMLTextAreaElement)?.value || "",
+            result: result
+        });
     }
   };
 
@@ -57,7 +69,19 @@ const PromptCard: React.FC<PromptCardProps> = ({ result, historyId }) => {
           </h2>
           <div className="flex items-center gap-2">
             {targetId && (
-                <FavoriteButton isFavorite={favorited} onClick={toggleFavorite} />
+                <>
+                    <button
+                        onClick={handleForkClick}
+                        className="text-xs font-medium text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 bg-amber-50 dark:bg-amber-900/30 hover:bg-amber-100 dark:hover:bg-amber-900/50 px-3 py-1 rounded-full transition-all flex items-center"
+                        title="Create variation"
+                    >
+                        <svg className="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                        </svg>
+                        Fork
+                    </button>
+                    <FavoriteButton isFavorite={favorited} onClick={toggleFavorite} />
+                </>
             )}
             <button
                 onClick={copyToClipboard}
