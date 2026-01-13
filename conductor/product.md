@@ -17,6 +17,7 @@ The studio serves a diverse group of AI practitioners:
 ## Core Feature Set
 - **CO-STAR Architect:** A multi-stage builder that guides users through context setting, objective definition, and output constraints.
 - **Persistence & History:** Comprehensive tracking of prompt versions, with the ability to favorite and revisit high-performing architectures.
+- **Personalization:** User-specific settings for default models and theme persistence across sessions.
 - **Hybrid Engine Support:** Native integration with Google Gemini for cloud scale and Ollama (Llama 3.2) for local, privacy-focused execution.
 
 ## Quality Standards

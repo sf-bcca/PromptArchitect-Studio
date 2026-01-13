@@ -8,7 +8,7 @@
 
 ## Backend & Persistence
 - **Supabase:** Core backend-as-a-service providing real-time data synchronization and authentication.
-- **PostgreSQL:** Reliable relational database for storing prompt history, favorites, and user metadata.
+- **PostgreSQL:** Reliable relational database for storing prompt history, favorites, user settings, and metadata.
 - **Deno (Edge Functions):** Serverless logic execution at the edge for low-latency prompt engineering transformations.
 
 ## AI Infrastructure
