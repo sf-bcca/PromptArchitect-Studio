@@ -7,10 +7,10 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Backend & Schema Updates' (Protocol in workflow.md) <!-- id: 3 --> [commit: 9b32b57]
 
 ## Phase 2: Frontend Workbench UI
-- [ ] Task: Create `CostarSection` component for displaying individual fields
-- [ ] Task: Update `ResultDisplay` to use a new layout (Workbench) when CO-STAR data is present
-- [ ] Task: Ensure backward compatibility for history items without CO-STAR data
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend Workbench UI' (Protocol in workflow.md)
+- [x] Task: Create `CostarSection` component for displaying individual fields <!-- id: 4 --> [commit: 6578311]
+- [x] Task: Update `ResultDisplay` to use a new layout (Workbench) when CO-STAR data is present <!-- id: 5 --> [commit: 6578311]
+- [x] Task: Ensure backward compatibility for history items without CO-STAR data <!-- id: 6 --> [commit: 6578311]
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend Workbench UI' (Protocol in workflow.md) <!-- id: 7 --> [commit: 6578311]
 
 ## Phase 3: Integration & Polish
 - [ ] Task: Update `PromptCard` to optionally show the breakdown or just the final prompt
