@@ -8,10 +8,11 @@ import { ErrorCode } from '../types';
 describe('Edge Function Logic Principles', () => {
   const ALLOWED_PROVIDERS = ["gemini", "ollama"];
   
-  const validateInput = (userInput: any, provider?: string) => {
+  const validateInput = (userInput: any, provider?: string, parentId?: string) => {
     if (!userInput) return { error: "Missing userInput", code: ErrorCode.VALIDATION_ERROR };
     if (typeof userInput !== "string" || userInput.length > 5000) return { error: "Invalid length", code: ErrorCode.VALIDATION_ERROR };
     if (provider && !ALLOWED_PROVIDERS.includes(provider)) return { error: "Invalid provider", code: ErrorCode.VALIDATION_ERROR };
+    if (parentId && typeof parentId !== 'string') return { error: "Invalid parentId", code: ErrorCode.VALIDATION_ERROR };
     return null;
   };
 
@@ -30,8 +31,8 @@ describe('Edge Function Logic Principles', () => {
     expect(result?.code).toBe(ErrorCode.VALIDATION_ERROR);
   });
 
-  it('should pass valid input', () => {
-    const result = validateInput("test", "gemini");
+  it('should pass valid input with parentId', () => {
+    const result = validateInput("test", "gemini", "some-uuid");
     expect(result).toBeNull();
   });
 });

@@ -53,7 +53,7 @@ serve(async (req) => {
   }
 
   try {
-    const { userInput, model, provider: reqProvider, task = 'engineer' } = await req.json();
+    const { userInput, model, provider: reqProvider, task = 'engineer', parentId } = await req.json();
 
     // Initialize Supabase Client for DB persistence
     const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
@@ -186,7 +186,7 @@ serve(async (req) => {
 
         const genAI = new GoogleGenerativeAI(apiKey);
         const modelName = model || Deno.env.get("GEMINI_MODEL") || "gemini-3.0-flash"; 
-        const genModel = genAI.getGenerativeModel ({
+        const genModel = genAI.getGenerativeModel({
             model: modelName,
             generationConfig: { responseMimeType: "application/json" }
         });
@@ -221,13 +221,11 @@ serve(async (req) => {
         if (task === 'title') {
              parsedResult = { title: text.substring(0, 50) };
         } else if (text.includes("refinedPrompt")) {
-            // Partial fallback if schema parsing fails but we have the main prompt
-            // We lose the CO-STAR breakdown here but save the request
             parsedResult = {
                 refinedPrompt: text,
                  whyThisWorks: "Output could not be strictly parsed. Providing raw response.",
                  suggestedVariables: [],
-                 costar: { // Fallback empty costar
+                 costar: {
                      context: "", objective: "", style: "", tone: "", audience: "", response: ""
                  }
             }
@@ -248,7 +246,8 @@ serve(async (req) => {
         .insert({
           user_id: userId,
           original_input: userInput,
-          result: parsedResult
+          result: parsedResult,
+          parent_id: parentId // Save the reference to the parent version
         })
         .select()
         .single();
