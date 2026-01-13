@@ -13,6 +13,6 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Mobile UI & Touch Optimization' (Protocol in workflow.md) <!-- id: 7 --> [commit: 13041c0]
 
 ## Phase 3: Final Polish
-- [ ] Task: Improve Sidebar drawer transitions and backdrop
+- [x] Task: Improve Sidebar drawer transitions and backdrop <!-- id: 8 --> [commit: 99bd1c8]
 - [ ] Task: Final responsive audit (margins, font sizes)
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Final Polish' (Protocol in workflow.md)
