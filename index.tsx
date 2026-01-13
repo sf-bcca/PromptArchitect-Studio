@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import { SessionProvider } from './context/SessionProvider';
 import { FavoritesProvider } from './context/FavoritesContext';
+import { NotificationProvider } from './context/NotificationContext';
 import './global.css';
 
 /**
@@ -20,9 +21,11 @@ try {
   root.render(
     <React.StrictMode>
       <SessionProvider>
-        <FavoritesProvider>
-          <App />
-        </FavoritesProvider>
+        <NotificationProvider>
+          <FavoritesProvider>
+            <App />
+          </FavoritesProvider>
+        </NotificationProvider>
       </SessionProvider>
     </React.StrictMode>
   );
