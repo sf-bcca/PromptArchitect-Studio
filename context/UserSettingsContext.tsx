@@ -22,8 +22,11 @@ export const UserSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
   
   // Initialize from localStorage or default
   const [theme, setInternalTheme] = useState<Theme>(() => {
-    const saved = localStorage.getItem('theme') as Theme;
-    return saved || 'dark';
+    if (typeof window !== 'undefined' && window.localStorage) {
+        const saved = localStorage.getItem('theme') as Theme;
+        return saved || 'dark';
+    }
+    return 'dark';
   });
 
   const refreshSettings = useCallback(async () => {
@@ -34,7 +37,9 @@ export const UserSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
         if (data) {
           setSettings(data);
           setInternalTheme(data.theme);
-          localStorage.setItem('theme', data.theme);
+          if (typeof window !== 'undefined' && window.localStorage) {
+            localStorage.setItem('theme', data.theme);
+          }
         }
       } catch (error) {
         console.error("Failed to fetch user settings", error);
@@ -63,7 +68,9 @@ export const UserSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
       root.classList.add(theme);
     }
     
-    localStorage.setItem('theme', theme);
+    if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem('theme', theme);
+    }
   }, [theme]);
 
   const updateSettings = async (updates: Partial<UserSettings>) => {

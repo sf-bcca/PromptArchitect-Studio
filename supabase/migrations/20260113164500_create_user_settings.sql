@@ -1,6 +1,6 @@
 -- Create user_settings table to store persistent preferences
 CREATE TABLE user_settings (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL UNIQUE,
   default_model TEXT DEFAULT 'llama3.2',
   theme TEXT DEFAULT 'dark',
