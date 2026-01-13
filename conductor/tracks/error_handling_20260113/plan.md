@@ -8,7 +8,7 @@
 
 ## Phase 2: Backend (Edge Function) Reliability
 - [x] Task: Update `engineer-prompt` Edge Function to return consistent JSON error objects <!-- id: 4 --> [commit: 8f5cc50]
-- [ ] Task: Add unit tests for edge function error scenarios
+- [x] Task: Add unit tests for edge function error scenarios <!-- id: 5 --> [commit: 9e0cf23]
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Backend (Edge Function) Reliability' (Protocol in workflow.md)
 
 ## Phase 3: UI Notifications & Feedback
