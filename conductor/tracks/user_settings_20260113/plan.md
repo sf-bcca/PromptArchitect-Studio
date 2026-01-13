@@ -12,8 +12,8 @@
 - [x] Task: Implement theme persistence logic (localStorage + DB sync) <!-- id: 6 --> [commit: 1e1add1]
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Application State Integration' (Protocol in workflow.md) <!-- id: 7 --> [commit: c08787c]
 
-## Phase 3: Settings UI
-- [~] Task: Create `SettingsPanel` component
-- [ ] Task: Add a settings trigger (gear icon) to the `Header` or user profile area
-- [ ] Task: Implement "Save Defaults" functionality
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Settings UI' (Protocol in workflow.md)
+## Phase 3: Settings UI [checkpoint: 321e80c]
+- [x] Task: Create `SettingsPanel` component <!-- id: 8 --> [commit: 321e80c]
+- [x] Task: Add a settings trigger (gear icon) to the `Header` or user profile area <!-- id: 9 --> [commit: 321e80c]
+- [x] Task: Implement "Save Defaults" functionality <!-- id: 10 --> [commit: 321e80c]
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Settings UI' (Protocol in workflow.md) <!-- id: 11 --> [commit: 321e80c]
