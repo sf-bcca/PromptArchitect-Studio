@@ -1,10 +1,10 @@
 # Track Plan: Prompt Versioning & Forking
 
-## Phase 1: Schema & Backend
+## Phase 1: Schema & Backend [checkpoint: 4405b3c]
 - [x] Task: Create a Supabase migration to add `parent_id` to `prompt_history` <!-- id: 0 --> [commit: c027ce9]
 - [x] Task: Update `types.ts` to include `parentId` in `PromptHistoryItem` <!-- id: 1 --> [commit: 9038822]
-- [ ] Task: Update `engineer-prompt` Edge Function to accept and save `parentId`
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Schema & Backend' (Protocol in workflow.md)
+- [x] Task: Update `engineer-prompt` Edge Function to accept and save `parentId` <!-- id: 2 --> [commit: 4405b3c]
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Schema & Backend' (Protocol in workflow.md) <!-- id: 3 --> [commit: 4405b3c]
 
 ## Phase 2: Frontend Implementation
 - [ ] Task: Update `usePromptHistory` to handle fetching relations (versions)
