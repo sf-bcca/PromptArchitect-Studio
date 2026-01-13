@@ -10,6 +10,7 @@ import { RefinedPromptResult, PromptHistoryItem, ErrorCode, isAppError, AppError
 import { useSession } from "./context/SessionProvider";
 import { usePromptHistory } from "./hooks/usePromptHistory";
 import { useNotifications } from "./context/NotificationContext";
+import { useUserSettings } from "./context/UserSettingsContext";
 
 /**
  * The main application component for PromptArchitect-Studio.
@@ -19,6 +20,7 @@ const App: React.FC = () => {
   const { session, showAuth, setShowAuth } = useSession();
   const { history, fetchHistory, addToHistory, clearHistory, hasMore, isLoadingMore, renameHistoryItem, deleteHistoryItem } = usePromptHistory(session);
   const { notify } = useNotifications();
+  const { settings } = useUserSettings();
 
   // Layout State
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -34,6 +36,13 @@ const App: React.FC = () => {
   const [userInput, setUserInput] = useState("");
   // State for selected LLM model
   const [selectedModel, setSelectedModel] = useState("llama3.2");
+
+  // Sync selected model with settings once loaded
+  useEffect(() => {
+    if (settings?.default_model) {
+      setSelectedModel(settings.default_model);
+    }
+  }, [settings]);
   // State for tracking the loading status of the API request
   const [isLoading, setIsLoading] = useState(false);
   // State for tracking the most recently refined prompt result
