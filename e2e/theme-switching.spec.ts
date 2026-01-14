@@ -2,23 +2,63 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Theme Switching', () => {
   test('should switch between light and dark themes and persist the setting', async ({ page }) => {
-    // By-pass login by setting a dummy session
     await page.goto('/');
-    await page.evaluate(() => {
-      const session = {
-        user: { id: 'test-user-id', email: 'test@example.com' },
+
+    // Mock Supabase auth to return a valid session
+    await page.addInitScript(() => {
+      // Mock Supabase client before any modules load
+      (window as any).__supabaseSession = {
+        user: { 
+          id: 'test-user-id', 
+          email: 'test@example.com',
+          aud: 'authenticated',
+          role: 'authenticated'
+        },
         access_token: 'test-access-token',
         refresh_token: 'test-refresh-token',
+        expires_at: Date.now() / 1000 + 3600,
+        token_type: 'bearer'
       };
-      localStorage.setItem('supabase.auth.token', JSON.stringify(session));
+
+      // Override fetch to mock Supabase auth endpoints
+      const originalFetch = window.fetch;
+      window.fetch = function(...args) {
+        const url = args[0]?.toString() || '';
+        
+        // Mock getSession call
+        if (url.includes('/auth/v1/user')) {
+          return Promise.resolve(new Response(JSON.stringify((window as any).__supabaseSession.user), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' }
+          }));
+        }
+        
+        return originalFetch.apply(this, args as any);
+      };
     });
+
+    // Set the session in localStorage for Supabase client
+    await page.evaluate(() => {
+      const session = (window as any).__supabaseSession;
+      const authKey = Object.keys(localStorage).find(k => k.includes('supabase.auth.token'));
+      const storageKey = authKey || 'sb-' + window.location.hostname.split('.')[0] + '-auth-token';
+      
+      localStorage.setItem(storageKey, JSON.stringify({
+        currentSession: session,
+        expiresAt: session.expires_at
+      }));
+    });
+
     await page.reload();
 
-    // Wait for the authenticated UI to load (Settings button appears)
-    await page.locator('button[aria-label="Settings"]').waitFor({ state: 'visible', timeout: 10000 });
+    // Wait for authenticated UI to load
+    await page.locator('button[aria-label="Settings"]').waitFor({ state: 'visible', timeout: 15000 });
 
     // Open the settings panel
     await page.locator('button[aria-label="Settings"]').click();
+
+    // Wait for settings panel to open
+    await page.locator('text=Studio Settings').waitFor({ state: 'visible' });
 
     // Check default theme is dark
     await expect(page.locator('html')).toHaveClass('dark');
@@ -35,11 +75,14 @@ test.describe('Theme Switching', () => {
     await page.reload();
     await expect(page.locator('html')).toHaveClass('light');
 
-    // Wait for authenticated UI to load again after reload
-    await page.locator('button[aria-label="Settings"]').waitFor({ state: 'visible', timeout: 10000 });
+    // Wait for authenticated UI after reload
+    await page.locator('button[aria-label="Settings"]').waitFor({ state: 'visible', timeout: 15000 });
 
     // Open the settings panel again
-    await page.getByRole('button', { name: 'Settings' }).click();
+    await page.locator('button[aria-label="Settings"]').click();
+
+    // Wait for settings panel
+    await page.locator('text=Studio Settings').waitFor({ state: 'visible' });
 
     // Switch back to dark mode
     await page.getByRole('button', { name: 'Dark' }).click();
