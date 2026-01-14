@@ -2,28 +2,43 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Theme Switching', () => {
   test('should switch between light and dark themes and persist the setting', async ({ page }) => {
-    // Mock Supabase auth before navigating
-    await page.addInitScript(() => {
-      // Create a mock session
-      const mockSession = {
-        user: { 
-          id: 'test-user-id', 
-          email: 'test@example.com',
-          aud: 'authenticated',
-          role: 'authenticated'
-        },
-        access_token: 'test-access-token',
-        refresh_token: 'test-refresh-token',
-        expires_at: Math.floor(Date.now() / 1000) + 3600,
-        token_type: 'bearer'
-      };
-
-      // Set localStorage for Supabase
-      const storageKey = 'sb-localhost-auth-token';
-      localStorage.setItem(storageKey, JSON.stringify({
-        currentSession: mockSession,
-        expiresAt: mockSession.expires_at
-      }));
+    // Intercept Supabase auth requests and mock them
+    await page.route('**/auth/v1/**', async (route) => {
+      const url = route.request().url();
+      
+      if (url.includes('/session')) {
+        // Mock getSession response
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            access_token: 'mock-access-token',
+            token_type: 'bearer',
+            expires_in: 3600,
+            refresh_token: 'mock-refresh-token',
+            user: {
+              id: 'test-user-id',
+              email: 'test@example.com',
+              aud: 'authenticated',
+              role: 'authenticated'
+            }
+          })
+        });
+      } else if (url.includes('/user')) {
+        // Mock user endpoint
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            id: 'test-user-id',
+            email: 'test@example.com',
+            aud: 'authenticated',
+            role: 'authenticated'
+          })
+        });
+      } else {
+        await route.continue();
+      }
     });
 
     await page.goto('/');
