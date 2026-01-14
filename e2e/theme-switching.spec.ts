@@ -15,6 +15,7 @@ test.describe('Theme Switching', () => {
     await page.reload();
 
     // Open the settings panel
+    await page.locator('button[aria-label="Settings"]').waitFor({ state: 'visible' });
     await page.locator('button[aria-label="Settings"]').click();
 
     // Check default theme is dark
