@@ -46,6 +46,7 @@ PromptArchitect-Studio is a specialized web application designed to help users e
 ## AI & Backend Configuration
 *   **LLM Setup:** Configured via Supabase Secrets (`LLM_PROVIDER`, `GEMINI_API_KEY` or `OLLAMA_URL`). See `LLM_SETUP.md`.
 *   **Supabase:** Local development requires Supabase CLI. Edge functions run in a Deno environment.
+*   **AI Providers:** Google Gemini 3.0 Flash (Cloud) or Ollama/Llama 3.2 (Self-hosted).
 
 ## Deployment
 *   **CI/CD:** GitHub Actions handle validation, testing, and Docker builds (`.github/workflows/`).

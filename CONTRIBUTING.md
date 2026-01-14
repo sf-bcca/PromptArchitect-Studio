@@ -20,14 +20,14 @@ We use a **trunk-based workflow** with automated CI/CD:
 
     - Write clean, documented code.
     - Ensure all new functions and components have JSDoc comments.
-    - Run tests locally: `npm test` (unit) and `npm run test:e2e` (E2E).
+    - Run tests locally: `pnpm test` (unit) and `pnpm test:e2e` (E2E).
 
 4.  **Security Checks**
 
     - We use `secretlint` to prevent accidental commit of secrets.
     - Before committing, run:
       ```bash
-      npm run secretlint
+      pnpm secretlint
       ```
     - **Never** commit `.env` files or hardcoded API keys.
 
@@ -42,5 +42,5 @@ We use a **trunk-based workflow** with automated CI/CD:
 
 - **TypeScript**: Use strict typing. Avoid `any` whenever possible.
 - **React**: Use functional components and Hooks.
-- **Styling**: Use Vanilla CSS as established in the project's existing design system.
+- **Styling**: Use **Tailwind CSS 4** for all new components, following the project's established utility-first patterns.
 - **Documentation**: Use JSDoc for functions; keep Markdown docs up-to-date.

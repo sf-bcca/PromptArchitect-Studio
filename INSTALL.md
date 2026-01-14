@@ -57,11 +57,11 @@ You should see output similar to:
 ```
   VITE v6.2.0  ready in 500 ms
 
-  ➜  Local:   http://localhost:5173/
+  ➜  Local:   http://localhost:5174/
   ➜  Network: use --host to expose
 ```
 
-Open [http://localhost:5173](http://localhost:5173) in your browser. You should see the PromptArchitect-Studio interface.
+Open [http://localhost:5174](http://localhost:5174) in your browser. You should see the PromptArchitect-Studio interface.
 
 **✅ Success!** You're ready to start engineering prompts.
 
@@ -72,7 +72,7 @@ Open [http://localhost:5173](http://localhost:5173) in your browser. You should 
 | Problem                    | Solution                                                                         |
 | -------------------------- | -------------------------------------------------------------------------------- |
 | `pnpm: command not found`  | Install pnpm: `npm install -g pnpm`                                              |
-| Port 5173 already in use   | Stop other dev servers or use `pnpm dev -- --port 5174`                          |
+| Port 5174 already in use   | Stop other dev servers or use `pnpm dev -- --port 5175`                          |
 | Supabase connection errors | Verify `.env.local` has correct `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` |
 | Module not found errors    | Delete `node_modules` and run `pnpm install` again                               |
 

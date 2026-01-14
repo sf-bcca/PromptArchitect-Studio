@@ -80,7 +80,7 @@ cp .env.example .env.local
 pnpm dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) — you're ready to engineer prompts!
+Open [http://localhost:5174](http://localhost:5174) — you're ready to engineer prompts!
 
 ## 📚 Documentation
 
