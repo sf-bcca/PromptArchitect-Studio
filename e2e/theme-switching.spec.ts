@@ -2,12 +2,10 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Theme Switching', () => {
   test('should switch between light and dark themes and persist the setting', async ({ page }) => {
-    await page.goto('/');
-
-    // Mock Supabase auth to return a valid session
+    // Mock Supabase auth before navigating
     await page.addInitScript(() => {
-      // Mock Supabase client before any modules load
-      (window as any).__supabaseSession = {
+      // Create a mock session
+      const mockSession = {
         user: { 
           id: 'test-user-id', 
           email: 'test@example.com',
@@ -16,40 +14,19 @@ test.describe('Theme Switching', () => {
         },
         access_token: 'test-access-token',
         refresh_token: 'test-refresh-token',
-        expires_at: Date.now() / 1000 + 3600,
+        expires_at: Math.floor(Date.now() / 1000) + 3600,
         token_type: 'bearer'
       };
 
-      // Override fetch to mock Supabase auth endpoints
-      const originalFetch = window.fetch;
-      window.fetch = function(...args) {
-        const url = args[0]?.toString() || '';
-        
-        // Mock getSession call
-        if (url.includes('/auth/v1/user')) {
-          return Promise.resolve(new Response(JSON.stringify((window as any).__supabaseSession.user), {
-            status: 200,
-            headers: { 'Content-Type': 'application/json' }
-          }));
-        }
-        
-        return originalFetch.apply(this, args as any);
-      };
-    });
-
-    // Set the session in localStorage for Supabase client
-    await page.evaluate(() => {
-      const session = (window as any).__supabaseSession;
-      const authKey = Object.keys(localStorage).find(k => k.includes('supabase.auth.token'));
-      const storageKey = authKey || 'sb-' + window.location.hostname.split('.')[0] + '-auth-token';
-      
+      // Set localStorage for Supabase
+      const storageKey = 'sb-localhost-auth-token';
       localStorage.setItem(storageKey, JSON.stringify({
-        currentSession: session,
-        expiresAt: session.expires_at
+        currentSession: mockSession,
+        expiresAt: mockSession.expires_at
       }));
     });
 
-    await page.reload();
+    await page.goto('/');
 
     // Wait for authenticated UI to load
     await page.locator('button[aria-label="Settings"]').waitFor({ state: 'visible', timeout: 15000 });
