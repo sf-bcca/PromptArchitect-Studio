@@ -61,15 +61,17 @@ export const UserSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
     const root = window.document.documentElement;
     root.classList.remove('light', 'dark');
 
+    let effectiveTheme = theme;
     if (theme === 'system') {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      root.classList.add(systemTheme);
-    } else {
-      root.classList.add(theme);
+      effectiveTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     }
     
-    if (typeof window !== 'undefined' && window.localStorage) {
-        localStorage.setItem('theme', theme);
+    root.classList.add(effectiveTheme);
+
+    try {
+      localStorage.setItem('theme', theme);
+    } catch (error) {
+      console.error("Could not save theme to localStorage", error);
     }
   }, [theme]);
 
