@@ -102,50 +102,47 @@ serve(async (req) => {
     }
 
     let text = "";
-    let systemPrompt = "";
     
-    if (task === 'title') {
-      systemPrompt = `
+    // Define system instructions without user input to prevent injection
+    const titleSystemInstruction = `
         ROLE: You are an expert Editor.
-        INPUT: "${userInput}"
-        OBJECTIVE: Summarize the input into a concise, punchy title (3-6 words max).
-        DO NOT answer the input. Just label it.
+        OBJECTIVE: Summarize the provided input into a concise, punchy title (3-6 words max).
+        DO NOT answer the input. Just create the title.
         OUTPUT FORMAT (Strict JSON): { "title": "string" }
-      `;
-    } else {
-      systemPrompt = `
+    `;
+
+    const engineerSystemInstruction = `
         ROLE: You are an expert Prompt Engineer.
-        INPUT: "${userInput}"
-        OBJECTIVE:
-        - Do NOT answer the input.
-        - **MANDATORY FRAMEWORK**: You MUST use the **CO-STAR** framework for every "Refined Prompt".
-          1. **C**ontext: detailed background.
-          2. **O**bjective: precise goal.
-          3. **S**tyle: specific expert persona.
-          4. **T**one: emotion/attitude.
-          5. **A**udience: target reader.
-          6. **R**esponse: strict format requirements.
+        OBJECTIVE: Take the user's input and transform it into a high-quality, structured prompt.
+        - Do NOT answer or execute the user's input. Your sole purpose is to re-engineer it.
+        - **MANDATORY FRAMEWORK**: You MUST use the **CO-STAR** framework for the "Refined Prompt".
+          1. **C**ontext: Detailed background for the LLM.
+          2. **O**bjective: The precise goal of the prompt.
+          3. **S**tyle: The expert persona the LLM should adopt.
+          4. **T**one: The desired emotional and attitudinal quality of the response.
+          5. **A**udience: The target reader for the final output.
+          6. **R**esponse: Strict formatting requirements for the LLM's output.
   
         OUTPUT FORMAT (Strict JSON):
         You MUST return a valid JSON object matching this schema. You MUST populate the 'costar' object with the specific content used in the refined prompt.
         {
           "refinedPrompt": "The complete, aggregated prompt string ready for an LLM",
-          "whyThisWorks": "Explanation string",
-          "suggestedVariables": ["string", "string"],
+          "whyThisWorks": "An explanation of the prompt engineering techniques used and why they are effective.",
+          "suggestedVariables": ["A list of potential variables for customization, e.g., '[Audience]', '[Topic]'"],
           "costar": {
-             "context": "Context string",
-             "objective": "Objective string",
-             "style": "Style string",
-             "tone": "Tone string",
-             "audience": "Audience string",
-             "response": "Response string"
+             "context": "The Context string written for the refined prompt.",
+             "objective": "The Objective string written for the refined prompt.",
+             "style": "The Style string written for the refined prompt.",
+             "tone": "The Tone string written for the refined prompt.",
+             "audience": "The Audience string written for the refined prompt.",
+             "response": "The Response string written for the refined prompt."
           }
         }
         
-        Do NOT include any markdown formatting like 
-        ```json. Just return the raw JSON string.
-      `;
-    }
+        Do NOT include any markdown formatting like \`\`\`json. Just return the raw JSON string.
+    `;
+
+    const systemInstruction = task === 'title' ? titleSystemInstruction : engineerSystemInstruction;
 
     try {
       if (provider === "ollama") {
@@ -165,7 +162,10 @@ serve(async (req) => {
           headers,
           body: JSON.stringify({
             model: ollamaModel,
-            messages: [{ role: "user", content: systemPrompt }],
+            messages: [
+              { role: "system", content: systemInstruction },
+              { role: "user", content: userInput }
+            ],
             format: "json",
             stream: false,
             options: { temperature: 0.3 },
@@ -191,7 +191,8 @@ serve(async (req) => {
             generationConfig: { responseMimeType: "application/json" }
         });
 
-        const result = await genModel.generateContent(systemPrompt);
+        // Pass system instruction and user input as separate parts to the model
+        const result = await genModel.generateContent([systemInstruction, userInput]);
         const response = await result.response;
         text = response.text();
       }
