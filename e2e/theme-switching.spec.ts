@@ -14,8 +14,10 @@ test.describe('Theme Switching', () => {
     });
     await page.reload();
 
+    // Wait for the authenticated UI to load (Settings button appears)
+    await page.locator('button[aria-label="Settings"]').waitFor({ state: 'visible', timeout: 10000 });
+
     // Open the settings panel
-    await page.locator('button[aria-label="Settings"]').waitFor({ state: 'visible' });
     await page.locator('button[aria-label="Settings"]').click();
 
     // Check default theme is dark
@@ -32,6 +34,9 @@ test.describe('Theme Switching', () => {
     // Reload the page and check if the theme persists
     await page.reload();
     await expect(page.locator('html')).toHaveClass('light');
+
+    // Wait for authenticated UI to load again after reload
+    await page.locator('button[aria-label="Settings"]').waitFor({ state: 'visible', timeout: 10000 });
 
     // Open the settings panel again
     await page.getByRole('button', { name: 'Settings' }).click();
