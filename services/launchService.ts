@@ -7,6 +7,7 @@ export interface LLMProvider {
   id: string;
   name: string;
   url: string;
+  mobileUrl?: string;
   color: string;
 }
 
@@ -14,13 +15,15 @@ export const EXTERNAL_PROVIDERS: LLMProvider[] = [
   { 
     id: 'gemini', 
     name: 'Google Gemini', 
-    url: 'https://gemini.google.com/app',
+    url: 'https://gemini.google.com',
+    mobileUrl: 'googlegemini://',
     color: 'from-blue-500 to-purple-600'
   },
   { 
     id: 'chatgpt', 
     name: 'OpenAI ChatGPT', 
     url: 'https://chatgpt.com',
+    mobileUrl: 'chatgpt://',
     color: 'from-emerald-500 to-teal-700'
   },
   { 

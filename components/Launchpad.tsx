@@ -13,6 +13,10 @@ const Launchpad: React.FC<LaunchpadProps> = ({ prompt }) => {
   const { notify } = useNotifications();
   const haptics = useHaptics();
 
+  // Mobile detection
+  const isMobile = typeof navigator !== 'undefined' && 
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -25,12 +29,16 @@ const Launchpad: React.FC<LaunchpadProps> = ({ prompt }) => {
   }, []);
 
   const handleLaunchClick = async (provider: LLMProvider, e: React.MouseEvent) => {
-    // We don't preventDefault here because we want the <a> tag to open the link
     haptics.mediumImpact();
     const success = await copyPrompt(prompt, notify);
     if (success) {
       notify(`Prompt copied! Opening ${provider.name}...`, 'success');
     }
+    
+    // For deep links on mobile, sometimes we need to manually trigger them 
+    // to avoid the "blocked popup" or "tab trap" issues if target="_blank" is used.
+    // But since this is a direct click on an <a> tag, it should be fine.
+    // However, if we want to ensure it opens the app, we can use the mobileUrl.
     setIsOpen(false);
   };
 
@@ -66,15 +74,20 @@ const Launchpad: React.FC<LaunchpadProps> = ({ prompt }) => {
               <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest px-1">Execute Prompt</p>
             </div>
             <div className="p-1.5">
-              {EXTERNAL_PROVIDERS.map((provider) => (
-                <a
-                  key={provider.id}
-                  href={provider.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => handleLaunchClick(provider, e)}
-                  className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group text-left decoration-none no-underline"
-                >
+              {EXTERNAL_PROVIDERS.map((provider) => {
+                const launchUrl = (isMobile && provider.mobileUrl) ? provider.mobileUrl : provider.url;
+                
+                const isDeepLink = launchUrl.includes('://') && !launchUrl.startsWith('http');
+                
+                return (
+                  <a
+                    key={provider.id}
+                    href={launchUrl}
+                    target={isDeepLink ? undefined : "_blank"}
+                    rel="noopener noreferrer"
+                    onClick={(e) => handleLaunchClick(provider, e)}
+                    className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group text-left decoration-none no-underline"
+                  >
                   <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${provider.color} flex items-center justify-center text-white shrink-0 shadow-sm group-hover:scale-110 transition-transform`}>
                      {provider.id === 'gemini' && (
                        <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
@@ -105,7 +118,8 @@ const Launchpad: React.FC<LaunchpadProps> = ({ prompt }) => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </a>
-              ))}
+              );
+            })}
             </div>
             <div className="bg-slate-50 dark:bg-slate-800/50 p-2 text-center">
               <p className="text-[9px] text-slate-400 italic">Universal links support native apps</p>
