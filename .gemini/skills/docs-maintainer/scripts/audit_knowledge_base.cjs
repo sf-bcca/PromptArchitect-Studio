@@ -20,9 +20,17 @@ console.log(`🔍 Auditing Knowledge Base: ${path.relative(rootDir, agentsPath)}
 
 const agentsContent = fs.readFileSync(agentsPath, 'utf8');
 const files = fs.readdirSync(absoluteTargetDir).filter(f => {
+  const ignoreList = [
+    'node_modules', 'dist', 'test-results', 'package-lock.json', 
+    'pnpm-lock.yaml', 'audit_report.json', 'metadata.json', '.git',
+    'coverage', '.DS_Store', 'index.html', 'nginx.conf', 'ollama-init.sh',
+    'playwright.config.ts', 'postcss.config.js', 'tailwind.config.ts',
+    'tsconfig.json', 'vitest.config.ts'
+  ];
   return !f.startsWith('.') && // Ignore hidden files
          f !== 'AGENTS.md' &&  // Ignore self
-         !f.endsWith('.test.tsx') && // Ignore tests (optional, usually docs focus on source)
+         !ignoreList.includes(f) &&
+         !f.endsWith('.test.tsx') && // Ignore tests
          !f.endsWith('.test.ts') &&
          !f.endsWith('.spec.ts');
 });

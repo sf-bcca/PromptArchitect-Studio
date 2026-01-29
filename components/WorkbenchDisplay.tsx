@@ -3,7 +3,6 @@ import { RefinedPromptResult, PromptHistoryItem } from '../types';
 import CostarSection from './CostarSection';
 import PromptCard from './PromptCard';
 import VersionHistory from './VersionHistory';
-import Launchpad from './Launchpad';
 import { useHaptics } from '../hooks/useHaptics';
 
 interface WorkbenchDisplayProps {
@@ -103,8 +102,6 @@ const WorkbenchDisplay: React.FC<WorkbenchDisplayProps> = ({ result, onFork, his
             </div>
 
             <div className="flex items-center gap-2">
-                <Launchpad prompt={result.refinedPrompt} />
-
                 <button
                     onClick={handleForkClick}
                     className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 text-xs font-bold border border-amber-200 dark:border-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-all active:scale-95 min-h-[44px] min-w-[44px]"

@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { RefinedPromptResult } from '../types';
 import { useFavorites } from '../context/FavoritesContext';
 import FavoriteButton from './FavoriteButton';
-import Launchpad from './Launchpad';
 import { useHaptics } from '../hooks/useHaptics';
 
 interface PromptCardProps {
@@ -93,8 +92,6 @@ const PromptCard: React.FC<PromptCardProps> = ({ result, historyId, onFork }) =>
             )}
             
             <div className="flex items-center gap-2 ml-auto sm:ml-0">
-                <Launchpad prompt={result.refinedPrompt} />
-
                 <button
                     onClick={copyToClipboard}
                     className="h-[44px] px-3 sm:px-4 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-xs font-bold transition-all flex items-center justify-center border border-indigo-100 dark:border-indigo-900/50 whitespace-nowrap min-w-[100px] sm:min-w-[110px]"
