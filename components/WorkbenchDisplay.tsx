@@ -3,6 +3,7 @@ import { RefinedPromptResult, PromptHistoryItem } from '../types';
 import CostarSection from './CostarSection';
 import PromptCard from './PromptCard';
 import VersionHistory from './VersionHistory';
+import Launchpad from './Launchpad';
 import { useHaptics } from '../hooks/useHaptics';
 
 interface WorkbenchDisplayProps {
@@ -50,7 +51,7 @@ const WorkbenchDisplay: React.FC<WorkbenchDisplayProps> = ({ result, onFork, his
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 relative">
       {/* Version History Navigation */}
       {result.id && onSelectVersion && (
           <VersionHistory 
@@ -64,8 +65,8 @@ const WorkbenchDisplay: React.FC<WorkbenchDisplayProps> = ({ result, onFork, his
       )}
 
       {/* Header / Tabs */}
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col lg:flex-row justify-between items-center gap-4 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm relative z-20">
+        <div className="flex items-center gap-2 w-full lg:w-auto">
             <div className="bg-indigo-100 dark:bg-indigo-900/30 p-2 rounded-lg">
                 <svg className="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
@@ -77,8 +78,8 @@ const WorkbenchDisplay: React.FC<WorkbenchDisplayProps> = ({ result, onFork, his
             </div>
         </div>
 
-        <div className="flex items-center gap-3 w-full sm:w-auto">
-            <div className="bg-slate-100 dark:bg-slate-800 p-1 rounded-lg inline-flex flex-1 sm:flex-none">
+        <div className="flex items-center gap-2 w-full lg:w-auto justify-end flex-wrap sm:flex-nowrap">
+            <div className="bg-slate-100 dark:bg-slate-800 p-1 rounded-lg flex-1 sm:flex-none flex">
                 <button
                     onClick={() => handleTabChange('workbench')}
                     className={`flex-1 sm:flex-none px-4 py-2 sm:py-1.5 rounded-md text-xs font-bold transition-all min-h-[44px] sm:min-h-0 ${
@@ -100,6 +101,8 @@ const WorkbenchDisplay: React.FC<WorkbenchDisplayProps> = ({ result, onFork, his
                     Preview
                 </button>
             </div>
+
+            <Launchpad prompt={result.refinedPrompt} />
 
             <button
                 onClick={handleForkClick}

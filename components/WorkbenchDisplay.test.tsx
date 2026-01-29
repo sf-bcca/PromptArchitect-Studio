@@ -4,6 +4,13 @@ import { describe, it, expect, vi } from 'vitest';
 import WorkbenchDisplay from './WorkbenchDisplay';
 import { RefinedPromptResult } from '../types';
 
+// Mock Notifications Context
+vi.mock('../context/NotificationContext', () => ({
+  useNotifications: () => ({
+    notify: vi.fn(),
+  })
+}));
+
 // Mock Favorites Context to avoid provider wrapping
 vi.mock('../context/FavoritesContext', () => ({
   useFavorites: () => ({
