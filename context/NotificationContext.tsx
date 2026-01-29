@@ -16,6 +16,10 @@ interface NotificationContextType {
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
+/**
+ * Provider component for the application-wide notification (toast) system.
+ * Manages an array of notifications that auto-dismiss after 5 seconds.
+ */
 export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
@@ -63,6 +67,11 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   );
 };
 
+/**
+ * Custom hook to access the NotificationContext for triggering toasts.
+ * @returns {NotificationContextType} The notify and removeNotification functions.
+ * @throws {Error} If used outside of a NotificationProvider.
+ */
 export const useNotifications = () => {
   const context = useContext(NotificationContext);
   if (!context) {

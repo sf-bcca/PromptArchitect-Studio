@@ -7,14 +7,19 @@ High-fidelity React 19 components for prompt engineering, model selection, and u
 ```
 components/
 ├── Auth.tsx              # Supabase Auth forms (Login/Sign-up)
+├── CostarSection.tsx     # CO-STAR framework input fields
 ├── FavoriteButton.tsx    # Toggle for bookmarking prompts
 ├── FavoritesSection.tsx  # Display area for saved favorites
 ├── Header.tsx            # Navigation and branding
+├── HistoryItemMenu.tsx   # Context menu for history items
 ├── HistorySidebar.tsx    # User's prompt history drawer
 ├── ModelSelector.tsx     # Dropdown for Gemini/Ollama selection
 ├── PromptCard.tsx        # Individual engineered prompt result view
 ├── PromptForm.tsx        # Core input area with transform logic
-└── ResultDisplay.tsx     # Container for prompt results and loading states
+├── ResultDisplay.tsx     # Container for prompt results and loading states
+├── SettingsPanel.tsx     # User preferences and model configuration
+├── VersionHistory.tsx    # List of prompt iterations and branches
+└── WorkbenchDisplay.tsx  # Main interactive prompt engineering area
 ```
 
 ## WHERE TO LOOK

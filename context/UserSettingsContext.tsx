@@ -14,6 +14,10 @@ interface UserSettingsContextType {
 
 const UserSettingsContext = createContext<UserSettingsContextType | undefined>(undefined);
 
+/**
+ * Provider component for user-specific preferences (theme, model choices).
+ * Synchronizes settings between Supabase persistence and local storage/document state.
+ */
 export const UserSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { session } = useSession();
   const { notify } = useNotifications();
@@ -105,6 +109,11 @@ export const UserSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
   );
 };
 
+/**
+ * Custom hook to access the UserSettingsContext.
+ * Provides current settings, loading state, and update functions.
+ * @throws {Error} If used outside of a UserSettingsProvider.
+ */
 export const useUserSettings = () => {
   const context = useContext(UserSettingsContext);
   if (context === undefined) {

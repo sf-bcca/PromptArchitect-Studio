@@ -8,16 +8,18 @@ Centralized service layer for Supabase Edge Functions, database interactions, an
 
 ## STRUCTURE
 - `supabaseClient.ts`       # Singleton Supabase client configuration
-- `geminiService.ts`         # secure invocation of 'engineer-prompt' Edge Function
-- `favorites.ts`             # CRUD operations for user prompt persistence
+- `geminiService.ts`        # Secure invocation of 'engineer-prompt' Edge Function
+- `favorites.ts`            # CRUD operations for user prompt persistence
+- `userSettings.ts`         # Management of user preferences and model config
 
 ## WHERE TO LOOK
 | Pattern | File | Description |
 |---------|------|-------------|
 | **Edge Functions** | `geminiService.ts` | Uses `supabase.functions.invoke` to bypass client-side LLM calls |
 | **Relational Joins** | `favorites.ts` | Complex `.select()` strings with nested object mapping |
-| **Data Mapping** | `favorites.ts` | Snake_case (DB) to camelCase (Frontend) transformation |
+| **Data Mapping** | `favorites.ts`, `userSettings.ts` | Snake_case (DB) to camelCase (Frontend) transformation |
 | **Error Handling** | `geminiService.ts` | Explicit re-throwing of Edge Function errors with messages |
+| **User State** | `userSettings.ts` | Persists layout and model preferences |
 
 ## CONVENTIONS
 - **Shared Client**: Always import `supabase` from `./supabaseClient.ts`.

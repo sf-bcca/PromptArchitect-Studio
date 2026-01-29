@@ -14,6 +14,10 @@ interface FavoritesContextType {
 
 const FavoritesContext = createContext<FavoritesContextType | undefined>(undefined);
 
+/**
+ * Provider component that manages the user's favorite prompts.
+ * Handles optimistic updates, persistence to Supabase, and notification triggers.
+ */
 export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { session, setShowAuth } = useSession();
   const { notify } = useNotifications();
@@ -90,6 +94,10 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   );
 };
 
+/**
+ * Custom hook to access the FavoritesContext.
+ * @throws {Error} If used outside of a FavoritesProvider.
+ */
 export const useFavorites = () => {
   const context = useContext(FavoritesContext);
   if (context === undefined) {

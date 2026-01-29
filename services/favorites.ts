@@ -1,6 +1,13 @@
 import { supabase, handleSupabaseError } from "./supabaseClient";
 import { FavoriteItem, PromptHistoryItem } from "../types";
 
+/**
+ * Retrieves all favorite prompts for a specific user.
+ * Performs a join with prompt_history to include the full prompt data.
+ * 
+ * @param userId - The UUID of the user
+ * @returns A promise resolving to an array of FavoriteItem objects
+ */
 export const getFavorites = async (userId: string): Promise<FavoriteItem[]> => {
   if (!userId) return [];
 
@@ -38,6 +45,13 @@ export const getFavorites = async (userId: string): Promise<FavoriteItem[]> => {
   }));
 };
 
+/**
+ * Adds a prompt to the user's favorites list.
+ * 
+ * @param userId - The UUID of the user
+ * @param promptHistoryId - The UUID of the prompt history item to favorite
+ * @returns A promise resolving to the created favorite record
+ */
 export const addFavorite = async (userId: string, promptHistoryId: string) => {
   console.log('[FavoritesService] Inserting favorite:', { userId, promptHistoryId });
   
@@ -56,6 +70,12 @@ export const addFavorite = async (userId: string, promptHistoryId: string) => {
   return data;
 };
 
+/**
+ * Removes a prompt from the user's favorites list.
+ * 
+ * @param userId - The UUID of the user
+ * @param promptHistoryId - The UUID of the prompt history item to unfavorite
+ */
 export const removeFavorite = async (userId: string, promptHistoryId: string) => {
   const { error } = await supabase
     .from("user_favorites")
