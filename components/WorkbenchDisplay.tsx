@@ -78,11 +78,11 @@ const WorkbenchDisplay: React.FC<WorkbenchDisplayProps> = ({ result, onFork, his
             </div>
         </div>
 
-        <div className="flex items-center gap-2 w-full lg:w-auto justify-end flex-wrap sm:flex-nowrap">
-            <div className="bg-slate-100 dark:bg-slate-800 p-1 rounded-lg flex-1 sm:flex-none flex">
+        <div className="flex items-center gap-2 w-full lg:w-auto justify-between sm:justify-end flex-wrap sm:flex-nowrap">
+            <div className="bg-slate-100 dark:bg-slate-800 p-1 rounded-lg flex-none flex">
                 <button
                     onClick={() => handleTabChange('workbench')}
-                    className={`flex-1 sm:flex-none px-4 py-2 sm:py-1.5 rounded-md text-xs font-bold transition-all min-h-[44px] sm:min-h-0 ${
+                    className={`px-3 sm:px-4 py-2 sm:py-1.5 rounded-md text-xs font-bold transition-all min-h-[44px] sm:min-h-0 ${
                     activeTab === 'workbench'
                         ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm'
                         : 'text-slate-500 hover:text-slate-700 dark:text-slate-400'
@@ -92,7 +92,7 @@ const WorkbenchDisplay: React.FC<WorkbenchDisplayProps> = ({ result, onFork, his
                 </button>
                 <button
                     onClick={() => handleTabChange('preview')}
-                    className={`flex-1 sm:flex-none px-4 py-2 sm:py-1.5 rounded-md text-xs font-bold transition-all min-h-[44px] sm:min-h-0 ${
+                    className={`px-3 sm:px-4 py-2 sm:py-1.5 rounded-md text-xs font-bold transition-all min-h-[44px] sm:min-h-0 ${
                     activeTab === 'preview'
                         ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm'
                         : 'text-slate-500 hover:text-slate-700 dark:text-slate-400'
@@ -102,17 +102,19 @@ const WorkbenchDisplay: React.FC<WorkbenchDisplayProps> = ({ result, onFork, his
                 </button>
             </div>
 
-            <Launchpad prompt={result.refinedPrompt} />
+            <div className="flex items-center gap-2">
+                <Launchpad prompt={result.refinedPrompt} />
 
-            <button
-                onClick={handleForkClick}
-                className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 text-xs font-bold border border-amber-200 dark:border-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-all active:scale-95 min-h-[44px] min-w-[44px]"
-            >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                </svg>
-                <span className="hidden xs:inline">Fork</span>
-            </button>
+                <button
+                    onClick={handleForkClick}
+                    className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 text-xs font-bold border border-amber-200 dark:border-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-all active:scale-95 min-h-[44px] min-w-[44px]"
+                >
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                    </svg>
+                    <span className="hidden xs:inline">Fork</span>
+                </button>
+            </div>
         </div>
       </div>
 

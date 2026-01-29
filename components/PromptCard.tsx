@@ -73,12 +73,12 @@ const PromptCard: React.FC<PromptCardProps> = ({ result, historyId, onFork }) =>
             </svg>
             Refined Prompt
           </h2>
-          <div className="flex items-center justify-end gap-2 w-full xs:w-auto flex-wrap sm:flex-nowrap">
+          <div className="flex items-center justify-between sm:justify-end gap-2 w-full xs:w-auto flex-wrap sm:flex-nowrap">
             {targetId && (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-none">
                     <button
                         onClick={handleForkClick}
-                        className="h-[44px] px-4 rounded-full bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 text-xs font-bold transition-all flex items-center justify-center border border-amber-100 dark:border-amber-900/50"
+                        className="h-[44px] px-3 sm:px-4 rounded-full bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 text-xs font-bold transition-all flex items-center justify-center border border-amber-100 dark:border-amber-900/50"
                         title="Create variation"
                     >
                         <svg className="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -92,28 +92,30 @@ const PromptCard: React.FC<PromptCardProps> = ({ result, historyId, onFork }) =>
                 </div>
             )}
             
-            <Launchpad prompt={result.refinedPrompt} />
+            <div className="flex items-center gap-2 ml-auto sm:ml-0">
+                <Launchpad prompt={result.refinedPrompt} />
 
-            <button
-                onClick={copyToClipboard}
-                className="h-[44px] px-4 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-xs font-bold transition-all flex items-center justify-center border border-indigo-100 dark:border-indigo-900/50 whitespace-nowrap min-w-[110px]"
-            >
-                {copied ? (
-                <>
-                    <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    Copied!
-                </>
-                ) : (
-                <>
-                    <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                    </svg>
-                    Copy Prompt
-                </>
-                )}
-            </button>
+                <button
+                    onClick={copyToClipboard}
+                    className="h-[44px] px-3 sm:px-4 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-xs font-bold transition-all flex items-center justify-center border border-indigo-100 dark:border-indigo-900/50 whitespace-nowrap min-w-[100px] sm:min-w-[110px]"
+                >
+                    {copied ? (
+                    <>
+                        <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        Copied!
+                    </>
+                    ) : (
+                    <>
+                        <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                        </svg>
+                        Copy
+                    </>
+                    )}
+                </button>
+            </div>
           </div>
         </div>
         <div className="p-6">
