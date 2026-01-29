@@ -22,3 +22,6 @@
 - **Playwright:** Robust end-to-end testing ensuring cross-browser stability and performance.
 - **SecretLint & Husky:** Automated security scans and git hooks to prevent credential leakage and ensure code quality.
 - **Docker:** Consistent environment orchestration via Docker Compose for both development and production.
+
+## Dev Tooling
+- **Gemini Skills:** Custom automated agents for workflow management (`conductor-helper`), architectural scaffolding (`scaffold-flat`, `edge-function-architect`), and testing (`test-suite-architect`).

@@ -15,6 +15,8 @@ All tasks follow a strict lifecycle:
 
 ### Standard Task Workflow
 
+**💡 TIP:** Use the `conductor-helper` skill to automate these steps (e.g., "Start task X", "Finish task Y").
+
 1. **Select Task:** Choose the next available task from `plan.md` in sequential order
 
 2. **Mark In Progress:** Before beginning work, edit `plan.md` and change the task from `[ ]` to `[~]`

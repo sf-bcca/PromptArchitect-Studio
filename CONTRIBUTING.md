@@ -38,6 +38,14 @@ We use a **trunk-based workflow** with automated CI/CD:
     - CI will automatically run: build, unit tests, E2E tests, and security scans.
     - Merging to `main` triggers automatic deployment.
 
+## Gemini Skills
+If you are using Gemini CLI, we have provided specialized skills to help you follow project conventions:
+- **`conductor-helper`**: Manage tasks and phases.
+- **`scaffold-flat`**: Create components with correct structure.
+- **`edge-function-architect`**: Create backend functions with mirrored tests.
+- **`test-suite-architect`**: Scaffold service tests with mocks.
+- **`docs-maintainer`**: Check documentation coverage.
+
 ## Coding Standards
 
 - **TypeScript**: Use strict typing. Avoid `any` whenever possible.

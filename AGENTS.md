@@ -55,6 +55,14 @@ PromptArchitect-Studio is a React 19 + TypeScript + Supabase web application for
 - **Zero-Trust Deployment**: Tailscale-based SSH deployment, no public ports
 - **Sentinel Learning Log**: .jules/sentinel.md tracks security learnings
 
+## AUTOMATED SKILLS
+This project uses specialized Gemini Skills to automate complex conventions. **Use them instead of manual labor.**
+- **conductor-helper**: Automates the rigorous 11-step task workflow (Start/Finish tasks, Checkpoints).
+- **scaffold-flat**: Generates components/tests adhering to the "Flat Structure" (no `src/`).
+- **edge-function-architect**: Scaffolds Deno Edge Functions with "Mirrored Logic" test files.
+- **test-suite-architect**: Generates service tests with pre-configured Supabase mocks.
+- **docs-maintainer**: Audits knowledge base integrity and JSDoc coverage.
+
 ## COMMANDS
 ```bash
 pnpm dev          # Development server on port 5174
