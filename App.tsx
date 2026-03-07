@@ -41,10 +41,16 @@ const App: React.FC = () => {
   // State for selected LLM model
   const [selectedModel, setSelectedModel] = useState("gemini-2.5-flash-lite");
 
-  // Sync selected model with settings once loaded
+  // Sync selected model with settings once loaded, ensuring legacy models are migrated
   useEffect(() => {
     if (settings?.default_model) {
-      setSelectedModel(settings.default_model);
+      const isValid = MODELS.some(m => m.id === settings.default_model);
+      if (isValid) {
+        setSelectedModel(settings.default_model);
+      } else {
+        // Fallback to default if legacy value found in user settings
+        setSelectedModel("gemini-2.5-flash-lite");
+      }
     }
   }, [settings]);
   // State for tracking the loading status of the API request
@@ -94,7 +100,7 @@ const App: React.FC = () => {
 
     // Find the full model object to get the provider
     const selectedModelObj = MODELS.find((m) => m.id === selectedModel);
-    const provider = selectedModelObj ? selectedModelObj.provider : "ollama";
+    const provider = selectedModelObj ? selectedModelObj.provider : "gemini";
 
     try {
       // The Edge Function handles persistence if the user is authenticated.

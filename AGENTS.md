@@ -5,12 +5,12 @@
 **Branch:** main
 
 ## OVERVIEW
-PromptArchitect-Studio is a specialized React 19 + TypeScript + Supabase web application designed to help users engineer high-quality AI prompts using the **CO-STAR framework** (Context, Objective, Style, Tone, Audience, Response). It features a modern frontend and a Supabase backend with Edge Functions that interface with LLMs (Gemini or Ollama).
+PromptArchitect-Studio is a specialized React 19 + TypeScript + Supabase web application designed to help users engineer high-quality AI prompts using the **CO-STAR framework** (Context, Objective, Style, Tone, Audience, Response). It features a modern frontend and a Supabase backend with Edge Functions that interface with Gemini LLMs.
 
 ## TECH STACK
 *   **Frontend:** React 19, TypeScript ~5.8, Vite 6, Tailwind CSS 4.
 *   **Backend:** Supabase (PostgreSQL), Deno (Edge Functions).
-*   **AI Providers:** Gemini 2.5 Flash-Lite (Default) / 3.0 Flash (Cloud) or Ollama/Llama 3.2 (Self-hosted).
+*   **AI Providers:** Gemini 2.5 Flash-Lite (Default) / 3.0 Flash (Cloud).
 *   **Testing:** Vitest (Unit), Playwright (E2E).
 *   **Containerization:** Docker, Docker Compose.
 *   **Tools:** Husky (Git hooks), SecretLint.
@@ -82,7 +82,7 @@ pnpm secretlint   # Security linting
 - **DO NOT** include markdown in JSON responses from edge functions.
 
 ## AI & BACKEND CONFIGURATION
-*   **LLM Setup:** Configured via Supabase Secrets (`LLM_PROVIDER`, `GEMINI_API_KEY` or `OLLAMA_URL`). See `LLM_SETUP.md`.
+*   **LLM Setup:** Configured via Supabase Secrets (`GEMINI_API_KEY`). See `LLM_SETUP.md`.
 *   **Supabase:** Local development requires Supabase CLI. Edge functions run in a Deno environment.
 
 ## DEPLOYMENT

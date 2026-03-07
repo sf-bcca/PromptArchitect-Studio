@@ -71,9 +71,8 @@ serve(async (req) => {
     }
 
     // Input Validation
-    const ALLOWED_PROVIDERS = ["gemini", "ollama"];
+    const ALLOWED_PROVIDERS = ["gemini"];
     const ALLOWED_MODELS = {
-      ollama: ["llama3.2", "gemma2:2b", "gemma3:4b"],
       gemini: [
         "gemini-2.5-flash-lite", "gemini-3.0-flash", "gemini-1.5-flash"
       ],
@@ -83,7 +82,7 @@ serve(async (req) => {
         return errorResponse(`Invalid provider. Allowed: ${ALLOWED_PROVIDERS.join(", ")}`, ErrorCode.VALIDATION_ERROR);
     }
 
-    const provider = reqProvider || Deno.env.get("LLM_PROVIDER") || "gemini";
+    const provider = reqProvider || "gemini";
 
     if (model) {
         const validModelsForProvider = ALLOWED_MODELS[provider as keyof typeof ALLOWED_MODELS];
@@ -144,42 +143,6 @@ serve(async (req) => {
     const systemInstruction = task === 'title' ? titleSystemInstruction : engineerSystemInstruction;
 
     try {
-      if (provider === "ollama") {
-        const ollamaUrl = Deno.env.get("OLLAMA_URL") || "http://localhost:11434";
-        const ollamaModel = model || Deno.env.get("OLLAMA_MODEL") || "llama3.2";
-
-        const headers: Record<string, string> = { "Content-Type": "application/json" };
-        const cfId = Deno.env.get("CF_ACCESS_CLIENT_ID");
-        const cfSecret = Deno.env.get("CF_ACCESS_CLIENT_SECRET");
-        if (cfId && cfSecret) {
-          headers["CF-Access-Client-Id"] = cfId;
-          headers["CF-Access-Client-Secret"] = cfSecret;
-        }
-
-        const response = await fetch(`${ollamaUrl}/api/chat`, {
-          method: "POST",
-          headers,
-          body: JSON.stringify({
-            model: ollamaModel,
-            messages: [
-              { role: "system", content: systemInstruction },
-              { role: "user", content: userInput }
-            ],
-            format: "json",
-            stream: false,
-            options: { temperature: 0.3 },
-          }),
-        });
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`Ollama API error: ${response.status} - ${errorText}`);
-        }
-
-        const data = await response.json();
-        text = data.message?.content || "";
-
-      } else {
         const apiKey = Deno.env.get("GEMINI_API_KEY");
         if (!apiKey) throw new Error("GEMINI_API_KEY is not set");
 
@@ -194,7 +157,6 @@ serve(async (req) => {
         const result = await genModel.generateContent([systemInstruction, userInput]);
         const response = await result.response;
         text = response.text();
-      }
     } catch (llmError: any) {
        console.error("LLM Provider Error:", llmError);
        return errorResponse(
@@ -235,9 +197,7 @@ serve(async (req) => {
     }
 
     parsedResult.provider = provider;
-    parsedResult.model = provider === "ollama" 
-      ? (model || Deno.env.get("OLLAMA_MODEL") || "llama3.2")
-      : (model || Deno.env.get("GEMINI_MODEL") || "gemini-2.5-flash-lite");
+    parsedResult.model = model || Deno.env.get("GEMINI_MODEL") || "gemini-2.5-flash-lite";
 
     // PERSISTENCE
     if (userId && task === 'engineer') {

@@ -6,7 +6,7 @@ import { ErrorCode } from '../types';
  * (Mirrored logic pattern)
  */
 describe('Edge Function Logic Principles', () => {
-  const ALLOWED_PROVIDERS = ["gemini", "ollama"];
+  const ALLOWED_PROVIDERS = ["gemini"];
   
   const validateInput = (userInput: any, provider?: string, parentId?: string) => {
     if (!userInput) return { error: "Missing userInput", code: ErrorCode.VALIDATION_ERROR };

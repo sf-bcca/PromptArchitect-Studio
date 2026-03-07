@@ -15,7 +15,7 @@ PromptArchitect-Studio is a tool designed to help you engineer high-quality prom
 2.  **Engineer the Prompt**
 
     - Click the **"Transform Prompt"** button.
-    - The system will process your request using **Gemini 2.5 Flash-Lite** or **Llama 3.2** (via Ollama) depending on your selection in the model dropdown.
+    - The system will process your request using **Gemini 2.5 Flash-Lite**.
 
 3.  **Review the Results**
 
@@ -36,7 +36,7 @@ PromptArchitect-Studio is a tool designed to help you engineer high-quality prom
 
 6.  **Personalization & Settings**
     - Click the gear icon in the header to open the **Settings Panel**.
-    - **Default Model:** Choose your preferred AI engine (Gemini or Ollama) to be used by default.
+    - **Default Model:** Choose your preferred Gemini model to be used by default.
     - **Theme:** Switch between Light and Dark modes. The studio defaults to a premium Dark theme on first load.
 
 ## Tips for Better Results

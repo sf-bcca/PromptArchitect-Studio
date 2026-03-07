@@ -28,7 +28,7 @@ PromptArchitect-Studio is a powerful web-based tool designed to elevate your int
 - **👤 Persona Engineering**: Automatically assigns expert roles and personas to your tasks.
 - **🎯 Constraint Driven**: Defines clear boundaries to ensure focused and high-quality AI outputs.
 - **📋 Structured Output Control**: Generates prompts that demand specific formats for easy integration.
-- **⚡ Dual-Engine Support**: Choice between Gemini 2.5 Flash-Lite (Default) and self-hosted **Llama 3.2** via Ollama.
+- **⚡ AI Powered**: Leverages **Gemini 2.5 Flash-Lite** (Default) for high-speed, high-quality prompt refinement.
 - **🕰️ History, Favorites & Persistence**: Save, favorite, and revisit your engineered architectures using Supabase integration.
 
 ## 🏗️ Architecture
@@ -44,13 +44,11 @@ flowchart LR
     end
     subgraph LLM Providers
         D[Gemini API]
-        E[Ollama<br/>Self-Hosted]
     end
 
     A -->|User Input| B
     B -->|Store History| C
     B -->|API Call| D
-    B -->|Cloudflare Tunnel| E
     B -->|Engineered Prompt| A
 ```
 
@@ -87,7 +85,7 @@ Open [http://localhost:5174](http://localhost:5174) — you're ready to engineer
 | Guide                                 | Description                                    |
 | ------------------------------------- | ---------------------------------------------- |
 | [Installation Guide](INSTALL.md)      | Detailed setup and environment configuration   |
-| [LLM Setup Guide](LLM_SETUP.md)       | Configure Gemini or self-hosted Ollama         |
+| [LLM Setup Guide](LLM_SETUP.md)       | Configure Gemini API                          |
 | [Usage Guide](USAGE.md)               | How to use the application effectively         |
 | [Deployment Guide](DEPLOY.md)         | Docker deployment for production               |
 | [Contributing Guide](CONTRIBUTING.md) | Workflow and standards for developers          |
@@ -100,7 +98,7 @@ Open [http://localhost:5174](http://localhost:5174) — you're ready to engineer
 | **Frontend**   | [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)                      |
 | **Build Tool** | [Vite 6](https://vite.dev/)                                                                         |
 | **Styling**    | [Tailwind CSS 4](https://tailwindcss.com/)                                                           |
-| **AI Engines** | [Gemini 2.5 Flash-Lite](https://ai.google.dev/) (Default) & [Ollama](https://ollama.com/) (Llama 3.2) |
+| **AI Engines** | [Gemini 2.5 Flash-Lite](https://ai.google.dev/) (Default)                                           |
 | **Backend/DB** | [Supabase](https://supabase.com/)                                                                   |
 | **Testing**    | [Vitest](https://vitest.dev/) + [Playwright](https://playwright.dev/)                               |
 | **Git Hooks**  | [Husky](https://typicode.github.io/husky/) + [SecretLint](https://github.com/secretlint/secretlint) |

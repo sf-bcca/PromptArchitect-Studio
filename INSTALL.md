@@ -78,6 +78,6 @@ Open [http://localhost:5174](http://localhost:5174) in your browser. You should 
 
 ## Next Steps
 
-- [Configure LLM Provider](LLM_SETUP.md) — Set up Gemini or Ollama
+- [Configure Gemini API](LLM_SETUP.md) — Set up your API key
 - [Learn the Interface](USAGE.md) — How to use the application
 - [Deploy to Production](DEPLOY.md) — Docker deployment guide

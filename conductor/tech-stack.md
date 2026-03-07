@@ -15,7 +15,6 @@
 ## AI Infrastructure
 - **Google Gemini 2.5 Flash-Lite:** Primary cloud-based LLM for cost-effective, high-performance prompt engineering (Default).
 - **Google Gemini 3.0 Flash:** High-performance alternative for rapid iterations.
-- **Ollama:** Self-hosted fallback or privacy-centric engine running **Llama 3.2**.
 - **GenAI SDK:** Direct integration with Gemini's advanced multimodal and instruction-following capabilities.
 
 ## Quality & Security

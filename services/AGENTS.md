@@ -34,7 +34,7 @@ Centralized service layer for Supabase Edge Functions, database interactions, an
 - **NEVER** include business logic that belongs in the Edge Function (e.g., prompt templates).
 - **NEVER** use `any` for database response types; cast or define appropriate interfaces.
 - **NEVER** expose raw database error objects to the UI; wrap in user-friendly `Error` messages.
-- **DO NOT** perform direct AI provider calls (Gemini/Ollama) from the frontend; use the Edge Function proxy.
+- **DO NOT** perform direct AI provider calls (Gemini) from the frontend; use the Edge Function proxy.
 - **DO NOT** include UI-specific logic (e.g., `alert()`, `setLoading`) in this layer.
 
 ## SUPABASE INTEGRATION PATTERNS

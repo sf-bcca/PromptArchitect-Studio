@@ -25,9 +25,9 @@ export interface RefinedPromptResult {
   suggestedVariables: string[];
   /** The granular CO-STAR components breakdown. Optional for backward compatibility. */
   costar?: CostarComponents;
-  /** The LLM provider used (e.g., 'gemini', 'ollama'). */
+  /** The LLM provider used (e.g., 'gemini'). */
   provider?: string;
-  /** The specific model used (e.g., 'llama3.2', 'gemini-3-flash-preview'). */
+  /** The specific model used (e.g., 'gemini-3.0-flash'). */
   model?: string;
   /** A user-defined custom title for this prompt session. */
   customTitle?: string;
@@ -84,25 +84,23 @@ export interface UserSettings {
 export interface Model {
   id: string;
   name: string;
-  provider: 'gemini' | 'ollama';
+  provider: 'gemini';
 }
 
 /**
  * Available models configuration.
  */
 export const MODELS: Model[] = [
-  { id: "llama3.2", name: "Ollama (Llama 3.2 3B)", provider: "ollama" },
-  { id: "gemma2:2b", name: "Ollama (Gemma 2 2B)", provider: "ollama" },
-  { id: "gemma3:4b", name: "Ollama (Gemma 3 4B)", provider: "ollama" },
   { id: "gemini-2.5-flash-lite", name: "Gemini Flash-Lite 2.5 (Cloud)", provider: "gemini" },
   { id: "gemini-3.0-flash", name: "Gemini 3.0 Flash (Latest)", provider: "gemini" },
+  { id: "gemini-1.5-flash", name: "Gemini 1.5 Flash (Legacy)", provider: "gemini" },
 ];
 
 /**
  * Standard error codes for the application.
  */
 export enum ErrorCode {
-  /** The LLM service (Gemini/Ollama) is unreachable or timed out. */
+  /** The LLM service (Gemini) is unreachable or timed out. */
   LLM_SERVICE_UNAVAILABLE = 'LLM_SERVICE_UNAVAILABLE',
   /** The service returned a 400/500 error or invalid response. */
   LLM_GENERATION_FAILED = 'LLM_GENERATION_FAILED',
