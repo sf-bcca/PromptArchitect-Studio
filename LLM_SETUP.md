@@ -1,12 +1,12 @@
 # LLM Setup Guide: Gemini
 
-This guide explains how to configure PromptArchitect-Studio to use Gemini (cloud).
+This guide explains how to configure PromptArchitect-Studio to use Gemini.
 
 ## Provider Overview
 
 | Provider             | Best For                          | Requirements                                   |
 | -------------------- | --------------------------------- | ---------------------------------------------- |
-| **Gemini** (Default) | Fastest setup, cloud-hosted       | Gemini API Key                                 |
+| **Gemini** (Default) | Fastest setup                    | Gemini API Key                                 |
 
 The `LLM_PROVIDER` environment variable in the Supabase Edge Function is set to `gemini` by default.
 
@@ -28,7 +28,7 @@ supabase secrets set LLM_PROVIDER=gemini
 supabase secrets set GEMINI_API_KEY=your_key_here
 ```
 
-**✅ Done!** The Edge Function will now use Gemini 3 Flash.
+**✅ Done!** The Edge Function will now use Gemini 2.5 Flash-Lite by default.
 
 ---
 

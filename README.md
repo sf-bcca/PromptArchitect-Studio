@@ -58,7 +58,7 @@ flowchart LR
 
 - [Node.js](https://nodejs.org/) v18+ and [pnpm](https://pnpm.io/)
 - A [Supabase](https://supabase.com/) account and project
-- A [Gemini API Key](https://aistudio.google.com/) (for cloud LLM)
+- A [Gemini API Key](https://aistudio.google.com/)
 
 ### Installation
 

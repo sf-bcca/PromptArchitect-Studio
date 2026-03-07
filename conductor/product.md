@@ -18,7 +18,7 @@ The studio serves a diverse group of AI practitioners:
 - **CO-STAR Architect:** A multi-stage builder that guides users through context setting, objective definition, and output constraints.
 - **Persistence & History:** Comprehensive tracking of prompt versions, with the ability to favorite and revisit high-performing architectures.
 - **Personalization:** User-specific settings for default models and theme persistence across sessions.
-- **AI Engine Support:** Native integration with Google Gemini for cloud scale, high-performance prompt engineering.
+- **AI Engine Support:** Native integration with Google Gemini for high-performance prompt engineering.
 
 ## Quality Standards
 - **Performance:** Sub-second response times for the transformation engine and UI interactions.
