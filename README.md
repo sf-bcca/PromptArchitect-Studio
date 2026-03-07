@@ -99,7 +99,7 @@ Open [http://localhost:5174](http://localhost:5174) — you're ready to engineer
 | -------------- | --------------------------------------------------------------------------------------------------- |
 | **Frontend**   | [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)                      |
 | **Build Tool** | [Vite 6](https://vite.dev/)                                                                         |
-| **Styling**    | Vanilla CSS (Premium Aesthetics)                                                                    |
+| **Styling**    | [Tailwind CSS 4](https://tailwindcss.com/)                                                           |
 | **AI Engines** | [Google Gemini 3 Flash](https://ai.google.dev/) & [Ollama](https://ollama.com/) (Llama 3.2)         |
 | **Backend/DB** | [Supabase](https://supabase.com/)                                                                   |
 | **Testing**    | [Vitest](https://vitest.dev/) + [Playwright](https://playwright.dev/)                               |
