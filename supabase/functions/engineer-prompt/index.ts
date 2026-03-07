@@ -160,7 +160,7 @@ serve(async (req) => {
     } catch (llmError: any) {
        console.error("LLM Provider Error:", llmError);
        return errorResponse(
-         `The AI service (${provider}) is currently unavailable or returned an error.`, 
+         `The AI service (${provider}) returned an error: ${llmError.message}`, 
          ErrorCode.LLM_SERVICE_UNAVAILABLE,
          503,
          { originalError: llmError.message }
