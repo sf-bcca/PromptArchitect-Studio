@@ -66,7 +66,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ onClose }) => {
             Default LLM Model
           </label>
           <select
-            value={settings?.default_model || 'gemini-3.1-flash-lite'}
+            value={settings?.default_model || 'gemini-3.1-flash-lite-preview'}
             onChange={handleModelChange}
             className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
           >

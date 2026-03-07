@@ -74,7 +74,7 @@ serve(async (req) => {
     const ALLOWED_PROVIDERS = ["gemini"];
     const ALLOWED_MODELS = {
       gemini: [
-        "gemini-3.1-flash-lite", "gemini-3.0-flash"
+        "gemini-3.1-flash-lite-preview", "gemini-3.0-flash"
       ],
     };
 
@@ -147,7 +147,7 @@ serve(async (req) => {
         if (!apiKey) throw new Error("GEMINI_API_KEY is not set");
 
         const genAI = new GoogleGenerativeAI(apiKey);
-        const modelName = model || Deno.env.get("GEMINI_MODEL") || "gemini-3.1-flash-lite"; 
+        const modelName = model || Deno.env.get("GEMINI_MODEL") || "gemini-3.1-flash-lite-preview"; 
         const genModel = genAI.getGenerativeModel({
             model: modelName,
             generationConfig: { responseMimeType: "application/json" }
@@ -197,7 +197,7 @@ serve(async (req) => {
     }
 
     parsedResult.provider = provider;
-    parsedResult.model = model || Deno.env.get("GEMINI_MODEL") || "gemini-3.1-flash-lite";
+    parsedResult.model = model || Deno.env.get("GEMINI_MODEL") || "gemini-3.1-flash-lite-preview";
 
     // PERSISTENCE
     if (userId && task === 'engineer') {
