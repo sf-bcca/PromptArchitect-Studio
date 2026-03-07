@@ -12,7 +12,7 @@
   <br />
   [![Vite](https://img.shields.io/badge/Vite-6.2.0-646CFF.svg)](https://vitejs.dev/)
   [![React](https://img.shields.io/badge/React-19.2.3-61DAFB.svg)](https://reactjs.org/)
-  [![Gemini](https://img.shields.io/badge/Gemini-2.5_Flash--Lite-4285F4.svg)](https://deepmind.google/technologies/gemini/)
+  [![Gemini](https://img.shields.io/badge/Gemini-3.1_Flash--Lite-4285F4.svg)](https://deepmind.google/technologies/gemini/)
 </div>
 
 ---
@@ -98,7 +98,7 @@ Open [http://localhost:5174](http://localhost:5174) — you're ready to engineer
 | **Frontend**   | [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)                      |
 | **Build Tool** | [Vite 6](https://vite.dev/)                                                                         |
 | **Styling**    | [Tailwind CSS 4](https://tailwindcss.com/)                                                           |
-| **AI Engines** | [Gemini 2.5 Flash-Lite](https://ai.google.dev/) (Default)                                           |
+| **AI Engines** | [Gemini 3.1 Flash-Lite](https://ai.google.dev/) (Default)                                           |
 | **Backend/DB** | [Supabase](https://supabase.com/)                                                                   |
 | **Testing**    | [Vitest](https://vitest.dev/) + [Playwright](https://playwright.dev/)                               |
 | **Git Hooks**  | [Husky](https://typicode.github.io/husky/) + [SecretLint](https://github.com/secretlint/secretlint) |

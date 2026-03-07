@@ -28,7 +28,7 @@ supabase secrets set LLM_PROVIDER=gemini
 supabase secrets set GEMINI_API_KEY=your_key_here
 ```
 
-**✅ Done!** The Edge Function will now use Gemini 2.5 Flash-Lite by default.
+**✅ Done!** The Edge Function will now use Gemini 3.1 Flash-Lite by default.
 
 ---
 

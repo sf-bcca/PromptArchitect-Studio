@@ -39,7 +39,7 @@ const App: React.FC = () => {
   // State for storing the raw user input text
   const [userInput, setUserInput] = useState("");
   // State for selected LLM model
-  const [selectedModel, setSelectedModel] = useState("gemini-2.5-flash-lite");
+  const [selectedModel, setSelectedModel] = useState("gemini-3.1-flash-lite");
 
   // Sync selected model with settings once loaded, ensuring legacy models are migrated
   useEffect(() => {
@@ -49,7 +49,7 @@ const App: React.FC = () => {
         setSelectedModel(settings.default_model);
       } else {
         // Fallback to default if legacy value found in user settings
-        setSelectedModel("gemini-2.5-flash-lite");
+        setSelectedModel("gemini-3.1-flash-lite");
       }
     }
   }, [settings]);
