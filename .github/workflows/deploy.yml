@@ -25,9 +25,9 @@ jobs:
           # Wait for Tailscale to stabilize
           sleep 5
           # Get the IP address of the target host using tailscale status
-          TARGET_IP=$(sudo tailscale status --json | jq -r '.Peer | to_entries[] | select(.value.HostName=="${{ secrets.DEPLOY_HOST }}" or .value.DNSName=="${{ secrets.DEPLOY_HOST }}.") | .value.TailscaleIPs[0]' | head -1)
+          TARGET_IP=$(sudo tailscale status --json | jq -r '.Peer | to_entries[] | select(.value.HostName=="raspberrypi" or .value.DNSName=="raspberrypi.") | .value.TailscaleIPs[0]' | head -1)
           if [ -z "$TARGET_IP" ] || [ "$TARGET_IP" = "null" ]; then
-            echo "Could not resolve IP for ${{ secrets.DEPLOY_HOST }}"
+            echo "Could not resolve IP for raspberrypi"
             echo "Tailscale peers:"
             sudo tailscale status
             exit 1
