@@ -12,7 +12,7 @@
   <br />
   [![Vite](https://img.shields.io/badge/Vite-6.2.0-646CFF.svg)](https://vitejs.dev/)
   [![React](https://img.shields.io/badge/React-19.2.3-61DAFB.svg)](https://reactjs.org/)
-  [![Gemini](https://img.shields.io/badge/Gemini-3_Flash-4285F4.svg)](https://deepmind.google/technologies/gemini/)
+  [![Gemini](https://img.shields.io/badge/Gemini-2.5_Flash--Lite-4285F4.svg)](https://deepmind.google/technologies/gemini/)
 </div>
 
 ---
@@ -28,7 +28,7 @@ PromptArchitect-Studio is a powerful web-based tool designed to elevate your int
 - **👤 Persona Engineering**: Automatically assigns expert roles and personas to your tasks.
 - **🎯 Constraint Driven**: Defines clear boundaries to ensure focused and high-quality AI outputs.
 - **📋 Structured Output Control**: Generates prompts that demand specific formats for easy integration.
-- **⚡ Dual-Engine Support**: Choice between Google Gemini 3 Flash and self-hosted **Llama 3.2** via Ollama.
+- **⚡ Dual-Engine Support**: Choice between Google Gemini 2.5 Flash-Lite (Default) and self-hosted **Llama 3.2** via Ollama.
 - **🕰️ History, Favorites & Persistence**: Save, favorite, and revisit your engineered architectures using Supabase integration.
 
 ## 🏗️ Architecture
@@ -100,7 +100,7 @@ Open [http://localhost:5174](http://localhost:5174) — you're ready to engineer
 | **Frontend**   | [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)                      |
 | **Build Tool** | [Vite 6](https://vite.dev/)                                                                         |
 | **Styling**    | [Tailwind CSS 4](https://tailwindcss.com/)                                                           |
-| **AI Engines** | [Google Gemini 3 Flash](https://ai.google.dev/) & [Ollama](https://ollama.com/) (Llama 3.2)         |
+| **AI Engines** | [Google Gemini 2.5 Flash-Lite](https://ai.google.dev/) (Default) & [Ollama](https://ollama.com/) (Llama 3.2) |
 | **Backend/DB** | [Supabase](https://supabase.com/)                                                                   |
 | **Testing**    | [Vitest](https://vitest.dev/) + [Playwright](https://playwright.dev/)                               |
 | **Git Hooks**  | [Husky](https://typicode.github.io/husky/) + [SecretLint](https://github.com/secretlint/secretlint) |

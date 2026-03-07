@@ -37,7 +37,7 @@ const App: React.FC = () => {
   // State for storing the raw user input text
   const [userInput, setUserInput] = useState("");
   // State for selected LLM model
-  const [selectedModel, setSelectedModel] = useState("llama3.2");
+  const [selectedModel, setSelectedModel] = useState("gemini-2.5-flash-lite");
 
   // Sync selected model with settings once loaded
   useEffect(() => {

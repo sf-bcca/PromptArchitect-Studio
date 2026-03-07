@@ -13,8 +13,8 @@
 - **Deno (Edge Functions):** Serverless logic execution at the edge for low-latency prompt engineering transformations.
 
 ## AI Infrastructure
-- **Google Gemini 3.1 Pro:** Advanced reasoning and high-fidelity prompt generation (Primary Cloud LLM - Default).
-- **Google Gemini 3.0 Flash:** High-performance, cost-effective alternative for rapid iterations.
+- **Google Gemini 2.5 Flash-Lite:** Primary cloud-based LLM for cost-effective, high-performance prompt engineering (Default).
+- **Google Gemini 3.0 Flash:** High-performance alternative for rapid iterations.
 - **Ollama:** Self-hosted fallback or privacy-centric engine running **Llama 3.2**.
 - **GenAI SDK:** Direct integration with Gemini's advanced multimodal and instruction-following capabilities.
 

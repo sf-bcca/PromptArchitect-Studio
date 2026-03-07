@@ -96,7 +96,6 @@ export const MODELS: Model[] = [
   { id: "gemma3:4b", name: "Ollama (Gemma 3 4B)", provider: "ollama" },
   { id: "gemini-2.5-flash-lite", name: "Gemini Flash-Lite 2.5 (Cloud)", provider: "gemini" },
   { id: "gemini-3.0-flash", name: "Google Gemini 3.0 Flash (Latest)", provider: "gemini" },
-  { id: "gemini-3.1-pro-preview", name: "Google Gemini 3.1 Pro (Preview)", provider: "gemini" },
 ];
 
 /**

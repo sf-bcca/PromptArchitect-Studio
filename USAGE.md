@@ -15,7 +15,7 @@ PromptArchitect-Studio is a tool designed to help you engineer high-quality prom
 2.  **Engineer the Prompt**
 
     - Click the **"Transform Prompt"** button.
-    - The system will process your request using **Google Gemini (3.1 Pro or 3.0 Flash)** or **Llama 3.2** (via Ollama) depending on your selection in the model dropdown.
+    - The system will process your request using **Google Gemini 2.5 Flash-Lite** or **Llama 3.2** (via Ollama) depending on your selection in the model dropdown.
 
 3.  **Review the Results**
 

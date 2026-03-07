@@ -75,8 +75,7 @@ serve(async (req) => {
     const ALLOWED_MODELS = {
       ollama: ["llama3.2", "gemma2:2b", "gemma3:4b"],
       gemini: [
-        "gemini-2.5-flash-lite", "gemini-3.0-flash", "gemini-3.1-pro-preview", "gemini-3-pro-preview",
-        "gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro"
+        "gemini-2.5-flash-lite", "gemini-3.0-flash", "gemini-1.5-flash"
       ],
     };
 
@@ -185,7 +184,7 @@ serve(async (req) => {
         if (!apiKey) throw new Error("GEMINI_API_KEY is not set");
 
         const genAI = new GoogleGenerativeAI(apiKey);
-        const modelName = model || Deno.env.get("GEMINI_MODEL") || "gemini-3.1-pro-preview"; 
+        const modelName = model || Deno.env.get("GEMINI_MODEL") || "gemini-2.5-flash-lite"; 
         const genModel = genAI.getGenerativeModel({
             model: modelName,
             generationConfig: { responseMimeType: "application/json" }
@@ -238,7 +237,7 @@ serve(async (req) => {
     parsedResult.provider = provider;
     parsedResult.model = provider === "ollama" 
       ? (model || Deno.env.get("OLLAMA_MODEL") || "llama3.2")
-      : (model || Deno.env.get("GEMINI_MODEL") || "gemini-3.1-pro-preview");
+      : (model || Deno.env.get("GEMINI_MODEL") || "gemini-2.5-flash-lite");
 
     // PERSISTENCE
     if (userId && task === 'engineer') {

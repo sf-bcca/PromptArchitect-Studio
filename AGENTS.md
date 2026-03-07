@@ -10,7 +10,7 @@ PromptArchitect-Studio is a specialized React 19 + TypeScript + Supabase web app
 ## TECH STACK
 *   **Frontend:** React 19, TypeScript ~5.8, Vite 6, Tailwind CSS 4.
 *   **Backend:** Supabase (PostgreSQL), Deno (Edge Functions).
-*   **AI Providers:** Google Gemini 3.1 Pro / 3.0 Flash (Cloud) or Ollama/Llama 3.2 (Self-hosted).
+*   **AI Providers:** Google Gemini 2.5 Flash-Lite (Default) / 3.0 Flash (Cloud) or Ollama/Llama 3.2 (Self-hosted).
 *   **Testing:** Vitest (Unit), Playwright (E2E).
 *   **Containerization:** Docker, Docker Compose.
 *   **Tools:** Husky (Git hooks), SecretLint.
