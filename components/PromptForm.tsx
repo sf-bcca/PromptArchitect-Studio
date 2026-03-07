@@ -18,6 +18,7 @@ interface PromptFormProps {
   setShowAuth: (show: boolean) => void;
   parentId?: string | null;
   onCancelFork?: () => void;
+  onClear?: () => void;
 }
 
 const PromptForm: React.FC<PromptFormProps> = ({
@@ -32,13 +33,21 @@ const PromptForm: React.FC<PromptFormProps> = ({
   session,
   setShowAuth,
   parentId,
-  onCancelFork
+  onCancelFork,
+  onClear
 }) => {
   const haptics = useHaptics();
 
   const handleLocalSubmit = (e: React.FormEvent) => {
     haptics.heavyImpact();
     handleSubmit(e);
+  };
+
+  const handleClear = () => {
+    haptics.lightImpact();
+    onClear?.();
+    // Focus the input after clearing
+    document.getElementById('prompt-input')?.focus();
   };
 
   return (
@@ -74,21 +83,35 @@ const PromptForm: React.FC<PromptFormProps> = ({
             </div>
           </div>
 
-          <textarea
-            id="prompt-input"
-            aria-label="Your Input"
-            rows={4}
-            className="block w-full rounded-xl border-none p-3 text-slate-900 dark:text-slate-100 bg-transparent resize-none focus:ring-0 focus:outline-none text-lg placeholder:text-slate-300 dark:placeholder:text-slate-700 leading-relaxed min-h-[120px]"
-            placeholder="Describe your task here..."
-            value={userInput}
-            onChange={(e) => setUserInput(e.target.value)}
-            disabled={isLoading}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-                handleLocalSubmit(e);
-              }
-            }}
-          />
+          <div className="relative">
+            <textarea
+              id="prompt-input"
+              aria-label="Your Input"
+              rows={4}
+              className="block w-full rounded-xl border-none p-3 pr-10 text-slate-900 dark:text-slate-100 bg-transparent resize-none focus:ring-0 focus:outline-none text-lg placeholder:text-slate-300 dark:placeholder:text-slate-700 leading-relaxed min-h-[120px]"
+              placeholder="Describe your task here..."
+              value={userInput}
+              onChange={(e) => setUserInput(e.target.value)}
+              disabled={isLoading}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                  handleLocalSubmit(e);
+                }
+              }}
+            />
+            {userInput && !isLoading && (
+              <button
+                type="button"
+                onClick={handleClear}
+                className="absolute right-2 top-2 p-2 rounded-full text-slate-300 hover:text-slate-500 dark:text-slate-600 dark:hover:text-slate-400 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                aria-label="Clear input"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+          </div>
 
           <div className="mt-6 flex justify-between items-end border-t border-slate-100 dark:border-slate-800 pt-4">
             <div className="flex flex-col">

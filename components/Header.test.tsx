@@ -8,6 +8,15 @@ vi.mock('../context/SessionProvider', () => ({
     useSession: vi.fn(),
 }));
 
+// Mock supabase client to avoid env var errors
+vi.mock('../services/supabaseClient', () => ({
+    supabase: {
+        auth: {
+            signOut: vi.fn(),
+        },
+    },
+}));
+
 describe('Header', () => {
     const mockSetShowAuth = vi.fn();
 
@@ -27,6 +36,14 @@ describe('Header', () => {
         expect(titleElement).toBeInTheDocument();
         const subtitle = screen.getByText(/Studio/i);
         expect(subtitle).toBeInTheDocument();
+    });
+
+    it('handles new prompt click', () => {
+        const onNewPrompt = vi.fn();
+        render(<Header onNewPrompt={onNewPrompt} />);
+        const newPromptBtn = screen.getByTitle(/New Prompt/i);
+        newPromptBtn.click();
+        expect(onNewPrompt).toHaveBeenCalled();
     });
 
     it('handles toggle sidebar click', () => {

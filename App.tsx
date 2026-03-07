@@ -12,6 +12,7 @@ import { useSession } from "./context/SessionProvider";
 import { usePromptHistory } from "./hooks/usePromptHistory";
 import { useNotifications } from "./context/NotificationContext";
 import { useUserSettings } from "./context/UserSettingsContext";
+import { useHaptics } from "./hooks/useHaptics";
 
 /**
  * The main application component for PromptArchitect-Studio.
@@ -22,6 +23,7 @@ const App: React.FC = () => {
   const { history, fetchHistory, addToHistory, clearHistory, hasMore, isLoadingMore, renameHistoryItem, deleteHistoryItem } = usePromptHistory(session);
   const { notify } = useNotifications();
   const { settings } = useUserSettings();
+  const haptics = useHaptics();
 
   // Layout State
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -135,6 +137,15 @@ const App: React.FC = () => {
     setParentId(null);
   };
 
+  const handleNewPrompt = () => {
+    haptics.lightImpact();
+    setUserInput("");
+    setCurrentResult(null);
+    setParentId(null);
+    setError(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handleSelectHistoryItem = (result: RefinedPromptResult, originalInput: string) => {
     setCurrentResult(result);
     setUserInput(originalInput);
@@ -155,6 +166,7 @@ const App: React.FC = () => {
       <Header 
         onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
         onOpenSettings={() => setShowSettings(true)}
+        onNewPrompt={handleNewPrompt}
       />
 
       <div className="flex flex-1 overflow-hidden relative">
@@ -201,6 +213,7 @@ const App: React.FC = () => {
               setShowAuth={setShowAuth}
               parentId={parentId}
               onCancelFork={() => setParentId(null)}
+              onClear={() => setUserInput("")}
             />
 
             <ResultDisplay 

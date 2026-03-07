@@ -5,12 +5,12 @@
 **Branch:** main
 
 ## OVERVIEW
-PromptArchitect-Studio is a specialized React 19 + TypeScript + Supabase web application designed to help users engineer high-quality AI prompts using the **CO-STAR framework** (Context, Objective, Style, Tone, Audience, Response). It features a modern frontend and a Supabase backend with Edge Functions that interface with LLMs (Google Gemini or Ollama).
+PromptArchitect-Studio is a specialized React 19 + TypeScript + Supabase web application designed to help users engineer high-quality AI prompts using the **CO-STAR framework** (Context, Objective, Style, Tone, Audience, Response). It features a modern frontend and a Supabase backend with Edge Functions that interface with LLMs (Gemini or Ollama).
 
 ## TECH STACK
 *   **Frontend:** React 19, TypeScript ~5.8, Vite 6, Tailwind CSS 4.
 *   **Backend:** Supabase (PostgreSQL), Deno (Edge Functions).
-*   **AI Providers:** Google Gemini 2.5 Flash-Lite (Default) / 3.0 Flash (Cloud) or Ollama/Llama 3.2 (Self-hosted).
+*   **AI Providers:** Gemini 2.5 Flash-Lite (Default) / 3.0 Flash (Cloud) or Ollama/Llama 3.2 (Self-hosted).
 *   **Testing:** Vitest (Unit), Playwright (E2E).
 *   **Containerization:** Docker, Docker Compose.
 *   **Tools:** Husky (Git hooks), SecretLint.

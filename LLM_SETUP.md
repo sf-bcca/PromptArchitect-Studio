@@ -1,6 +1,6 @@
 # LLM Setup Guide: Gemini & Ollama
 
-This guide explains how to configure PromptArchitect-Studio to use either Google Gemini (cloud) or a self-hosted Llama 3.2 via Ollama.
+This guide explains how to configure PromptArchitect-Studio to use either Gemini (cloud) or a self-hosted Llama 3.2 via Ollama.
 
 ## Provider Overview
 
@@ -13,7 +13,7 @@ The `LLM_PROVIDER` environment variable in the Supabase Edge Function determines
 
 ---
 
-## Option 1: Google Gemini (Recommended)
+## Option 1: Gemini (Recommended)
 
 ### Step 1: Obtain API Key
 

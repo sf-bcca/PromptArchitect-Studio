@@ -5,13 +5,14 @@ import { useSession } from '../context/SessionProvider';
 interface HeaderProps {
   onToggleSidebar?: () => void;
   onOpenSettings?: () => void;
+  onNewPrompt?: () => void;
 }
 
 /**
  * The application header component.
  * Displays the branding, navigation links, and auth controls.
  */
-const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onOpenSettings }) => {
+const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onOpenSettings, onNewPrompt }) => {
   const { session, setShowAuth } = useSession();
 
   const handleLogout = async () => {
@@ -47,6 +48,17 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onOpenSettings }) => {
               PromptArchitect <span className="text-indigo-600 dark:text-indigo-400">Studio</span>
             </h1>
           </div>
+
+          <button
+            onClick={onNewPrompt}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors border border-slate-200 dark:border-slate-700 ml-2 group min-h-[40px]"
+            title="New Prompt"
+          >
+            <svg className="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            <span className="text-xs font-bold hidden xs:block">New</span>
+          </button>
         </div>
         
         <nav className="flex items-center gap-1 sm:gap-4 md:gap-8">
