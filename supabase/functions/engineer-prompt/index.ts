@@ -74,7 +74,7 @@ serve(async (req) => {
     const ALLOWED_PROVIDERS = ["gemini"];
     const ALLOWED_MODELS = {
       gemini: [
-        "gemini-2.5-flash-lite", "gemini-3.0-flash", "gemini-1.5-flash"
+        "gemini-2.5-flash-lite", "gemini-3.0-flash"
       ],
     };
 

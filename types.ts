@@ -93,7 +93,6 @@ export interface Model {
 export const MODELS: Model[] = [
   { id: "gemini-2.5-flash-lite", name: "Gemini Flash-Lite 2.5 (Cloud)", provider: "gemini" },
   { id: "gemini-3.0-flash", name: "Gemini 3.0 Flash (Latest)", provider: "gemini" },
-  { id: "gemini-1.5-flash", name: "Gemini 1.5 Flash (Legacy)", provider: "gemini" },
 ];
 
 /**
