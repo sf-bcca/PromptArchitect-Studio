@@ -14,29 +14,38 @@ export const usePromptHistory = (session: Session | null) => {
   const [history, setHistory] = useState<PromptHistoryItem[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [lastSearchQuery, setLastSearchQuery] = useState('');
   const PAGE_SIZE = 20;
 
   /**
    * Fetches the user's prompt history from Supabase.
    * @param offset The number of items to skip (for pagination)
+   * @param searchQuery The search query to filter the history (optional)
    */
-  const fetchHistory = useCallback(async (offset = 0) => {
+  const fetchHistory = useCallback(async (offset = 0, searchQuery = '') => {
     if (!session) {
       setHistory([]);
       return;
     }
 
-    if (offset > 0) {
-        setIsLoadingMore(true);
-    }
+    setIsLoadingMore(true);
+    setLastSearchQuery(searchQuery);
 
     try {
-      // If offset is 0, we can fetch slightly more to fill the screen, or just PAGE_SIZE
-      const { data, error } = await supabase
+      let query = supabase
         .from("prompt_history")
         .select("*")
         .order("created_at", { ascending: false })
         .range(offset, offset + PAGE_SIZE - 1);
+
+      // If search query is provided, add filtering
+      if (searchQuery.trim()) {
+        const search = `%${searchQuery.trim()}%`;
+        // Search in original_input, refinedPrompt (inside result JSON), and customTitle (inside result JSON)
+        query = query.or(`original_input.ilike.${search},result->>refinedPrompt.ilike.${search},result->>customTitle.ilike.${search}`);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
 
@@ -102,8 +111,8 @@ export const usePromptHistory = (session: Session | null) => {
 
     if (error) {
       console.error("Failed to delete history item:", error);
-      // Revert if failed (fetch again)
-      fetchHistory();
+      // Revert if failed (fetch again with same search)
+      fetchHistory(0, lastSearchQuery);
     }
   };
 
@@ -136,8 +145,8 @@ export const usePromptHistory = (session: Session | null) => {
 
     if (error) {
         console.error("Failed to rename history item:", error);
-        // Revert
-        fetchHistory();
+        // Revert with same search
+        fetchHistory(0, lastSearchQuery);
     }
   };
 

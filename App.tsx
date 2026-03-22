@@ -62,13 +62,26 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   // State for tracking parent ID during forking
   const [parentId, setParentId] = useState<string | null>(null);
+  // State for search query in history
+  const [searchQuery, setSearchQuery] = useState("");
+  // Debounced search query for API calls
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
+
+  // Handle debouncing search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 400); // 400ms debounce
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   /**
-   * Effect hook to load prompt history from Supabase when session changes.
+   * Effect hook to load prompt history from Supabase when session or search changes.
    */
   useEffect(() => {
-    fetchHistory();
-  }, [session, fetchHistory]);
+    fetchHistory(0, debouncedSearchQuery);
+  }, [session, fetchHistory, debouncedSearchQuery]);
 
   /**
    * Effect hook to sync the current result to the history list locally.
@@ -184,11 +197,16 @@ const App: React.FC = () => {
             history={history}
             onSelectHistoryItem={handleSelectHistoryItem}
             onClearHistory={handleClearHistory}
-            onLoadMore={() => fetchHistory(history.length)}
+            onLoadMore={() => fetchHistory(history.length, debouncedSearchQuery)}
             hasMore={hasMore}
             isLoadingMore={isLoadingMore}
             onRename={renameHistoryItem}
             onDelete={deleteHistoryItem}
+            searchQuery={searchQuery}
+            onSearch={(query) => {
+              setSearchQuery(query);
+              if (!query) setDebouncedSearchQuery("");
+            }}
           />
         )}
 

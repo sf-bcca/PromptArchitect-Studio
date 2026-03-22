@@ -16,6 +16,8 @@ interface HistorySidebarProps {
   isLoadingMore: boolean;
   onRename: (id: string, newTitle: string) => void;
   onDelete: (id: string) => void;
+  searchQuery: string;
+  onSearch: (query: string) => void;
 }
 
 const HistorySidebar: React.FC<HistorySidebarProps> = ({
@@ -28,7 +30,9 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({
   hasMore,
   isLoadingMore,
   onRename,
-  onDelete
+  onDelete,
+  searchQuery,
+  onSearch
 }) => {
   const sidebarRef = useRef<HTMLDivElement>(null);
   const observerTarget = useRef<HTMLDivElement>(null);
@@ -239,8 +243,34 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({
              </button>
         </div>
 
-        {/* Filters */}
-        <div className="p-4 border-b border-slate-200 dark:border-slate-800/50">
+        {/* Search */}
+        <div className="p-4 flex flex-col gap-3">
+          <div className="relative group">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg className="h-4 w-4 text-slate-400 group-focus-within:text-indigo-500 transition-colors" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <input
+              type="text"
+              placeholder="Search prompts..."
+              value={searchQuery}
+              onChange={(e) => onSearch(e.target.value)}
+              className="block w-full pl-10 pr-10 py-2.5 text-sm bg-white dark:bg-slate-800 border-none rounded-xl focus:ring-2 focus:ring-indigo-500/50 dark:focus:ring-indigo-400/30 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 shadow-sm transition-all"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => onSearch('')}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+              >
+                <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+                </svg>
+              </button>
+            )}
+          </div>
+          
+          {/* Filters */}
            <div className="flex bg-slate-200 dark:bg-slate-800 p-1 rounded-xl">
             <button
               onClick={() => setFilter('all')}
@@ -381,8 +411,23 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({
             ))}
 
             {filteredHistory.length === 0 && (
-                <div className="p-4 text-center text-slate-400 text-sm">
-                    No history found.
+                <div className="p-8 text-center">
+                    <div className="w-12 h-12 bg-slate-200 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">
+                        {searchQuery ? `No results for "${searchQuery}"` : 'No history found yet.'}
+                    </p>
+                    {searchQuery && (
+                        <button 
+                            onClick={() => onSearch('')}
+                            className="mt-3 text-xs text-indigo-500 hover:text-indigo-600 font-bold px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg transition-colors"
+                        >
+                            Clear Search
+                        </button>
+                    )}
                 </div>
             )}
             
