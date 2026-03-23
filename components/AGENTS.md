@@ -27,7 +27,7 @@ components/
 |---------|---------|-------|
 | Form Handling | `PromptForm.tsx`, `Auth.tsx` | Standard controlled components |
 | Result Mapping | `ResultDisplay.tsx` | Maps `RefinedPromptResult` to UI |
-| Sidebar Layout | `HistorySidebar.tsx` | Mobile-responsive drawer pattern |
+| Sidebar Layout | `HistorySidebar.tsx` | Mobile-responsive drawer with search |
 | Theme Support | All | Heavy use of `dark:` Tailwind variants |
 | API Integration | `Auth.tsx`, `PromptForm.tsx` | Direct service calls to Supabase |
 

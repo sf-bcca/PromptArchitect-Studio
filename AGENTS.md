@@ -1,6 +1,6 @@
 # PROJECT KNOWLEDGE BASE
 
-**Generated:** 2026-03-07
+**Generated:** 2026-03-22
 **Commit:** HEAD
 **Branch:** main
 
@@ -51,6 +51,7 @@ PromptArchitect-Studio is a specialized React 19 + TypeScript + Supabase web app
 | App routing | App.tsx | Main application logic |
 | Component library | components/ | Flat structure |
 | API logic | services/ | Supabase client setup |
+| Prompt history search | hooks/usePromptHistory.ts | Debounced search filtering |
 | Prompt engineering | supabase/functions/engineer-prompt/ | Core backend logic |
 | Build config | vite.config.ts | Port 5174, @/ path alias |
 | Testing | test/, e2e/ | Vitest + Playwright |

@@ -15,7 +15,7 @@ PromptArchitect-Studio is a tool designed to help you engineer high-quality prom
 2.  **Engineer the Prompt**
 
     - Click the **"Transform Prompt"** button.
-    - The system will process your request using **Gemini 2.5 Flash-Lite**.
+    - The system will process your request using **Gemini 3.1 Flash-Lite** (Default).
 
 3.  **Review the Results**
 
@@ -27,6 +27,7 @@ PromptArchitect-Studio is a tool designed to help you engineer high-quality prom
 4.  **History & Versioning**
     - Your recent prompts are saved automatically.
     - **Sidebar:** Access your full history from the sidebar (click the menu icon in the header).
+    - **Search:** Use the search bar at the top of the history drawer to find previous prompts by their content or title.
     - **Forking:** Click the "Fork" button on any result or history item to use it as a base for a new prompt. This creates a version chain in the database.
     - **Management:** You can rename or delete items directly from the history sidebar.
 
