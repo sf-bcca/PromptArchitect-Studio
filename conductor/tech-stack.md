@@ -13,7 +13,7 @@
 - **Deno (Edge Functions):** Serverless logic execution at the edge for low-latency prompt engineering transformations.
 
 ## AI Infrastructure
-- **Google Gemini 2.5 Flash-Lite:** Primary LLM for cost-effective, high-performance prompt engineering (Default).
+- **Google Gemini 3.1 Flash-Lite:** Primary LLM for cost-effective, high-performance prompt engineering (Default).
 - **Google Gemini 3 Flash:** High-performance alternative for rapid iterations.
 - **GenAI SDK:** Direct integration with Gemini's advanced multimodal and instruction-following capabilities.
 

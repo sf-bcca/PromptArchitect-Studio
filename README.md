@@ -28,7 +28,7 @@ PromptArchitect-Studio is a powerful web-based tool designed to elevate your int
 - **👤 Persona Engineering**: Automatically assigns expert roles and personas to your tasks.
 - **🎯 Constraint Driven**: Defines clear boundaries to ensure focused and high-quality AI outputs.
 - **📋 Structured Output Control**: Generates prompts that demand specific formats for easy integration.
-- **⚡ AI Powered**: Leverages **Gemini 2.5 Flash-Lite** (Default) for high-speed, high-quality prompt refinement.
+- **⚡ AI Powered**: Leverages **Gemini 3.1 Flash-Lite** (Default) for high-speed, high-quality prompt refinement.
 - **🕰️ History, Favorites & Persistence**: Save, favorite, and revisit your engineered architectures using Supabase integration.
 
 ## 🏗️ Architecture
