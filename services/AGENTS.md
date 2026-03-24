@@ -16,6 +16,7 @@ Centralized service layer for Supabase Edge Functions, database interactions, an
 | Pattern | File | Description |
 |---------|------|-------------|
 | **Edge Functions** | `geminiService.ts` | Uses `supabase.functions.invoke` to bypass client-side LLM calls |
+| **Local AI Routing** | `geminiService.ts` | Dynamically routes requests to localhost:8080 for LiteRT-LM |
 | **Relational Joins** | `favorites.ts` | Complex `.select()` strings with nested object mapping |
 | **Data Mapping** | `favorites.ts`, `userSettings.ts` | Snake_case (DB) to camelCase (Frontend) transformation |
 | **Error Handling** | `geminiService.ts` | Explicit re-throwing of Edge Function errors with messages |

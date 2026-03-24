@@ -13,22 +13,32 @@ The `LLM_PROVIDER` environment variable in the Supabase Edge Function is set to 
 ---
 
 ## Option 1: Gemini (Recommended)
-
-### Step 1: Obtain API Key
-
-1. Go to [Google AI Studio](https://aistudio.google.com/)
-2. Create a new API key (or use an existing one)
-
-### Step 2: Configure Supabase
-
-Set the following secrets in your Supabase project:
-
-```bash
-supabase secrets set LLM_PROVIDER=gemini
-supabase secrets set GEMINI_API_KEY=your_key_here
-```
-
+...
 **✅ Done!** The Edge Function will now use Gemini 3.1 Flash-Lite by default.
+
+---
+
+## Option 2: Local Gemma 3 (LiteRT-LM)
+
+For developers wanting a high-reliability fallback or offline inference, the studio supports local Gemma 3 via [LiteRT-LM](https://github.com/google/litert-lm).
+
+### Step 1: Install & Run LiteRT-LM
+
+1. Ensure you have Node.js installed.
+2. Follow the LiteRT-LM documentation to install and download the Gemma 3 model.
+3. Start the inference server on port `8080` (the studio's default endpoint):
+   ```bash
+   # Example LiteRT-LM command
+   npx @google/litert-lm serve --port 8080 --model gemma-3-4b-it
+   ```
+
+### Step 2: Automatic Detection
+
+The studio automatically pings `localhost:8080` on load. If a valid server is detected:
+- **"Gemma 3 (Local)"** will appear in the model selector.
+- Requests will be routed directly from your browser to the local server, bypassing Supabase.
+
+> **Note:** Local inference is only available when the server is running on the same machine as your browser.
 
 ---
 

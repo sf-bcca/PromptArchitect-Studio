@@ -16,6 +16,7 @@ PromptArchitect-Studio is a tool designed to help you engineer high-quality prom
 
     - Click the **"Transform Prompt"** button.
     - The system will process your request using **Gemini 3.1 Flash-Lite** (Default).
+    - **Local AI:** If you have a local Gemma 3 (LiteRT-LM) server running on port 8080, it will be automatically detected and added to the model selector.
 
 3.  **Review the Results**
 

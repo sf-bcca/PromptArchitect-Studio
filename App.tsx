@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Header from "./components/Header";
 import Auth from "./components/Auth";
 import PromptForm from "./components/PromptForm";
@@ -13,6 +13,7 @@ import { usePromptHistory } from "./hooks/usePromptHistory";
 import { useNotifications } from "./context/NotificationContext";
 import { useUserSettings } from "./context/UserSettingsContext";
 import { useHaptics } from "./hooks/useHaptics";
+import { useLocalAI } from "./hooks/useLocalAI";
 
 /**
  * The main application component for PromptArchitect-Studio.
@@ -24,6 +25,10 @@ const App: React.FC = () => {
   const { notify } = useNotifications();
   const { settings } = useUserSettings();
   const haptics = useHaptics();
+  const { isLocalAvailable, localModels } = useLocalAI();
+
+  // Combine global models with local ones if detected, memoized to prevent unnecessary re-renders
+  const availableModels = useMemo(() => [...MODELS, ...localModels], [localModels]);
 
   // Layout State
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -44,15 +49,15 @@ const App: React.FC = () => {
   // Sync selected model with settings once loaded, ensuring legacy models are migrated
   useEffect(() => {
     if (settings?.default_model) {
-      const isValid = MODELS.some(m => m.id === settings.default_model);
+      const isValid = availableModels.some(m => m.id === settings.default_model);
       if (isValid) {
         setSelectedModel(settings.default_model);
-      } else {
-        // Fallback to default if legacy value found in user settings
+      } else if (isLocalAvailable === false || (isLocalAvailable === true && availableModels.length > MODELS.length)) {
+        // Fallback to default if legacy value found or if detection finished and still not valid
         setSelectedModel("gemini-3.1-flash-lite-preview");
       }
     }
-  }, [settings]);
+  }, [settings, availableModels, isLocalAvailable]);
   // State for tracking the loading status of the API request
   const [isLoading, setIsLoading] = useState(false);
   // State for tracking the most recently refined prompt result
@@ -112,7 +117,7 @@ const App: React.FC = () => {
     setError(null);
 
     // Find the full model object to get the provider
-    const selectedModelObj = MODELS.find((m) => m.id === selectedModel);
+    const selectedModelObj = availableModels.find((m) => m.id === selectedModel);
     const provider = selectedModelObj ? selectedModelObj.provider : "gemini";
 
     try {
@@ -231,7 +236,7 @@ const App: React.FC = () => {
               isLoading={isLoading}
               selectedModel={selectedModel}
               setSelectedModel={setSelectedModel}
-              models={MODELS}
+              models={availableModels}
               currentResult={currentResult}
               session={session}
               setShowAuth={setShowAuth}

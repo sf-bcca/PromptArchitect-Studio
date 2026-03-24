@@ -10,7 +10,7 @@ PromptArchitect-Studio is a specialized React 19 + TypeScript + Supabase web app
 ## TECH STACK
 *   **Frontend:** React 19, TypeScript ~5.8, Vite 6, Tailwind CSS 4.
 *   **Backend:** Supabase (PostgreSQL), Deno (Edge Functions).
-*   **AI Providers:** Gemini 3.1 Flash-Lite (Default) / 3 Flash.
+*   **AI Providers:** Gemini 3.1 Flash-Lite (Default) / 3 Flash / Local Gemma 3 (LiteRT-LM).
 *   **Testing:** Vitest (Unit), Playwright (E2E).
 *   **Containerization:** Docker, Docker Compose.
 *   **Tools:** Husky (Git hooks), SecretLint.
@@ -51,6 +51,7 @@ PromptArchitect-Studio is a specialized React 19 + TypeScript + Supabase web app
 | App routing | App.tsx | Main application logic |
 | Component library | components/ | Flat structure |
 | API logic | services/ | Supabase client setup |
+| Local AI detection | hooks/useLocalAI.ts | LiteRT-LM server detection |
 | Prompt history search | hooks/usePromptHistory.ts | Debounced search filtering |
 | Prompt engineering | supabase/functions/engineer-prompt/ | Core backend logic |
 | Build config | vite.config.ts | Port 5174, @/ path alias |

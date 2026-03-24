@@ -53,7 +53,8 @@ serve(async (req) => {
   }
 
   try {
-    const { userInput, model, provider: reqProvider, task = 'engineer', parentId } = await req.json();
+    const { userInput, model, provider: reqProvider, task = 'engineer', mode, parentId } = await req.json();
+    const currentTask = mode === 'title' ? 'title' : task;
 
     // Initialize Supabase Client for DB persistence
     const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
@@ -140,7 +141,7 @@ serve(async (req) => {
         Do NOT include any markdown formatting like \`\`\`json. Just return the raw JSON string.
     `;
 
-    const systemInstruction = task === 'title' ? titleSystemInstruction : engineerSystemInstruction;
+    const systemInstruction = currentTask === 'title' ? titleSystemInstruction : engineerSystemInstruction;
 
     try {
         const apiKey = Deno.env.get("GEMINI_API_KEY");
@@ -172,7 +173,7 @@ serve(async (req) => {
     try {
         const cleanedText = text.replace(/```json/g, "").replace(/```/g, "").trim();
         const json = JSON.parse(cleanedText);
-        if (task === 'title') {
+        if (currentTask === 'title') {
              if (!json.title) throw new Error("Missing 'title' field in response");
              parsedResult = { title: json.title };
         } else {
@@ -180,7 +181,7 @@ serve(async (req) => {
         }
     } catch (e: any) {
         console.error("Validation Failed:", e);
-        if (task === 'title') {
+        if (currentTask === 'title') {
              parsedResult = { title: text.substring(0, 50) };
         } else if (text.includes("refinedPrompt")) {
             parsedResult = {
@@ -200,7 +201,7 @@ serve(async (req) => {
     parsedResult.model = model || Deno.env.get("GEMINI_MODEL") || "gemini-3.1-flash-lite-preview";
 
     // PERSISTENCE
-    if (userId && task === 'engineer') {
+    if (userId && currentTask === 'engineer') {
       const { data: insertedData, error: dbError } = await supabase
         .from("prompt_history")
         .insert({
