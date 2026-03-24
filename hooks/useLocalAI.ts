@@ -9,7 +9,6 @@ const LOCAL_GEMMA_ENDPOINT = 'http://localhost:8080/v1/models';
  */
 export function useLocalAI() {
   const [isLocalAvailable, setIsLocalAvailable] = useState(false);
-  const [localModels, setLocalModels] = useState<Model[]>([]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -23,25 +22,10 @@ export function useLocalAI() {
           signal: AbortSignal.any([AbortSignal.timeout(1000), controller.signal]) 
         });
         
-        if (response.ok) {
-          setIsLocalAvailable(true);
-          
-          // Map local models to our Model interface
-          const gemmaModel: Model = {
-            id: 'gemma-3-local',
-            name: 'Gemma 3 (Local)',
-            provider: 'gemma-local'
-          };
-          
-          setLocalModels([gemmaModel]);
-        } else {
-          setIsLocalAvailable(false);
-          setLocalModels([]);
-        }
+        setIsLocalAvailable(response.ok);
       } catch (err) {
         // Silently fail if local server is not running
         setIsLocalAvailable(false);
-        setLocalModels([]);
       }
     };
 
@@ -55,5 +39,5 @@ export function useLocalAI() {
     };
   }, []);
 
-  return { isLocalAvailable, localModels };
+  return { isLocalAvailable };
 }

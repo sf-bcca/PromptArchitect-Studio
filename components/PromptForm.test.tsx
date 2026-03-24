@@ -11,6 +11,7 @@ describe('PromptForm', () => {
         selectedModel: 'gemini-3.1-flash-lite-preview',
         setSelectedModel: vi.fn(),
         models: [{ id: 'gemini-3.1-flash-lite-preview', name: 'Gemini 3.1 Flash-Lite', provider: 'gemini' }],
+        isLocalAvailable: false,
         currentResult: null,
         session: null,
         setShowAuth: vi.fn(),

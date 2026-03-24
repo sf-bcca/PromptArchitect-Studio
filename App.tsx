@@ -25,10 +25,10 @@ const App: React.FC = () => {
   const { notify } = useNotifications();
   const { settings } = useUserSettings();
   const haptics = useHaptics();
-  const { isLocalAvailable, localModels } = useLocalAI();
-
-  // Combine global models with local ones if detected, memoized to prevent unnecessary re-renders
-  const availableModels = useMemo(() => [...MODELS, ...localModels], [localModels]);
+  const { isLocalAvailable } = useLocalAI();
+  
+  // Use globally defined MODELS, which now includes Gemma 3 (Local)
+  const availableModels = MODELS;
 
   // Layout State
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -52,7 +52,7 @@ const App: React.FC = () => {
       const isValid = availableModels.some(m => m.id === settings.default_model);
       if (isValid) {
         setSelectedModel(settings.default_model);
-      } else if (isLocalAvailable === false || (isLocalAvailable === true && availableModels.length > MODELS.length)) {
+      } else if (isLocalAvailable === false) {
         // Fallback to default if legacy value found or if detection finished and still not valid
         setSelectedModel("gemini-3.1-flash-lite-preview");
       }
@@ -250,6 +250,7 @@ const App: React.FC = () => {
               selectedModel={selectedModel}
               setSelectedModel={setSelectedModel}
               models={availableModels}
+              isLocalAvailable={isLocalAvailable}
               currentResult={currentResult}
               session={session}
               setShowAuth={setShowAuth}
