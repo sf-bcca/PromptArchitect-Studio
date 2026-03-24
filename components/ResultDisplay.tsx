@@ -10,14 +10,30 @@ interface ResultDisplayProps {
   onFork?: (item: any) => void;
   history?: PromptHistoryItem[];
   onSelectHistoryItem?: (result: RefinedPromptResult, originalInput: string) => void;
+  isLocalAvailable?: boolean;
+  onRetryWithLocal?: () => void;
 }
 
-const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, error, isLoading, onFork, history = [], onSelectHistoryItem }) => {
+const ResultDisplay: React.FC<ResultDisplayProps> = ({ 
+  result, 
+  error, 
+  isLoading, 
+  onFork, 
+  history = [], 
+  onSelectHistoryItem,
+  isLocalAvailable,
+  onRetryWithLocal
+}) => {
   if (error) {
+    const isServiceError = error.includes("503") || 
+                          error.toLowerCase().includes("unavailable") || 
+                          error.toLowerCase().includes("demand") ||
+                          error.toLowerCase().includes("overloaded");
+
     return (
-      <div className="bg-red-50 dark:bg-red-900/30 border-l-4 border-red-400 dark:border-red-500 p-4 mb-8 rounded-r-xl">
-        <div className="flex">
-          <div className="flex-shrink-0">
+      <div className="bg-red-50 dark:bg-red-900/30 border-l-4 border-red-400 dark:border-red-500 p-4 mb-8 rounded-r-xl shadow-sm">
+        <div className="flex items-start">
+          <div className="flex-shrink-0 pt-0.5">
             <svg
               className="h-5 w-5 text-red-400 dark:text-red-400"
               viewBox="0 0 20 20"
@@ -30,10 +46,26 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, error, isLoading,
               />
             </svg>
           </div>
-          <div className="ml-3">
-            <p className="text-sm text-red-700 dark:text-red-200">
+          <div className="ml-3 flex-1">
+            <p className="text-sm text-red-700 dark:text-red-200 font-medium">
               {error}
             </p>
+            {isServiceError && isLocalAvailable && onRetryWithLocal && (
+              <div className="mt-4">
+                <button
+                  onClick={onRetryWithLocal}
+                  className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-bold rounded-md text-red-700 bg-red-100 hover:bg-red-200 dark:bg-red-800 dark:text-red-100 dark:hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors shadow-sm"
+                >
+                  <svg className="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  Switch to Local Gemma 3
+                </button>
+                <p className="mt-2 text-[10px] text-red-600 dark:text-red-400 opacity-80">
+                  Recommended: Local inference is high-reliability and privacy-first.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

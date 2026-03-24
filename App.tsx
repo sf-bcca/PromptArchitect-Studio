@@ -107,23 +107,26 @@ const App: React.FC = () => {
   /**
    * Handles the form submission to engineer the prompt.
    *
-   * @param {React.FormEvent} e - The form submission event.
+   * @param {React.FormEvent | null} e - The form submission event, or null if triggered programmatically.
+   * @param {string} [overrideModel] - Optional model ID to use instead of the selected one.
    */
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent | null, overrideModel?: string) => {
+    if (e) e.preventDefault();
     if (!userInput.trim()) return;
 
     setIsLoading(true);
     setError(null);
 
+    const targetModel = overrideModel || selectedModel;
+
     // Find the full model object to get the provider
-    const selectedModelObj = availableModels.find((m) => m.id === selectedModel);
+    const selectedModelObj = availableModels.find((m) => m.id === targetModel);
     const provider = selectedModelObj ? selectedModelObj.provider : "gemini";
 
     try {
       // The Edge Function handles persistence if the user is authenticated.
       // We pass the session access token implicitly or explicitly via the invoke call.
-      const result = await engineerPrompt(userInput, selectedModel, provider, parentId);
+      const result = await engineerPrompt(userInput, targetModel, provider, parentId);
       setCurrentResult(result);
 
       // Reset parentId after successful creation
@@ -131,7 +134,7 @@ const App: React.FC = () => {
 
       // Auto-generate title in background if persisted
       if (result.id) {
-        generateTitle(userInput, selectedModel).then((title) => {
+        generateTitle(userInput, targetModel).then((title) => {
           if (title && renameHistoryItem) {
             renameHistoryItem(result.id!, title); // Non-null assertion safe due to if check
           }
@@ -149,6 +152,16 @@ const App: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  /**
+   * Specifically handles switching to local Gemma when a cloud service fails.
+   */
+  const handleRetryWithLocal = () => {
+    haptics.heavyImpact();
+    setError(null);
+    setSelectedModel("gemma-3-local");
+    handleSubmit(null, "gemma-3-local");
   };
 
   /**
@@ -252,6 +265,8 @@ const App: React.FC = () => {
               onFork={handleFork}
               history={history}
               onSelectHistoryItem={handleSelectHistoryItem}
+              isLocalAvailable={isLocalAvailable}
+              onRetryWithLocal={handleRetryWithLocal}
             />
             {/* ... */}
 
