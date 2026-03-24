@@ -21,10 +21,10 @@ test.describe('Error Handling & Notifications', () => {
     await page.getByRole('button', { name: 'Transform' }).click();
 
     // Check for toast notification
-    await expect(page.locator('.fixed.bottom-4.right-4').getByText('Gemini is currently experiencing high demand')).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('.fixed.bottom-4.right-4').getByText('The AI service is currently unavailable')).toBeVisible();
     
     // Also check for inline error display
-    await expect(page.locator('.bg-red-50').getByText('Gemini is currently experiencing high demand')).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('.bg-red-50').getByText('The AI service is currently unavailable')).toBeVisible();
   });
 
   test('displays validation error for invalid input format', async ({ page }) => {

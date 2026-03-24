@@ -10,7 +10,6 @@ interface ModelSelectorProps {
   selectedModel: string;
   onModelChange: (modelId: string) => void;
   models: Model[];
-  isLocalAvailable?: boolean;
   disabled?: boolean;
 }
 
@@ -18,7 +17,6 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({
   selectedModel,
   onModelChange,
   models,
-  isLocalAvailable,
   disabled
 }) => {
   return (
@@ -31,7 +29,7 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({
       >
         {models.map((model) => (
           <option key={model.id} value={model.id}>
-            {model.name} {model.provider === 'gemma-local' ? (isLocalAvailable ? '(Active)' : '(Offline)') : ''}
+            {model.name}
           </option>
         ))}
       </select>

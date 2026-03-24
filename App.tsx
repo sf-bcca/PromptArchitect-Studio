@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "./components/Header";
 import Auth from "./components/Auth";
 import PromptForm from "./components/PromptForm";
@@ -13,7 +13,6 @@ import { usePromptHistory } from "./hooks/usePromptHistory";
 import { useNotifications } from "./context/NotificationContext";
 import { useUserSettings } from "./context/UserSettingsContext";
 import { useHaptics } from "./hooks/useHaptics";
-import { useLocalAI } from "./hooks/useLocalAI";
 
 /**
  * The main application component for PromptArchitect-Studio.
@@ -25,10 +24,6 @@ const App: React.FC = () => {
   const { notify } = useNotifications();
   const { settings } = useUserSettings();
   const haptics = useHaptics();
-  const { isLocalAvailable } = useLocalAI();
-  
-  // Use globally defined MODELS, which now includes Gemma 3 (Local)
-  const availableModels = MODELS;
 
   // Layout State
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -49,15 +44,15 @@ const App: React.FC = () => {
   // Sync selected model with settings once loaded, ensuring legacy models are migrated
   useEffect(() => {
     if (settings?.default_model) {
-      const isValid = availableModels.some(m => m.id === settings.default_model);
+      const isValid = MODELS.some(m => m.id === settings.default_model);
       if (isValid) {
         setSelectedModel(settings.default_model);
-      } else if (isLocalAvailable === false) {
-        // Fallback to default if legacy value found or if detection finished and still not valid
+      } else {
+        // Fallback to default if legacy value found in user settings
         setSelectedModel("gemini-3.1-flash-lite-preview");
       }
     }
-  }, [settings, availableModels, isLocalAvailable]);
+  }, [settings]);
   // State for tracking the loading status of the API request
   const [isLoading, setIsLoading] = useState(false);
   // State for tracking the most recently refined prompt result
@@ -107,26 +102,23 @@ const App: React.FC = () => {
   /**
    * Handles the form submission to engineer the prompt.
    *
-   * @param {React.FormEvent | null} e - The form submission event, or null if triggered programmatically.
-   * @param {string} [overrideModel] - Optional model ID to use instead of the selected one.
+   * @param {React.FormEvent} e - The form submission event.
    */
-  const handleSubmit = async (e: React.FormEvent | null, overrideModel?: string) => {
-    if (e) e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (!userInput.trim()) return;
 
     setIsLoading(true);
     setError(null);
 
-    const targetModel = overrideModel || selectedModel;
-
     // Find the full model object to get the provider
-    const selectedModelObj = availableModels.find((m) => m.id === targetModel);
+    const selectedModelObj = MODELS.find((m) => m.id === selectedModel);
     const provider = selectedModelObj ? selectedModelObj.provider : "gemini";
 
     try {
       // The Edge Function handles persistence if the user is authenticated.
       // We pass the session access token implicitly or explicitly via the invoke call.
-      const result = await engineerPrompt(userInput, targetModel, provider, parentId);
+      const result = await engineerPrompt(userInput, selectedModel, provider, parentId);
       setCurrentResult(result);
 
       // Reset parentId after successful creation
@@ -134,7 +126,7 @@ const App: React.FC = () => {
 
       // Auto-generate title in background if persisted
       if (result.id) {
-        generateTitle(userInput, targetModel).then((title) => {
+        generateTitle(userInput, selectedModel).then((title) => {
           if (title && renameHistoryItem) {
             renameHistoryItem(result.id!, title); // Non-null assertion safe due to if check
           }
@@ -152,16 +144,6 @@ const App: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  /**
-   * Specifically handles switching to local Gemma when a cloud service fails.
-   */
-  const handleRetryWithLocal = () => {
-    haptics.heavyImpact();
-    setError(null);
-    setSelectedModel("gemma-3-local");
-    handleSubmit(null, "gemma-3-local");
   };
 
   /**
@@ -249,8 +231,7 @@ const App: React.FC = () => {
               isLoading={isLoading}
               selectedModel={selectedModel}
               setSelectedModel={setSelectedModel}
-              models={availableModels}
-              isLocalAvailable={isLocalAvailable}
+              models={MODELS}
               currentResult={currentResult}
               session={session}
               setShowAuth={setShowAuth}
@@ -266,8 +247,6 @@ const App: React.FC = () => {
               onFork={handleFork}
               history={history}
               onSelectHistoryItem={handleSelectHistoryItem}
-              isLocalAvailable={isLocalAvailable}
-              onRetryWithLocal={handleRetryWithLocal}
             />
             {/* ... */}
 

@@ -13,7 +13,6 @@ interface PromptFormProps {
   selectedModel: string;
   setSelectedModel: (modelId: string) => void;
   models: Model[];
-  isLocalAvailable: boolean;
   currentResult: RefinedPromptResult | null;
   session: Session | null;
   setShowAuth: (show: boolean) => void;
@@ -30,7 +29,6 @@ const PromptForm: React.FC<PromptFormProps> = ({
   selectedModel,
   setSelectedModel,
   models,
-  isLocalAvailable,
   currentResult,
   session,
   setShowAuth,
@@ -80,7 +78,6 @@ const PromptForm: React.FC<PromptFormProps> = ({
                     selectedModel={selectedModel}
                     onModelChange={(id) => { haptics.lightImpact(); setSelectedModel(id); }}
                     models={models}
-                    isLocalAvailable={isLocalAvailable}
                     disabled={isLoading}
                 />
             </div>

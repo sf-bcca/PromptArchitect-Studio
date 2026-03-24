@@ -84,16 +84,15 @@ export interface UserSettings {
 export interface Model {
   id: string;
   name: string;
-  provider: 'gemini' | 'gemma-local';
+  provider: 'gemini';
 }
 
 /**
  * Available models configuration.
  */
 export const MODELS: Model[] = [
-  { id: "gemini-3.1-flash-lite-preview", name: "Gemini 3.1 Flash-Lite (Cloud Preview)", provider: "gemini" },
-  { id: "gemini-3.0-flash", name: "Gemini 3 Flash (Cloud Preview)", provider: "gemini" },
-  { id: "gemma-3-local", name: "Gemma 3 (Local)", provider: "gemma-local" },
+  { id: "gemini-3.1-flash-lite-preview", name: "Gemini 3.1 Flash-Lite", provider: "gemini" },
+  { id: "gemini-3.0-flash", name: "Gemini 3 Flash", provider: "gemini" },
 ];
 
 /**

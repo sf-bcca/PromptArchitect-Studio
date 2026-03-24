@@ -10,7 +10,6 @@ Reusable React hooks for authentication, haptics, and prompt history state manag
 - `useAuth.ts`           # Supabase Auth session and loading state
 - `useHaptics.ts`        # Mobile-ready tactile feedback wrapper
 - `usePromptHistory.ts`  # Search, pagination, and persistence for prompt results
-- `useLocalAI.ts`        # Detection of local Gemma 3 (LiteRT-LM) inference server
 
 ## WHERE TO LOOK
 | Pattern | File | Description |
@@ -18,7 +17,6 @@ Reusable React hooks for authentication, haptics, and prompt history state manag
 | **History Logic** | `usePromptHistory.ts` | Implements debounced search filtering and pagination |
 | **Auth State** | `useAuth.ts` | Handles `onAuthStateChange` from Supabase |
 | **Feedback** | `useHaptics.ts` | Uses `vibrate` API with fallback for broad device support |
-| **Local AI Detection** | `useLocalAI.ts` | Pings localhost:8080 for LiteRT-LM availability |
 
 ## CONVENTIONS
 - **Prefix**: All hook filenames and exports must start with `use`.
