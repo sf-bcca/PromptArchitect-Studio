@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai@0.24.1";
+import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai@0.24.1"; // Keeping this but checking if we need newer
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.48.1";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
@@ -74,7 +74,7 @@ serve(async (req) => {
     const ALLOWED_PROVIDERS = ["gemini"];
     const ALLOWED_MODELS = {
       gemini: [
-        "gemini-3.1-flash-lite-preview", "gemini-3.0-flash"
+        "gemini-3.1-flash-lite-preview", "gemini-3.1-flash", "gemini-3.0-flash"
       ],
     };
 

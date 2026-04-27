@@ -139,7 +139,10 @@ const App: React.FC = () => {
       
       // Use toast for critical system errors
       if (appErr.code === ErrorCode.LLM_SERVICE_UNAVAILABLE || appErr.code === ErrorCode.NETWORK_ERROR) {
-          notify(appErr.message, 'error');
+          const message = appErr.message.includes("503") 
+            ? "The selected model is currently under high demand. Please try a different model (e.g., Gemini 3.1 Flash Stable)."
+            : appErr.message;
+          notify(message, 'error');
       }
     } finally {
       setIsLoading(false);
