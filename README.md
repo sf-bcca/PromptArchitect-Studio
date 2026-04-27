@@ -126,5 +126,5 @@ For manual or first-time deployment, see [DEPLOY.md](DEPLOY.md) for Docker Compo
 ---
 
 <div align="center">
-  <p>Developed with ❤️ by Expert Prompt Engineers</p>
+  <p>Developed with ❤️ by Shedrick Flowers</p>
 </div>
