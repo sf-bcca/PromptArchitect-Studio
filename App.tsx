@@ -39,7 +39,7 @@ const App: React.FC = () => {
   // State for storing the raw user input text
   const [userInput, setUserInput] = useState("");
   // State for selected LLM model
-  const [selectedModel, setSelectedModel] = useState("gemini-3.1-flash-lite-preview");
+  const [selectedModel, setSelectedModel] = useState("gemini-3.1-flash");
 
   // Sync selected model with settings once loaded, ensuring legacy models are migrated
   useEffect(() => {
@@ -49,7 +49,7 @@ const App: React.FC = () => {
         setSelectedModel(settings.default_model);
       } else {
         // Fallback to default if legacy value found in user settings
-        setSelectedModel("gemini-3.1-flash-lite-preview");
+        setSelectedModel("gemini-3.1-flash");
       }
     }
   }, [settings]);
@@ -140,7 +140,7 @@ const App: React.FC = () => {
       // Use toast for critical system errors
       if (appErr.code === ErrorCode.LLM_SERVICE_UNAVAILABLE || appErr.code === ErrorCode.NETWORK_ERROR) {
           const message = appErr.message.includes("503") 
-            ? "The selected model is currently under high demand. Please try a different model (e.g., Gemini 3.1 Flash Stable)."
+            ? "Gemini is currently overloaded. We've attempted to fallback to your local Gemma 4 model, but both services are having issues. Please try selecting Gemma 4 manually or wait a moment."
             : appErr.message;
           notify(message, 'error');
       }

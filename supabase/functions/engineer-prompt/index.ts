@@ -147,16 +147,29 @@ serve(async (req) => {
         if (!apiKey) throw new Error("GEMINI_API_KEY is not set");
 
         const genAI = new GoogleGenerativeAI(apiKey);
-        const modelName = model || Deno.env.get("GEMINI_MODEL") || "gemini-3.1-flash-lite-preview"; 
-        const genModel = genAI.getGenerativeModel({
-            model: modelName,
-            generationConfig: { responseMimeType: "application/json" }
-        });
+        const modelName = model || Deno.env.get("GEMINI_MODEL") || "gemini-3.1-flash"; 
+        // Internal retry loop for transient failures
+        let lastError;
+        for (let i = 0; i < 2; i++) {
+            try {
+                const genModel = genAI.getGenerativeModel({
+                    model: i === 1 ? "gemini-3.1-flash" : modelName, // Fallback to stable on retry
+                    generationConfig: { responseMimeType: "application/json" }
+                });
 
-        // Pass system instruction and user input as separate parts to the model
-        const result = await genModel.generateContent([systemInstruction, userInput]);
-        const response = await result.response;
-        text = response.text();
+                const result = await genModel.generateContent([systemInstruction, userInput]);
+                const response = await result.response;
+                text = response.text();
+                lastError = null;
+                break;
+            } catch (err: any) {
+                lastError = err;
+                console.warn(`LLM attempt ${i+1} failed:`, err.message);
+                if (!err.message?.includes("503") && !err.message?.includes("429")) break;
+            }
+        }
+        
+        if (lastError) throw lastError;
     } catch (llmError: any) {
        console.error("LLM Provider Error:", llmError);
        return errorResponse(
@@ -197,7 +210,7 @@ serve(async (req) => {
     }
 
     parsedResult.provider = provider;
-    parsedResult.model = model || Deno.env.get("GEMINI_MODEL") || "gemini-3.1-flash-lite-preview";
+    parsedResult.model = model || Deno.env.get("GEMINI_MODEL") || "gemini-3.1-flash";
 
     // PERSISTENCE
     if (userId && task === 'engineer') {
