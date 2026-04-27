@@ -5,6 +5,8 @@ on:
     branches: [main]
   push:
     branches: [main]
+  # Allow manual trigger for debugging and status updates
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
