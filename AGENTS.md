@@ -37,6 +37,7 @@ PromptArchitect-Studio is a specialized React 19 + TypeScript + Supabase web app
 ├── INSTALL.md         # Detailed installation guide
 ├── USAGE.md           # User manual and framework guide
 ├── DEPLOY.md          # Deployment instructions
+├── components.json    # Shadcn/ui configuration
 ├── LLM_SETUP.md       # AI provider configuration
 ├── CONTRIBUTING.md    # Contribution guidelines
 ├── docker-compose.yml # Container orchestration

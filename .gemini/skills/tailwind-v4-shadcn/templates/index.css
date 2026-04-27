@@ -1,10 +1,14 @@
 @import "tailwindcss";
 
-@variant dark (&:where(.dark, .dark *));
-
 /*
   Tailwind v4 + shadcn/ui Dark Mode Pattern
   Based on: https://ui.shadcn.com/docs/tailwind-v4
+
+  Key Pattern:
+  1. Define CSS variables at root level (NOT in @layer base)
+  2. Use .dark for dark mode overrides (NOT in @theme)
+  3. Use @theme inline to map variables to Tailwind utilities
+  4. All color values must use hsl() wrapper
 */
 
 /* Light mode colors - Define at root level */
@@ -82,8 +86,6 @@
 
 /* Map CSS variables to Tailwind theme with @theme inline */
 @theme inline {
-  --breakpoint-xs: 480px;
-
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
