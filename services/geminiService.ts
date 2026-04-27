@@ -52,8 +52,10 @@ export const engineerPromptLocal = async (userInput: string): Promise<RefinedPro
             body: JSON.stringify({
                 model: 'gemma-3-local', // The LXC accepts this model ID
                 messages: [
-                    { role: 'system', content: SYSTEM_INSTRUCTION },
-                    { role: 'user', content: userInput }
+                    { 
+                        role: 'user', 
+                        content: `SYSTEM INSTRUCTION:\n${SYSTEM_INSTRUCTION.trim()}\n\nUSER INPUT:\n${userInput}` 
+                    }
                 ],
                 response_format: { type: 'json_object' }
             })
@@ -65,7 +67,27 @@ export const engineerPromptLocal = async (userInput: string): Promise<RefinedPro
 
         const data = await response.json();
         const text = data.choices[0].message.content;
-        const parsed = JSON.parse(text);
+        
+        // Robust JSON parsing: extract JSON block if it's wrapped in conversational text
+        let cleanedText = text.trim();
+        const firstBrace = cleanedText.indexOf('{');
+        const lastBrace = cleanedText.lastIndexOf('}');
+        
+        if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+            cleanedText = cleanedText.substring(firstBrace, lastBrace + 1);
+        }
+        
+        let parsed;
+        try {
+            parsed = JSON.parse(cleanedText);
+        } catch (e) {
+            console.error("Local AI JSON parse failed. Raw text:", text);
+            // If it starts with "I do not h", it's likely a refusal/answering the prompt
+            if (text.toLowerCase().includes("i do not have") || text.toLowerCase().includes("i am an ai")) {
+                 throw new Error("Model refused to engineer the prompt and instead tried to answer it. Try a more specific engineering request.");
+            }
+            throw new Error(`Invalid JSON format. Received: ${text.substring(0, 50)}...`);
+        }
         
         return {
             ...parsed,
