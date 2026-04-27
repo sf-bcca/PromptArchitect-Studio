@@ -3,7 +3,8 @@ import { RefinedPromptResult, AppError, ErrorCode } from "../types";
 
 const MAX_RETRIES = 3;
 const BASE_DELAY = 1000;
-const LOCAL_AI_URL = "http://100.115.102.53:8080/v1/chat/completions";
+const LOCAL_AI_URL = "/local-ai/v1/chat/completions";
+const LOCAL_AI_MODEL = "gemma-3-local";
 
 const SYSTEM_INSTRUCTION = `
 ROLE: You are an expert Prompt Engineer.

@@ -13,6 +13,13 @@ export default defineConfig(({ mode }) => {
       server: {
         port: 5174,
         host: '0.0.0.0',
+        proxy: {
+          '/local-ai': {
+            target: 'http://100.115.102.53:8080',
+            changeOrigin: true,
+            rewrite: (path) => path.replace(/^\/local-ai/, '')
+          }
+        }
       },
       plugins: [react(), tailwindcss()],
       resolve: {
