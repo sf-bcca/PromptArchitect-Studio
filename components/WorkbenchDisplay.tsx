@@ -73,7 +73,16 @@ const WorkbenchDisplay: React.FC<WorkbenchDisplayProps> = ({ result, onFork, his
             </div>
             <div>
                 <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">Architecture Workbench</h3>
-                <p className="text-[10px] text-slate-500 font-mono uppercase tracking-tight">Granular CO-STAR Breakdown</p>
+                <div className="flex items-center gap-2 mt-0.5">
+                    <p className="text-[10px] text-slate-500 font-mono uppercase tracking-tight">Granular CO-STAR Breakdown</p>
+                    <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-tight border ${
+                        result.provider === 'local' 
+                        ? "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800 text-amber-600 dark:text-amber-400"
+                        : "bg-indigo-50 dark:bg-indigo-900/20 border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400"
+                    }`}>
+                        {result.provider === 'local' ? "🤖 Local" : "☁️ Cloud"}
+                    </span>
+                </div>
             </div>
         </div>
 
