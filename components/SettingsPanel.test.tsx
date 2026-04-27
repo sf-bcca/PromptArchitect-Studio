@@ -44,9 +44,9 @@ describe('SettingsPanel', () => {
     const select = screen.getByRole('combobox');
     
     await act(async () => {
-        fireEvent.change(select, { target: { value: 'gemini-3.0-flash' } });
+        fireEvent.change(select, { target: { value: 'gemini-3.1-flash' } });
     });
 
-    expect(mockUpdateSettings).toHaveBeenCalledWith({ default_model: 'gemini-3.0-flash' });
+    expect(mockUpdateSettings).toHaveBeenCalledWith({ default_model: 'gemini-3.1-flash' });
   });
 });

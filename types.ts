@@ -27,7 +27,7 @@ export interface RefinedPromptResult {
   costar?: CostarComponents;
   /** The LLM provider used (e.g., 'gemini'). */
   provider?: string;
-  /** The specific model used (e.g., 'gemini-3.0-flash'). */
+  /** The specific model used (e.g., 'gemini-3.1-flash'). */
   model?: string;
   /** A user-defined custom title for this prompt session. */
   customTitle?: string;
