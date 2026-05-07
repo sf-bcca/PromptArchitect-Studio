@@ -4,7 +4,7 @@ import { RefinedPromptResult, AppError, ErrorCode } from "../types";
 const MAX_RETRIES = 3;
 const BASE_DELAY = 1000;
 const LOCAL_AI_URL = "/local-ai/v1/chat/completions";
-const LOCAL_AI_MODEL = "gemma-3-local";
+const LOCAL_AI_MODEL = "gemma-4-local";
 
 const SYSTEM_INSTRUCTION = `
 ROLE: You are an expert Prompt Engineer.
@@ -42,7 +42,11 @@ async function delay(ms: number) {
 }
 
 /**
- * Directly calls the local Gemma 4 Inference LXC.
+ * Engineers a refined prompt using the local Gemma 4 inference service.
+ * This is used as a fallback when Gemini is unavailable or when manually selected.
+ * 
+ * @param {string} userInput - The raw input to be engineered.
+ * @returns {Promise<RefinedPromptResult>} The engineered prompt and CO-STAR components.
  */
 export const engineerPromptLocal = async (userInput: string): Promise<RefinedPromptResult> => {
     try {
@@ -50,7 +54,7 @@ export const engineerPromptLocal = async (userInput: string): Promise<RefinedPro
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                model: 'gemma-3-local', // The LXC accepts this model ID
+                model: 'gemma-4-local', // The LXC accepts this model ID
                 messages: [
                     { 
                         role: 'user', 

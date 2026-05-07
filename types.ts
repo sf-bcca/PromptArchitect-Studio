@@ -92,7 +92,7 @@ export interface Model {
  */
 export const MODELS: Model[] = [
   { id: "gemini-3.1-flash", name: "Gemini 3.1 Flash (Stable)", provider: "gemini" },
-  { id: "gemini-3.1-flash-lite-preview", name: "Gemini 3.1 Flash-Lite", provider: "gemini" },
+  { id: "gemini-3.1-flash-lite", name: "Gemini 3.1 Flash-Lite (Stable)", provider: "gemini" },
   { id: "gemma-4-local", name: "Gemma 4 (Local Inference)", provider: "local" },
 ];
 

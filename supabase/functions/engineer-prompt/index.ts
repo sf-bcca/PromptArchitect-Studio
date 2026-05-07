@@ -74,7 +74,7 @@ serve(async (req) => {
     const ALLOWED_PROVIDERS = ["gemini"];
     const ALLOWED_MODELS = {
       gemini: [
-        "gemini-3.1-flash-lite-preview", "gemini-3.1-flash"
+        "gemini-3.1-flash-lite", "gemini-3.1-flash-lite-preview", "gemini-3.1-flash"
       ],
     };
 
@@ -147,13 +147,13 @@ serve(async (req) => {
         if (!apiKey) throw new Error("GEMINI_API_KEY is not set");
 
         const genAI = new GoogleGenerativeAI(apiKey);
-        const modelName = model || Deno.env.get("GEMINI_MODEL") || "gemini-3.1-flash"; 
+        const modelName = model || Deno.env.get("GEMINI_MODEL") || "gemini-3.1-flash-lite"; 
         // Internal retry loop for transient failures
         let lastError;
         for (let i = 0; i < 2; i++) {
             try {
                 const genModel = genAI.getGenerativeModel({
-                    model: i === 1 ? "gemini-3.1-flash" : modelName, // Fallback to stable on retry
+                    model: i === 1 ? "gemini-3.1-flash-lite" : modelName, // Fallback to stable on retry
                     generationConfig: { responseMimeType: "application/json" }
                 });
 
@@ -210,7 +210,7 @@ serve(async (req) => {
     }
 
     parsedResult.provider = provider;
-    parsedResult.model = model || Deno.env.get("GEMINI_MODEL") || "gemini-3.1-flash";
+    parsedResult.model = model || Deno.env.get("GEMINI_MODEL") || "gemini-3.1-flash-lite";
 
     // PERSISTENCE
     if (userId && task === 'engineer') {
