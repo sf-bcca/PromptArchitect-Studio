@@ -21,6 +21,13 @@ interface PromptFormProps {
   onClear?: () => void;
 }
 
+/**
+ * PromptForm component for capturing user input and selecting LLM models.
+ * Features haptic feedback, clear actions, and visual status indicators for forking.
+ * 
+ * @param {PromptFormProps} props - Component properties.
+ * @returns {React.FC} The rendered prompt form.
+ */
 const PromptForm: React.FC<PromptFormProps> = ({
   userInput,
   setUserInput,
@@ -38,11 +45,18 @@ const PromptForm: React.FC<PromptFormProps> = ({
 }) => {
   const haptics = useHaptics();
 
+  /**
+   * Handles the form submission with added haptic feedback.
+   * @param {React.FormEvent} e - Form submission event.
+   */
   const handleLocalSubmit = (e: React.FormEvent) => {
     haptics.heavyImpact();
     handleSubmit(e);
   };
 
+  /**
+   * Clears the input field and triggers haptic feedback.
+   */
   const handleClear = () => {
     haptics.lightImpact();
     onClear?.();

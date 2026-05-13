@@ -42,7 +42,7 @@ VITE_SUPABASE_URL=https://your-project-id.supabase.co
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-> **Note:** The `GEMINI_API_KEY` or `OLLAMA_URL` are securely managed by the Supabase Edge Function. See [LLM Setup Guide](LLM_SETUP.md) for backend configuration.
+> **Note:** The `GEMINI_API_KEY` is securely managed by the Supabase Edge Function. Local inference via **Gemma 4** is managed via the proxy settings in `vite.config.ts`. See [LLM Setup Guide](LLM_SETUP.md) for detailed configuration.
 
 ### 4. Start Development Server
 

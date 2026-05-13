@@ -12,6 +12,14 @@ interface ResultDisplayProps {
   onSelectHistoryItem?: (result: RefinedPromptResult, originalInput: string) => void;
 }
 
+/**
+ * ResultDisplay component manages the rendering of engineered prompt results.
+ * It switches between detailed Workbench views, simple cards, or feature placeholders
+ * based on the current application state.
+ * 
+ * @param {ResultDisplayProps} props - Component properties including the result and loading state.
+ * @returns {React.FC} The rendered result or status display.
+ */
 const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, error, isLoading, onFork, history = [], onSelectHistoryItem }) => {
   if (error) {
     return (

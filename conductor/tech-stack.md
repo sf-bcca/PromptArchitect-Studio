@@ -15,6 +15,7 @@
 ## AI Infrastructure
 - **Google Gemini 3.1 Flash-Lite:** Primary LLM for cost-effective, high-performance prompt engineering (Default).
 - **Google Gemini 3 Flash:** High-performance alternative for rapid iterations.
+- **Gemma 4 (LiteRT-LM):** Local inference fallback for high availability and privacy.
 - **GenAI SDK:** Direct integration with Gemini's advanced multimodal and instruction-following capabilities.
 
 ## Quality & Security

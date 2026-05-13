@@ -10,7 +10,7 @@ PromptArchitect-Studio is a specialized React 19 + TypeScript + Supabase web app
 ## TECH STACK
 *   **Frontend:** React 19, TypeScript ~5.8, Vite 6, Tailwind CSS 4.
 *   **Backend:** Supabase (PostgreSQL), Deno (Edge Functions).
-*   **AI Providers:** Gemini 3.1 Flash-Lite (Default) / 3 Flash.
+*   **AI Providers:** Gemini 3.1 Flash-Lite (Default) / 3 Flash / **Gemma 4 (Local Fallback)**.
 *   **Testing:** Vitest (Unit), Playwright (E2E).
 *   **Containerization:** Docker, Docker Compose.
 *   **Tools:** Husky (Git hooks), SecretLint.
@@ -42,7 +42,9 @@ PromptArchitect-Studio is a specialized React 19 + TypeScript + Supabase web app
 ├── CONTRIBUTING.md    # Contribution guidelines
 ├── docker-compose.yml # Container orchestration
 ├── supabase_schema.sql # Database schema snapshot
-├── vite.config.ts     # Build config (Port 5174, @/ path alias)
+├── vite.config.ts     # Build config (Port 5174, @/ path alias, AI Proxy)
+├── conductor/         # Product guidelines and workflow documentation
+├── docs/              # Project assets and manual documentation
 └── package.json       # Dependencies and scripts
 ```
 
@@ -51,10 +53,11 @@ PromptArchitect-Studio is a specialized React 19 + TypeScript + Supabase web app
 |------|----------|-------|
 | App routing | App.tsx | Main application logic |
 | Component library | components/ | Flat structure |
-| API logic | services/ | Supabase client setup |
+| API logic | services/ | Supabase client + local fallback logic |
 | Prompt history search | hooks/usePromptHistory.ts | Debounced search filtering |
 | Prompt engineering | supabase/functions/engineer-prompt/ | Core backend logic |
-| Build config | vite.config.ts | Port 5174, @/ path alias |
+| Build config | vite.config.ts | Port 5174, @/ path alias, local AI proxy |
+| Product & Workflow | conductor/ | Guidelines and technical tracks |
 | Testing | test/, e2e/ | Vitest + Playwright |
 
 ## DEVELOPMENT WORKFLOW & COMMANDS

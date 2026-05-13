@@ -20,6 +20,14 @@ interface HistorySidebarProps {
   onSearch: (query: string) => void;
 }
 
+/**
+ * HistorySidebar component provides a navigation menu for previous prompt history.
+ * Supports searching, filtering (all/favorites), renaming, deleting, and infinite scrolling.
+ * Features a mobile-optimized overlay and desktop-friendly sidebar layouts.
+ * 
+ * @param {HistorySidebarProps} props - Component properties including history items and action handlers.
+ * @returns {React.FC} The rendered history sidebar.
+ */
 const HistorySidebar: React.FC<HistorySidebarProps> = ({
   isOpen,
   onClose,

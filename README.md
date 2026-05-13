@@ -29,6 +29,7 @@ PromptArchitect-Studio is a powerful web-based tool designed to elevate your int
 - **🎯 Constraint Driven**: Defines clear boundaries to ensure focused and high-quality AI outputs.
 - **📋 Structured Output Control**: Generates prompts that demand specific formats for easy integration.
 - **⚡ AI Powered**: Leverages **Gemini 3.1 Flash-Lite** (Default) for high-speed, high-quality prompt refinement.
+- **🛡️ High Availability**: Automatic fallback to **local Gemma 4** (LiteRT-LM) if Gemini services are overloaded.
 - **🕰️ History, Favorites & Persistence**: Save, favorite, and revisit your engineered architectures using Supabase integration.
 
 ## 🏗️ Architecture
@@ -37,19 +38,25 @@ PromptArchitect-Studio is a powerful web-based tool designed to elevate your int
 flowchart LR
     subgraph Client
         A[React App]
+        E[Local Inference Proxy]
     end
     subgraph Supabase
         B[Edge Function<br/>Prompt Architect]
         C[(PostgreSQL)]
     end
-    subgraph LLM Providers
+    subgraph AI Providers
         D[Gemini API]
+        F[Gemma 4 Local]
     end
 
-    A -->|User Input| B
-    B -->|Store History| C
-    B -->|API Call| D
-    B -->|Engineered Prompt| A
+    A -->|1. User Input| B
+    B -->|2. Store History| C
+    B -->|3. API Call| D
+    B -->|4. Result| A
+    
+    A -.->|Fallback / Manual| E
+    E -.->|Proxy Pass| F
+    F -.->|Engineered Prompt| A
 ```
 
 ## 🚦 Quick Start
@@ -98,7 +105,7 @@ Open [http://localhost:5174](http://localhost:5174) — you're ready to engineer
 | **Frontend**   | [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)                      |
 | **Build Tool** | [Vite 6](https://vite.dev/)                                                                         |
 | **Styling**    | [Tailwind CSS 4](https://tailwindcss.com/)                                                           |
-| **AI Engines** | [Gemini 3.1 Flash-Lite](https://ai.google.dev/) (Default)                                           |
+| **AI Engines** | [Gemini 3.1 Flash-Lite](https://ai.google.dev/) (Default) + **Gemma 4** (Local Fallback) |
 | **Backend/DB** | [Supabase](https://supabase.com/)                                                                   |
 | **Testing**    | [Vitest](https://vitest.dev/) + [Playwright](https://playwright.dev/)                               |
 | **Git Hooks**  | [Husky](https://typicode.github.io/husky/) + [SecretLint](https://github.com/secretlint/secretlint) |
