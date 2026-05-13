@@ -76,7 +76,6 @@ serve(async (req) => {
       gemini: [
         "gemini-3.1-flash",
         "gemini-3.1-flash-lite",
-        "gemini-3.1-flash-lite-preview",
       ],
     };
 
@@ -150,12 +149,13 @@ serve(async (req) => {
 
         const genAI = new GoogleGenerativeAI(apiKey);
         const modelName = model || Deno.env.get("GEMINI_MODEL") || "gemini-3.1-flash-lite"; 
-        // Internal retry loop for transient failures
+        // Internal retry loop for transient failures with exponential backoff
         let lastError;
-        for (let i = 0; i < 2; i++) {
+        const maxRetries = 3;
+        for (let i = 0; i < maxRetries; i++) {
             try {
                 const genModel = genAI.getGenerativeModel({
-                    model: i === 1 ? "gemini-3.1-flash-lite" : modelName, // Fallback to stable on retry
+                    model: i >= 1 ? "gemini-3.1-flash" : modelName, // Fallback to full flash on retry if lite fails
                     generationConfig: { responseMimeType: "application/json" }
                 });
 
@@ -167,7 +167,15 @@ serve(async (req) => {
             } catch (err: any) {
                 lastError = err;
                 console.warn(`LLM attempt ${i+1} failed:`, err.message);
+                
+                // If it's not a transient error, don't retry
                 if (!err.message?.includes("503") && !err.message?.includes("429")) break;
+                
+                // Wait before retrying (exponential backoff: 1s, 2s)
+                if (i < maxRetries - 1) {
+                    const delayMs = Math.pow(2, i) * 1000;
+                    await new Promise(resolve => setTimeout(resolve, delayMs));
+                }
             }
         }
         
