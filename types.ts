@@ -27,7 +27,7 @@ export interface RefinedPromptResult {
   costar?: CostarComponents;
   /** The LLM provider used (e.g., 'gemini'). */
   provider?: string;
-  /** The specific model used (e.g., 'gemini-3.1-flash'). */
+  /** The specific model used (e.g., 'gemini-3.1-flash-lite'). */
   model?: string;
   /** A user-defined custom title for this prompt session. */
   customTitle?: string;
@@ -91,8 +91,8 @@ export interface Model {
  * Available models configuration.
  */
 export const MODELS: Model[] = [
-  { id: "gemini-3.1-flash", name: "Gemini 3.1 Flash (Stable)", provider: "gemini" },
   { id: "gemini-3.1-flash-lite", name: "Gemini 3.1 Flash-Lite (Stable)", provider: "gemini" },
+  { id: "gemini-3-flash-preview", name: "Gemini 3 Flash (Preview)", provider: "gemini" },
   { id: "gemma-4-local", name: "Gemma 4 (Local Inference)", provider: "local" },
 ];
 

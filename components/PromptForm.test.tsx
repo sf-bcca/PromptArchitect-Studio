@@ -10,7 +10,7 @@ describe('PromptForm', () => {
         isLoading: false,
         selectedModel: 'gemini-3.1-flash-lite',
         setSelectedModel: vi.fn(),
-        models: [{ id: 'gemini-3.1-flash-lite', name: 'Gemini 3.1 Flash-Lite', provider: 'gemini' }],
+        models: [{ id: 'gemini-3.1-flash-lite', name: 'Gemini 3.1 Flash-Lite (Stable)', provider: 'gemini' }],
         currentResult: null,
         session: null,
         setShowAuth: vi.fn(),

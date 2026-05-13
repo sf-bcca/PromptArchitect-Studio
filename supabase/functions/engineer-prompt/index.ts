@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai@0.24.1"; // Keeping this but checking if we need newer
+import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai@0.24.1"; // Reverted to legacy version for stability
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.48.1";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
@@ -74,8 +74,8 @@ serve(async (req) => {
     const ALLOWED_PROVIDERS = ["gemini"];
     const ALLOWED_MODELS = {
       gemini: [
-        "gemini-3.1-flash",
         "gemini-3.1-flash-lite",
+        "gemini-3-flash-preview",
       ],
     };
 
@@ -155,7 +155,7 @@ serve(async (req) => {
         for (let i = 0; i < maxRetries; i++) {
             try {
                 const genModel = genAI.getGenerativeModel({
-                    model: i >= 1 ? "gemini-3.1-flash" : modelName, // Fallback to full flash on retry if lite fails
+                    model: i >= 1 ? "gemini-3-flash-preview" : modelName, // Fallback to stable preview on retry if lite fails
                     generationConfig: { responseMimeType: "application/json" }
                 });
 
