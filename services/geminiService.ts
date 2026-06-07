@@ -155,7 +155,7 @@ function cleanAndParseJSON(text: string): any {
 export const engineerPromptLocal = async (userInput: string): Promise<RefinedPromptResult> => {
     try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 2000);
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
 
         const response = await fetch(LOCAL_AI_URL, {
             method: 'POST',
