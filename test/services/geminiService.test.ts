@@ -16,10 +16,12 @@ describe('geminiService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.useFakeTimers();
+    vi.spyOn(global, 'fetch').mockRejectedValue(new Error('Fetch failed (mocked)'));
   });
 
   afterEach(() => {
     vi.useRealTimers();
+    vi.restoreAllMocks();
   });
 
   it('should return data on successful invocation', async () => {
