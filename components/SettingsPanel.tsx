@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useUserSettings } from '../context/UserSettingsContext';
 import { MODELS, Theme } from '../types';
+import { Capacitor } from '@capacitor/core';
+import { NativeAI } from '../services/nativeAiPlugin';
 
 interface SettingsPanelProps {
   onClose: () => void;
@@ -72,7 +74,9 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ onClose }) => {
           >
             {MODELS.map((m) => (
               <option key={m.id} value={m.id}>
-                {m.name}
+                {m.id === 'gemma-4-local' && Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android'
+                  ? 'Gemma 4 (Local On-Device)'
+                  : m.name}
               </option>
             ))}
           </select>
@@ -80,6 +84,11 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ onClose }) => {
             This model will be selected by default every time you open the studio.
           </p>
         </section>
+
+        {/* On-Device Gemma 4 Downloader (Android Only) */}
+        {Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android' && (
+          <GemmaDownloaderSection />
+        )}
       </div>
 
       <div className="p-6 bg-slate-50 dark:bg-slate-950/50 border-t border-slate-200 dark:border-slate-800 flex justify-end">
@@ -91,6 +100,117 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ onClose }) => {
         </button>
       </div>
     </div>
+  );
+};
+
+const GemmaDownloaderSection: React.FC = () => {
+  const [available, setAvailable] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+
+  const checkStatus = async () => {
+    try {
+      const res = await NativeAI.isModelAvailable();
+      setAvailable(res.available);
+      setIsDownloading(res.isDownloading);
+      setProgress(res.downloadProgress);
+      setError(res.error);
+    } catch (e: any) {
+      console.error('Failed to check Gemma status', e);
+    }
+  };
+
+  useEffect(() => {
+    checkStatus();
+
+    let listener: any = null;
+
+    const setupListener = async () => {
+      listener = await NativeAI.addListener('downloadProgress', (data) => {
+        setProgress(data.progress);
+        if (data.status === 'COMPLETED') {
+          setAvailable(true);
+          setIsDownloading(false);
+        } else if (data.status === 'FAILED') {
+          setIsDownloading(false);
+          setError(data.error || 'Download failed');
+        } else if (data.status === 'DOWNLOADING') {
+          setIsDownloading(true);
+        }
+      });
+    };
+
+    setupListener();
+
+    return () => {
+      if (listener) {
+        listener.remove();
+      }
+    };
+  }, []);
+
+  const handleDownload = async () => {
+    try {
+      setError(null);
+      setIsDownloading(true);
+      setProgress(0);
+      await NativeAI.downloadModel();
+    } catch (e: any) {
+      setIsDownloading(false);
+      setError(e.message || 'Failed to start download');
+    }
+  };
+
+  return (
+    <section className="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3">
+      <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest block">
+        On-Device AI Model (Gemma 4)
+      </label>
+
+      {available ? (
+        <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 text-sm font-medium">
+          <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>Model is downloaded and ready for offline use.</span>
+        </div>
+      ) : isDownloading ? (
+        <div className="space-y-2">
+          <div className="flex justify-between text-xs font-medium text-slate-600 dark:text-slate-400">
+            <span>Downloading Gemma 4...</span>
+            <span>{progress}%</span>
+          </div>
+          <div className="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+            <div 
+              className="bg-indigo-600 h-2 rounded-full transition-all duration-300" 
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <p className="text-[10px] text-slate-500">
+            Please keep the app open and connected to Wi-Fi. This download is approximately 1.3 GB.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          <p className="text-xs text-slate-600 dark:text-slate-400">
+            Download the Gemma 4 model to enable offline, private prompt engineering directly on your Pixel.
+          </p>
+          <button
+            onClick={handleDownload}
+            className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg transition-all shadow-md active:scale-98"
+          >
+            Download Gemma 4 Model (~1.3 GB)
+          </button>
+        </div>
+      )}
+
+      {error && (
+        <div className="text-xs text-rose-500 font-medium">
+          Error: {error}
+        </div>
+      )}
+    </section>
   );
 };
 

@@ -1,5 +1,7 @@
 import { supabase } from './supabaseClient';
 import { RefinedPromptResult, AppError, ErrorCode } from "../types";
+import { Capacitor } from '@capacitor/core';
+import { NativeAI } from './nativeAiPlugin';
 
 const MAX_RETRIES = 3;
 const BASE_DELAY = 1000;
@@ -37,8 +39,110 @@ You MUST return a valid JSON object matching this schema. You MUST populate the 
 Do NOT include any markdown formatting like \`\`\`json. Just return the raw JSON string.
 `;
 
+const LOCAL_SYSTEM_INSTRUCTION = `
+ROLE: You are an expert Prompt Engineer.
+OBJECTIVE: Take the user's input and transform it into a high-quality, structured prompt using the CO-STAR framework.
+- Do NOT answer or execute the user's input. Your sole purpose is to re-engineer it.
+- **MANDATORY FRAMEWORK**: You MUST use the **CO-STAR** framework.
+
+OUTPUT FORMAT (Strict JSON):
+You MUST return a valid JSON object matching this schema. Note that the 'costar' object is at the top of the JSON. Keep descriptions extremely concise to prevent truncation.
+{
+  "costar": {
+     "context": "Detailed background for the LLM.",
+     "objective": "The precise goal of the prompt.",
+     "style": "The expert persona the LLM should adopt.",
+     "tone": "The desired emotional and attitudinal quality.",
+     "audience": "The target reader for the final output.",
+     "response": "Strict formatting requirements for the output."
+  },
+  "whyThisWorks": "A very brief explanation of why this works (1 sentence).",
+  "suggestedVariables": ["Variables used in the prompt, e.g. '[Audience]'"],
+  "refinedPrompt": "The complete, aggregated prompt string combining the CO-STAR sections."
+}
+
+Do NOT include any markdown formatting like \`\`\`json. Just return the raw JSON string.
+`;
+
 async function delay(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function repairTruncatedJSON(jsonStr: string): string {
+  let str = jsonStr.trim();
+  if (str.endsWith(',')) {
+    str = str.slice(0, -1);
+  }
+  let openBraces = 0;
+  let openBrackets = 0;
+  let inString = false;
+  for (let i = 0; i < str.length; i++) {
+    const char = str[i];
+    if (char === '"' && (i === 0 || str[i-1] !== '\\')) {
+      inString = !inString;
+    } else if (!inString) {
+      if (char === '{') openBraces++;
+      else if (char === '}') openBraces--;
+      else if (char === '[') openBrackets++;
+      else if (char === ']') openBrackets--;
+    }
+  }
+  if (inString) {
+    str += '"';
+  }
+  while (openBrackets > 0) {
+    str += ']';
+    openBrackets--;
+  }
+  while (openBraces > 0) {
+    str += '}';
+    openBraces--;
+  }
+  return str;
+}
+
+function cleanAndParseJSON(text: string): any {
+  let cleanedText = text.trim();
+  if (cleanedText.startsWith("```")) {
+    const firstNewLine = cleanedText.indexOf("\n");
+    if (firstNewLine !== -1) {
+      cleanedText = cleanedText.substring(firstNewLine + 1);
+    } else {
+      cleanedText = cleanedText.substring(3);
+    }
+  }
+  if (cleanedText.endsWith("```")) {
+    cleanedText = cleanedText.substring(0, cleanedText.length - 3);
+  }
+  cleanedText = cleanedText.trim();
+  const firstBrace = cleanedText.indexOf('{');
+  const lastBrace = cleanedText.lastIndexOf('}');
+  if (firstBrace === -1) {
+    throw new Error("No JSON object found in response");
+  }
+  if (lastBrace === -1 || lastBrace < firstBrace) {
+    cleanedText = cleanedText.substring(firstBrace);
+    cleanedText = repairTruncatedJSON(cleanedText);
+  } else {
+    cleanedText = cleanedText.substring(firstBrace, lastBrace + 1);
+  }
+  
+  const parsed = JSON.parse(cleanedText);
+  const costar = parsed.costar || {};
+  
+  return {
+    refinedPrompt: parsed.refinedPrompt || "",
+    whyThisWorks: parsed.whyThisWorks || "Structured prompt engineered using the CO-STAR framework on-device.",
+    suggestedVariables: parsed.suggestedVariables || [],
+    costar: {
+      context: costar.context || "",
+      objective: costar.objective || "",
+      style: costar.style || "",
+      tone: costar.tone || "",
+      audience: costar.audience || "",
+      response: costar.response || ""
+    }
+  };
 }
 
 /**
@@ -72,26 +176,7 @@ export const engineerPromptLocal = async (userInput: string): Promise<RefinedPro
         const data = await response.json();
         const text = data.choices[0].message.content;
         
-        // Robust JSON parsing: extract JSON block if it's wrapped in conversational text
-        let cleanedText = text.trim();
-        const firstBrace = cleanedText.indexOf('{');
-        const lastBrace = cleanedText.lastIndexOf('}');
-        
-        if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
-            cleanedText = cleanedText.substring(firstBrace, lastBrace + 1);
-        }
-        
-        let parsed;
-        try {
-            parsed = JSON.parse(cleanedText);
-        } catch (e) {
-            console.error("Local AI JSON parse failed. Raw text:", text);
-            // If it starts with "I do not h", it's likely a refusal/answering the prompt
-            if (text.toLowerCase().includes("i do not have") || text.toLowerCase().includes("i am an ai")) {
-                 throw new Error("Model refused to engineer the prompt and instead tried to answer it. Try a more specific engineering request.");
-            }
-            throw new Error(`Invalid JSON format. Received: ${text.substring(0, 50)}...`);
-        }
+        const parsed = cleanAndParseJSON(text);
         
         return {
             ...parsed,
@@ -103,17 +188,64 @@ export const engineerPromptLocal = async (userInput: string): Promise<RefinedPro
     }
 };
 
+async function runGemmaOnDeviceInference(userInput: string): Promise<RefinedPromptResult> {
+  const promptText = `SYSTEM INSTRUCTION:\n${LOCAL_SYSTEM_INSTRUCTION.trim()}\n\nUSER INPUT:\n${userInput}`;
+  const response = await NativeAI.generateResponse({ prompt: promptText });
+  
+  const parsed = cleanAndParseJSON(response.result);
+  
+  // Auto-reconstruct refinedPrompt from CO-STAR blocks if it was truncated at the bottom of the JSON response
+  if (!parsed.refinedPrompt || parsed.refinedPrompt.length < 50) {
+    const parts = [
+      parsed.costar.context ? `# Context\n${parsed.costar.context}` : "",
+      parsed.costar.objective ? `# Objective\n${parsed.costar.objective}` : "",
+      parsed.costar.style ? `# Style\n${parsed.costar.style}` : "",
+      parsed.costar.tone ? `# Tone\n${parsed.costar.tone}` : "",
+      parsed.costar.audience ? `# Audience\n${parsed.costar.audience}` : "",
+      parsed.costar.response ? `# Response\n${parsed.costar.response}` : ""
+    ];
+    parsed.refinedPrompt = parts.filter(Boolean).join("\n\n");
+  }
+  
+  return {
+    ...parsed,
+    provider: 'local',
+    model: 'gemma-4-local'
+  } as RefinedPromptResult;
+}
+
 /**
  * Engineers a refined prompt using Gemini (via Edge Function) with automatic local fallback.
  */
 export const engineerPrompt = async (userInput: string, model?: string, provider?: string, parentId?: string | null): Promise<RefinedPromptResult> => {
-  // Direct route for local model selection
-  if (provider === 'local') {
-      return engineerPromptLocal(userInput);
+  const isAndroid = Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android';
+  const isLocalSelected = provider === 'local';
+
+  // 1. If running on Android and "local" is selected in the UI dropdown, route to Gemma 4 on-device AI
+  if (isAndroid && isLocalSelected) {
+    try {
+      const { available } = await NativeAI.isModelAvailable();
+      if (available) {
+        return runGemmaOnDeviceInference(userInput);
+      } else {
+        throw new AppError(
+          ErrorCode.LLM_GENERATION_FAILED,
+          "Gemma 4 on-device model is not downloaded. Please download it in the app settings to use offline AI."
+        );
+      }
+    } catch (e) {
+      if (e instanceof AppError) throw e;
+      console.warn("Explicit on-device Gemma execution failed, falling back to local VM...", e);
+    }
   }
 
+  // 2. Direct route for local model selection (Gemma 4 proxy on desktop or fallback)
+  if (isLocalSelected) {
+    return engineerPromptLocal(userInput);
+  }
+
+  // 3. For cloud models, try the Supabase Edge Function first
   let attempt = 0;
-  
   while (true) {
     try {
       const { data, error } = await supabase.functions.invoke('engineer-prompt', {
@@ -121,26 +253,19 @@ export const engineerPrompt = async (userInput: string, model?: string, provider
       });
 
       if (error) {
-        // Check for 503/429 for automatic fallback
+        // Force fallback check for service errors
         if (error.message?.includes("503") || error.message?.includes("429")) {
-            console.warn("Gemini overloaded, attempting local fallback...");
-            try {
-                const fallbackResult = await engineerPromptLocal(userInput);
-                return { ...fallbackResult, id: "fallback-" + Date.now() }; 
-            } catch (fallbackError) {
-                console.error("Local fallback also failed:", fallbackError);
-            }
+          throw error;
         }
 
         let errorCode = ErrorCode.LLM_GENERATION_FAILED;
         let errorMessage = error.message || "Failed to engineer prompt.";
-
         try {
-            if (error.context?.json) {
-                const body = await error.context.json();
-                if (body.errorCode) errorCode = body.errorCode;
-                if (body.error) errorMessage = body.error;
-            }
+          if (error.context?.json) {
+            const body = await error.context.json();
+            if (body.errorCode) errorCode = body.errorCode;
+            if (body.error) errorMessage = body.error;
+          }
         } catch (e) {}
 
         throw new AppError(errorCode, errorMessage, { originalError: error });
@@ -148,18 +273,43 @@ export const engineerPrompt = async (userInput: string, model?: string, provider
 
       return data as RefinedPromptResult;
     } catch (error: any) {
-      if (error instanceof AppError) throw error;
-
-      if (attempt >= MAX_RETRIES) {
-        throw new AppError(
-            ErrorCode.NETWORK_ERROR, 
-            error.message || "Failed to connect to the engineering service.", 
-            { originalError: error }
-        );
+      // For general app failures (other than network errors or model overloaded), throw immediately
+      if (error instanceof AppError && error.code !== ErrorCode.NETWORK_ERROR && error.code !== ErrorCode.LLM_SERVICE_UNAVAILABLE) {
+        throw error;
       }
 
-      await delay(BASE_DELAY);
-      attempt++;
+      console.warn("Cloud model request failed. Attempting on-device/local fallback...", error);
+      
+      // A. If on Android, try Gemma 4 on-device first
+      if (isAndroid) {
+        try {
+          const { available } = await NativeAI.isModelAvailable();
+          if (available) {
+            return runGemmaOnDeviceInference(userInput);
+          }
+        } catch (gemmaError) {
+          console.error("On-device fallback also failed:", gemmaError);
+        }
+      }
+
+      // B. Try remote Gemma 4 proxy fallback
+      try {
+        const fallbackResult = await engineerPromptLocal(userInput);
+        return { ...fallbackResult, id: "fallback-" + Date.now() };
+      } catch (fallbackError) {
+        console.error("Local VM fallback also failed:", fallbackError);
+      }
+
+      if (attempt < MAX_RETRIES) {
+        await delay(BASE_DELAY);
+        attempt++;
+        continue;
+      }
+
+      throw new AppError(
+        ErrorCode.NETWORK_ERROR,
+        "All AI services are currently unreachable. Please check your network connection."
+      );
     }
   }
 };

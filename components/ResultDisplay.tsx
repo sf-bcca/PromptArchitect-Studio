@@ -49,8 +49,17 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, error, isLoading,
   }
 
   if (result) {
-    // If granular data exists, use Workbench. Otherwise fallback to simple card.
-    if (result.costar) {
+    // If granular data exists and has actual content, use Workbench. Otherwise fallback to simple card.
+    const hasCostarContent = result.costar && (
+      result.costar.context?.trim() ||
+      result.costar.objective?.trim() ||
+      result.costar.style?.trim() ||
+      result.costar.tone?.trim() ||
+      result.costar.audience?.trim() ||
+      result.costar.response?.trim()
+    );
+
+    if (hasCostarContent) {
         return <WorkbenchDisplay 
             result={result} 
             onFork={onFork} 

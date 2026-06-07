@@ -13,6 +13,7 @@ import { usePromptHistory } from "./hooks/usePromptHistory";
 import { useNotifications } from "./context/NotificationContext";
 import { useUserSettings } from "./context/UserSettingsContext";
 import { useHaptics } from "./hooks/useHaptics";
+import { Capacitor } from "@capacitor/core";
 
 /**
  * The main application component for PromptArchitect-Studio.
@@ -234,7 +235,12 @@ const App: React.FC = () => {
               isLoading={isLoading}
               selectedModel={selectedModel}
               setSelectedModel={setSelectedModel}
-              models={MODELS}
+              models={MODELS.map(m => {
+                if (m.id === "gemma-4-local" && Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android') {
+                  return { ...m, name: "Gemma 4 (Local On-Device)" };
+                }
+                return m;
+              })}
               currentResult={currentResult}
               session={session}
               setShowAuth={setShowAuth}
