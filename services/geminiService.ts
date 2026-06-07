@@ -152,10 +152,14 @@ function cleanAndParseJSON(text: string): any {
  * @param {string} userInput - The raw input to be engineered.
  * @returns {Promise<RefinedPromptResult>} The engineered prompt and CO-STAR components.
  */
-export const engineerPromptLocal = async (userInput: string, timeoutMs: number = 30000): Promise<RefinedPromptResult> => {
+export const engineerPromptLocal = async (userInput: string, timeoutMs: number = 120000): Promise<RefinedPromptResult> => {
     try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+        const timeoutId = setTimeout(() => {
+            const err = new Error("Local AI request timed out");
+            err.name = "TimeoutError";
+            controller.abort(err);
+        }, timeoutMs);
 
         const response = await fetch(LOCAL_AI_URL, {
             method: 'POST',
@@ -190,6 +194,9 @@ export const engineerPromptLocal = async (userInput: string, timeoutMs: number =
             model: 'gemma-4-local'
         } as RefinedPromptResult;
     } catch (error: any) {
+        if (error.name === 'AbortError' || error.name === 'TimeoutError') {
+            throw new AppError(ErrorCode.LLM_GENERATION_FAILED, `Local AI timed out after ${timeoutMs / 1000}s. Please check if your local Gemma VM is running and responsive.`);
+        }
         throw new AppError(ErrorCode.LLM_GENERATION_FAILED, `Local AI failed: ${error.message}`);
     }
 };
@@ -300,7 +307,7 @@ export const engineerPrompt = async (userInput: string, model?: string, provider
 
         // B. Try remote Gemma 4 proxy fallback
         try {
-          const fallbackResult = await engineerPromptLocal(userInput, 2000);
+          const fallbackResult = await engineerPromptLocal(userInput, 30000);
           return { ...fallbackResult, id: "fallback-" + Date.now() };
         } catch (fallbackError) {
           console.error("Local VM fallback also failed:", fallbackError);
@@ -330,7 +337,7 @@ export const engineerPrompt = async (userInput: string, model?: string, provider
 
       // B. Try remote Gemma 4 proxy fallback
       try {
-        const fallbackResult = await engineerPromptLocal(userInput, 2000);
+        const fallbackResult = await engineerPromptLocal(userInput, 30000);
         return { ...fallbackResult, id: "fallback-" + Date.now() };
       } catch (fallbackError) {
         console.error("Local VM fallback also failed:", fallbackError);
