@@ -154,6 +154,9 @@ function cleanAndParseJSON(text: string): any {
  */
 export const engineerPromptLocal = async (userInput: string): Promise<RefinedPromptResult> => {
     try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 2000);
+
         const response = await fetch(LOCAL_AI_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -166,8 +169,11 @@ export const engineerPromptLocal = async (userInput: string): Promise<RefinedPro
                     }
                 ],
                 response_format: { type: 'json_object' }
-            })
+            }),
+            signal: controller.signal
         });
+
+        clearTimeout(timeoutId);
 
         if (!response.ok) {
             throw new Error(`Local AI returned ${response.status}`);
@@ -246,6 +252,7 @@ export const engineerPrompt = async (userInput: string, model?: string, provider
 
   // 3. For cloud models, try the Supabase Edge Function first
   let attempt = 0;
+  let firstError: any = null;
   while (true) {
     try {
       const { data, error } = await supabase.functions.invoke('engineer-prompt', {
@@ -273,8 +280,37 @@ export const engineerPrompt = async (userInput: string, model?: string, provider
 
       return data as RefinedPromptResult;
     } catch (error: any) {
-      // For general app failures (other than network errors or model overloaded), throw immediately
-      if (error instanceof AppError && error.code !== ErrorCode.NETWORK_ERROR && error.code !== ErrorCode.LLM_SERVICE_UNAVAILABLE) {
+      if (!firstError) {
+        firstError = error;
+      }
+
+      // If it is LLM_SERVICE_UNAVAILABLE (503 overloaded), attempt fallback once, then fail fast
+      if (error instanceof AppError && error.code === ErrorCode.LLM_SERVICE_UNAVAILABLE) {
+        // A. If on Android, try Gemma 4 on-device first
+        if (isAndroid) {
+          try {
+            const { available } = await NativeAI.isModelAvailable();
+            if (available) {
+              return runGemmaOnDeviceInference(userInput);
+            }
+          } catch (gemmaError) {
+            console.error("On-device fallback also failed:", gemmaError);
+          }
+        }
+
+        // B. Try remote Gemma 4 proxy fallback
+        try {
+          const fallbackResult = await engineerPromptLocal(userInput);
+          return { ...fallbackResult, id: "fallback-" + Date.now() };
+        } catch (fallbackError) {
+          console.error("Local VM fallback also failed:", fallbackError);
+        }
+
+        throw error;
+      }
+
+      // For general app failures (other than network errors), throw immediately
+      if (error instanceof AppError && error.code !== ErrorCode.NETWORK_ERROR) {
         throw error;
       }
 
@@ -304,6 +340,18 @@ export const engineerPrompt = async (userInput: string, model?: string, provider
         await delay(BASE_DELAY);
         attempt++;
         continue;
+      }
+
+      if (firstError) {
+        if (firstError instanceof AppError) {
+          throw firstError;
+        } else {
+          throw new AppError(
+            ErrorCode.NETWORK_ERROR,
+            firstError.message || "All AI services are currently unreachable. Please check your network connection.",
+            { originalError: firstError }
+          );
+        }
       }
 
       throw new AppError(
