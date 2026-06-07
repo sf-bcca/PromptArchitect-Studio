@@ -1,6 +1,17 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Error Handling & Notifications', () => {
+  test.beforeEach(async ({ page }) => {
+    // Intercept local AI fallback calls and fail them immediately to avoid test timeouts
+    await page.route('**/local-ai/**', async (route) => {
+      await route.fulfill({
+        status: 502,
+        contentType: 'application/json',
+        body: JSON.stringify({ error: 'Local AI offline' }),
+      });
+    });
+  });
+
   test('displays error toast when LLM service returns 503', async ({ page }) => {
     await page.goto('/');
     
