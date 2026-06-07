@@ -263,10 +263,8 @@ export const engineerPrompt = async (userInput: string, model?: string, provider
         let errorCode = ErrorCode.LLM_GENERATION_FAILED;
         let errorMessage = error.message || "Failed to engineer prompt.";
         
-        if (error.message?.includes("503")) {
+        if (error.message?.includes("503") || error.message?.includes("429")) {
           errorCode = ErrorCode.LLM_SERVICE_UNAVAILABLE;
-        } else if (error.message?.includes("429")) {
-          errorCode = ErrorCode.RATE_LIMIT_EXCEEDED;
         }
 
         try {
