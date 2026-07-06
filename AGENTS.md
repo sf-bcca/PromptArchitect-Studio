@@ -11,7 +11,7 @@ PromptArchitect-Studio is a specialized React 19 + TypeScript + Supabase web app
 *   **Frontend:** React 19, TypeScript ~5.8, Vite 6, Tailwind CSS 4.
 *   **Backend:** Supabase (PostgreSQL), Deno (Edge Functions).
 *   **Mobile:** Capacitor ^8 (iOS/Android targets via `capacitor.config.ts`).
-*   **AI Providers:** Gemini 3.1 Flash-Lite (Default) / 3 Flash / **Gemma 4 (Local Fallback)**.
+*   **AI Providers:** Gemini 3.1 Flash-Lite (Default) / **Gemini 3.5 Flash-Preview** / **Gemma 4 (Local Fallback)**.
 *   **Testing:** Vitest (Unit), Playwright (E2E).
 *   **Containerization:** Docker, Docker Compose.
 *   **Tools:** Husky (Git hooks), SecretLint.
@@ -43,6 +43,7 @@ PromptArchitect-Studio is a specialized React 19 + TypeScript + Supabase web app
 ├── CONTRIBUTING.md    # Contribution guidelines
 ├── LLM_SETUP.md       # AI provider configuration
 ├── components.json    # Shadcn/ui configuration
+├── ANDROID_BUILD.md   # Building & deploying APKs for Android devices
 ├── capacitor.config.ts # Capacitor mobile config (iOS/Android)
 ├── docker-compose.yml # Container orchestration
 ├── Dockerfile         # Production container image
@@ -92,6 +93,9 @@ pnpm secretlint   # Security linting
 ## AI & BACKEND CONFIGURATION
 *   **LLM Setup:** Configured via Supabase Secrets (`GEMINI_API_KEY`). See `LLM_SETUP.md`.
 *   **Supabase:** Local development requires Supabase CLI. Edge functions run in a Deno environment.
+
+## MOBILE DEPLOYMENT
+*   **Android APKs:** Built via Capacitor 8 + Gradle. Debug builds for device install, signed releases for Play Store. Java 21 (Oracle JDK) required — OpenJDK 26 breaks the build. See `ANDROID_BUILD.md` for full guide.
 
 ## DEPLOYMENT
 *   **CI/CD:** GitHub Actions handle validation, testing, and Docker builds (`.github/workflows/`).
