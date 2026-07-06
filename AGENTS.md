@@ -1,7 +1,7 @@
 # PROJECT KNOWLEDGE BASE
 
-**Generated:** 2026-05-07
-**Commit:** 980a7de0c8e87bd0e15d41cb4984643d967d12a3
+**Generated:** 2026-07-06
+**Commit:** f937eb8
 **Branch:** main
 
 ## OVERVIEW
@@ -10,6 +10,7 @@ PromptArchitect-Studio is a specialized React 19 + TypeScript + Supabase web app
 ## TECH STACK
 *   **Frontend:** React 19, TypeScript ~5.8, Vite 6, Tailwind CSS 4.
 *   **Backend:** Supabase (PostgreSQL), Deno (Edge Functions).
+*   **Mobile:** Capacitor ^8 (iOS/Android targets via `capacitor.config.ts`).
 *   **AI Providers:** Gemini 3.1 Flash-Lite (Default) / 3 Flash / **Gemma 4 (Local Fallback)**.
 *   **Testing:** Vitest (Unit), Playwright (E2E).
 *   **Containerization:** Docker, Docker Compose.
@@ -29,6 +30,8 @@ PromptArchitect-Studio is a specialized React 19 + TypeScript + Supabase web app
 ├── supabase/
 │   ├── functions/     # Edge Functions (Deno runtime)
 │   └── migrations/    # Database migrations
+├── conductor/         # Product guidelines and workflow documentation
+├── docs/              # Project assets and manual documentation
 ├── App.tsx            # Main application component and routing logic
 ├── index.tsx          # Application entry point
 ├── global.css         # Global styles (Tailwind)
@@ -37,14 +40,14 @@ PromptArchitect-Studio is a specialized React 19 + TypeScript + Supabase web app
 ├── INSTALL.md         # Detailed installation guide
 ├── USAGE.md           # User manual and framework guide
 ├── DEPLOY.md          # Deployment instructions
-├── components.json    # Shadcn/ui configuration
-├── LLM_SETUP.md       # AI provider configuration
 ├── CONTRIBUTING.md    # Contribution guidelines
+├── LLM_SETUP.md       # AI provider configuration
+├── components.json    # Shadcn/ui configuration
+├── capacitor.config.ts # Capacitor mobile config (iOS/Android)
 ├── docker-compose.yml # Container orchestration
+├── Dockerfile         # Production container image
 ├── supabase_schema.sql # Database schema snapshot
 ├── vite.config.ts     # Build config (Port 5174, @/ path alias, AI Proxy)
-├── conductor/         # Product guidelines and workflow documentation
-├── docs/              # Project assets and manual documentation
 └── package.json       # Dependencies and scripts
 ```
 

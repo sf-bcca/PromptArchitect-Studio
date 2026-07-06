@@ -31,6 +31,7 @@ PromptArchitect-Studio is a powerful web-based tool designed to elevate your int
 - **⚡ AI Powered**: Leverages **Gemini 3.1 Flash-Lite** (Default) for high-speed, high-quality prompt refinement.
 - **🛡️ High Availability**: Automatic fallback to **local Gemma 4** (LiteRT-LM) if Gemini services are overloaded.
 - **🕰️ History, Favorites & Persistence**: Save, favorite, and revisit your engineered architectures using Supabase integration.
+- **📱 Mobile Ready**: Capacitor-based hybrid app targets for iOS and Android.
 
 ## 🏗️ Architecture
 
@@ -105,7 +106,8 @@ Open [http://localhost:5174](http://localhost:5174) — you're ready to engineer
 | **Frontend**   | [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)                      |
 | **Build Tool** | [Vite 6](https://vite.dev/)                                                                         |
 | **Styling**    | [Tailwind CSS 4](https://tailwindcss.com/)                                                           |
-| **AI Engines** | [Gemini 3.1 Flash-Lite](https://ai.google.dev/) (Default) + **Gemma 4** (Local Fallback) |
+| **Mobile**         | [Capacitor 8](https://capacitorjs.com/) (iOS/Android)                                                         |
+| **AI Engines**     | [Gemini 3.1 Flash-Lite](https://ai.google.dev/) (Default) + **Gemma 4** (Local Fallback) |
 | **Backend/DB** | [Supabase](https://supabase.com/)                                                                   |
 | **Testing**    | [Vitest](https://vitest.dev/) + [Playwright](https://playwright.dev/)                               |
 | **Git Hooks**  | [Husky](https://typicode.github.io/husky/) + [SecretLint](https://github.com/secretlint/secretlint) |
