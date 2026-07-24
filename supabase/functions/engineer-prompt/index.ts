@@ -75,7 +75,7 @@ serve(async (req) => {
     const ALLOWED_MODELS = {
       gemini: [
         "gemini-3.1-flash-lite",
-        "gemini-3.5-flash-preview",
+        "gemini-3.6-flash",
       ],
     };
 
@@ -155,7 +155,7 @@ serve(async (req) => {
         for (let i = 0; i < maxRetries; i++) {
             try {
                 const genModel = genAI.getGenerativeModel({
-                    model: i >= 1 ? "gemini-3.5-flash-preview" : modelName, // Fallback to experimental preview on retry if lite fails
+                    model: i >= 1 ? "gemini-3.6-flash" : modelName, // Fallback to Gemini 3.6 Flash on retry if lite fails
                     generationConfig: { responseMimeType: "application/json" }
                 });
 
